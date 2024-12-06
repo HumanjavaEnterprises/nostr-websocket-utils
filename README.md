@@ -14,8 +14,10 @@ A TypeScript library providing WebSocket utilities for Nostr applications, with 
 - 💓 Heartbeat monitoring
 - 📨 Message queueing during disconnections
 - 📢 Channel-based broadcasting
-- 🔒 Type-safe message handling
+- 🔒 Type-safe message handling with required handlers
 - 📝 Built-in logging
+- 🛡️ Comprehensive error handling
+- 🧪 Full test coverage
 
 ## Installation
 
@@ -23,30 +25,14 @@ A TypeScript library providing WebSocket utilities for Nostr applications, with 
 npm install @humanjavaenterprises/nostr-websocket-utils
 ```
 
+## Breaking Changes in v0.2.0
+
+- Introduced required handlers pattern for better type safety
+- Removed individual event handler properties (onMessage, onError, onClose)
+- Message handler is now required in server options
+- Client updated to match server interface
+
 ## Usage
-
-### Client Example
-
-```typescript
-import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
-
-const client = new NostrWSClient('wss://your-server.com', {
-  heartbeatInterval: 30000,
-  reconnectInterval: 5000,
-  maxReconnectAttempts: 5
-});
-
-client.on('connect', () => {
-  console.log('Connected!');
-  client.subscribe('my-channel');
-});
-
-client.on('message', (message) => {
-  console.log('Received:', message);
-});
-
-client.connect();
-```
 
 ### Server Example
 
@@ -54,24 +40,120 @@ client.connect();
 import express from 'express';
 import { createServer } from 'http';
 import { NostrWSServer } from '@humanjavaenterprises/nostr-websocket-utils';
+import winston from 'winston';
 
 const app = express();
 const server = createServer(app);
-const wss = new NostrWSServer(server, {
-  heartbeatInterval: 30000
+
+// Create a logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()]
 });
 
-wss.on('message', (message, client) => {
-  console.log('Received message:', message);
-  
-  // Broadcast to specific channel
-  wss.broadcastToChannel('my-channel', {
-    type: 'event',
-    data: { content: 'Hello channel!' }
-  });
+// Initialize WebSocket server with required handlers
+const wss = new NostrWSServer(server, {
+  heartbeatInterval: 30000,
+  logger,
+  handlers: {
+    // Required message handler
+    message: async (ws, message) => {
+      logger.info('Received message:', message);
+      
+      // Example: Handle different message types
+      switch (message.type) {
+        case 'subscribe':
+          // Handle subscription
+          break;
+        case 'event':
+          // Broadcast to specific channel
+          wss.broadcastToChannel('my-channel', {
+            type: 'event',
+            data: { content: 'Hello channel!' }
+          });
+          break;
+      }
+    },
+    // Optional error handler
+    error: (ws, error) => {
+      logger.error('WebSocket error:', error);
+    },
+    // Optional close handler
+    close: (ws) => {
+      logger.info('Client disconnected');
+    }
+  }
 });
 
 server.listen(3000);
+```
+
+### Client Example
+
+```typescript
+import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
+import winston from 'winston';
+
+// Create a logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()]
+});
+
+const client = new NostrWSClient('wss://your-server.com', {
+  heartbeatInterval: 30000,
+  reconnectInterval: 5000,
+  maxReconnectAttempts: 5,
+  logger,
+  handlers: {
+    message: async (ws, message) => {
+      logger.info('Received message:', message);
+      // Handle message
+    },
+    error: (ws, error) => {
+      logger.error('Connection error:', error);
+    },
+    close: (ws) => {
+      logger.info('Connection closed');
+    }
+  }
+});
+
+// Listen to events
+client.on('connect', () => {
+  logger.info('Connected!');
+  client.subscribe('my-channel');
+});
+
+client.connect();
+```
+
+## Interface Reference
+
+### NostrWSOptions
+
+```typescript
+interface NostrWSOptions {
+  // Interval for sending heartbeat pings (ms)
+  heartbeatInterval?: number;
+  // Interval between reconnection attempts (ms)
+  reconnectInterval?: number;
+  // Maximum number of reconnection attempts
+  maxReconnectAttempts?: number;
+  // Required logger instance
+  logger: Logger;
+  // Required handlers object
+  handlers: {
+    // Required message handler
+    message: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
+    // Optional error handler
+    error?: (ws: WebSocket, error: Error) => void;
+    // Optional close handler
+    close?: (ws: WebSocket) => void;
+  };
+}
 ```
 
 ## Why This Library is Perfect for Nostr Development
@@ -99,54 +181,12 @@ This library is specifically designed to accelerate Nostr application developmen
 - Full TypeScript support with comprehensive type definitions
 - Event-driven architecture matching Nostr's event-centric nature
 - Clear, consistent error handling and validation
-- Minimal boilerplate needed to get started
-
-### 5. Production-Ready Features
-- Built-in logging system
-- Memory leak prevention through proper client cleanup
-- Scalable client management
-- Support for multiple simultaneous subscriptions
-
-By using this library, you can skip weeks of WebSocket infrastructure development and focus on building your Nostr application's unique features.
-
-## API Reference
-
-### NostrWSClient
-
-- `constructor(url: string, options?: NostrWSOptions)`
-- `connect(): void`
-- `send(message: NostrWSMessage): void`
-- `subscribe(channel: string): void`
-- `unsubscribe(channel: string): void`
-- `close(): void`
-
-Events:
-- `connect`
-- `disconnect`
-- `reconnect`
-- `message`
-- `error`
-
-### NostrWSServer
-
-- `constructor(server: any, options?: NostrWSOptions)`
-- `broadcast(message: NostrWSMessage): void`
-- `broadcastToChannel(channel: string, message: NostrWSMessage): void`
-- `sendTo(client: ExtendedWebSocket, message: NostrWSMessage): void`
-- `getClients(): Set<ExtendedWebSocket>`
-- `close(): void`
-
-Events:
-- `message`
+- Required handlers pattern ensures type safety
 
 ## Contributing
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
 
 ## License
 
-MIT
+MIT License - see the [LICENSE](LICENSE) file for details.
