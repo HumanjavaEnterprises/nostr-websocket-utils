@@ -17,12 +17,17 @@ export class NostrWSServer extends EventEmitter {
     if (!options.logger) {
       throw new Error('Logger is required');
     }
+    if (!options.handlers?.message) {
+      throw new Error('Message handler is required');
+    }
     this.options = {
       heartbeatInterval: options.heartbeatInterval || 30000,
       logger: options.logger,
-      onMessage: options.onMessage || (() => {}),
-      onError: options.onError || (() => {}),
-      onClose: options.onClose || (() => {})
+      handlers: {
+        message: options.handlers.message,
+        error: options.handlers.error || (() => {}),
+        close: options.handlers.close || (() => {})
+      }
     };
 
     this.wss = new WebSocketServer({ server });
@@ -38,26 +43,24 @@ export class NostrWSServer extends EventEmitter {
       ws.on('message', async (data: Buffer) => {
         try {
           const message = JSON.parse(data.toString()) as NostrWSMessage;
-          if (this.options.onMessage) {
-            await this.options.onMessage(extWs, message);
-          }
+          await this.options.handlers.message(extWs, message);
         } catch (error) {
-          if (this.options.onError) {
-            this.options.onError(ws, error as Error);
+          if (this.options.handlers.error) {
+            this.options.handlers.error(ws, error as Error);
           }
         }
       });
 
       ws.on('close', () => {
         extWs.isAlive = false;
-        if (this.options.onClose) {
-          this.options.onClose(ws);
+        if (this.options.handlers.close) {
+          this.options.handlers.close(ws);
         }
       });
 
       ws.on('error', (error: Error) => {
-        if (this.options.onError) {
-          this.options.onError(ws, error);
+        if (this.options.handlers.error) {
+          this.options.handlers.error(ws, error);
         }
       });
     });

@@ -14,9 +14,11 @@ export interface NostrWSOptions {
   reconnectInterval?: number;
   maxReconnectAttempts?: number;
   logger: Logger;
-  onMessage?: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
-  onError?: (ws: WebSocket, error: Error) => void;
-  onClose?: (ws: WebSocket) => void;
+  handlers: {
+    message: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
+    error?: (ws: WebSocket, error: Error) => void;
+    close?: (ws: WebSocket) => void;
+  };
 }
 
 export interface NostrWSMessage {

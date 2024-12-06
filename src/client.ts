@@ -21,9 +21,11 @@ export class NostrWSClient extends EventEmitter {
     this.options = {
       heartbeatInterval: options.heartbeatInterval || 30000,
       logger: options.logger,
-      onMessage: options.onMessage,
-      onError: options.onError,
-      onClose: options.onClose
+      handlers: {
+        message: options.handlers?.message || (async () => {}),
+        error: options.handlers?.error || (() => {}),
+        close: options.handlers?.close || (() => {})
+      }
     };
   }
 
@@ -57,13 +59,11 @@ export class NostrWSClient extends EventEmitter {
       try {
         const message = JSON.parse(data.toString()) as NostrWSMessage;
         this.emit('message', message);
-        if (this.options.onMessage) {
-          await this.options.onMessage(this.ws!, message);
-        }
+        await this.options.handlers.message(this.ws!, message);
       } catch (error) {
         this.emit('error', error);
-        if (this.options.onError) {
-          this.options.onError(this.ws!, error as Error);
+        if (this.options.handlers.error) {
+          this.options.handlers.error(this.ws!, error as Error);
         }
       }
     });
@@ -73,16 +73,16 @@ export class NostrWSClient extends EventEmitter {
       this.stopHeartbeat();
       this.handleReconnect();
       this.emit('disconnect');
-      if (this.options.onClose) {
-        this.options.onClose(this.ws!);
+      if (this.options.handlers.close) {
+        this.options.handlers.close(this.ws!);
       }
     });
 
     this.ws.on('error', (error: Error) => {
       this.options.logger.error('WebSocket error:', error);
       this.emit('error', error);
-      if (this.options.onError) {
-        this.options.onError(this.ws!, error);
+      if (this.options.handlers.error) {
+        this.options.handlers.error(this.ws!, error);
       }
     });
   }

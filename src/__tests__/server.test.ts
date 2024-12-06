@@ -113,6 +113,11 @@ describe('NostrWSServer', () => {
         debug: jest.fn(),
         info: jest.fn(),
         error: jest.fn()
+      },
+      handlers: {
+        message: async () => {},
+        error: () => {},
+        close: () => {}
       }
     });
   });
