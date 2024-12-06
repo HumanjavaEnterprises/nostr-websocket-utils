@@ -108,7 +108,13 @@ describe('NostrWSServer', () => {
     (WebSocketServer as unknown as jest.Mock).mockImplementation(() => mockWsServer);
 
     mockHttpServer = new Server();
-    server = new NostrWSServer(mockHttpServer);
+    server = new NostrWSServer(mockHttpServer, {
+      logger: {
+        debug: jest.fn(),
+        info: jest.fn(),
+        error: jest.fn()
+      }
+    });
   });
 
   afterEach(() => {

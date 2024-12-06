@@ -1,5 +1,5 @@
 {
-  "name": "@humanjavaenterprises/nostr-websocket-utils",
+  "name": "nostr-websocket-utils",
   "version": "0.1.0",
   "description": "WebSocket utilities for Nostr applications",
   "main": "dist/index.js",

@@ -13,7 +13,10 @@ export interface NostrWSOptions {
   heartbeatInterval?: number;
   reconnectInterval?: number;
   maxReconnectAttempts?: number;
-  logger?: Logger;
+  logger: Logger;
+  onMessage?: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
+  onError?: (ws: WebSocket, error: Error) => void;
+  onClose?: (ws: WebSocket) => void;
 }
 
 export interface NostrWSMessage {
@@ -24,7 +27,7 @@ export interface NostrWSMessage {
 
 export interface NostrWSSubscription {
   channel: string;
-  filter?: any;
+  filter?: Record<string, unknown>;
 }
 
 export interface NostrWSClientEvents {

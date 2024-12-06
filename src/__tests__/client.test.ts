@@ -1,6 +1,6 @@
 import { NostrWSClient } from '../client.js';
 import WebSocket from 'ws';
-import type { NostrWSMessage } from '../types/index.js';
+import type { NostrWSMessage, Logger } from '../types/index.js';
 import { jest, describe, expect, it, beforeEach, afterEach } from '@jest/globals';
 
 // Mock WebSocket
@@ -10,9 +10,16 @@ describe('NostrWSClient', () => {
   let client: NostrWSClient;
   let mockWs: WebSocket;
   let eventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
+  let mockLogger: Logger;
 
   beforeEach(() => {
     eventHandlers = {};
+
+    mockLogger = {
+      debug: jest.fn((_message: string, ..._args: unknown[]) => {}),
+      info: jest.fn((_message: string, ..._args: unknown[]) => {}),
+      error: jest.fn((_message: string, ..._args: unknown[]) => {})
+    };
 
     const mockWebSocket = {
       binaryType: 'nodebuffer' as const,
@@ -55,7 +62,7 @@ describe('NostrWSClient', () => {
 
     mockWs = mockWebSocket as unknown as WebSocket;
     (WebSocket as unknown as jest.Mock).mockImplementation(() => mockWs);
-    client = new NostrWSClient('ws://test.com');
+    client = new NostrWSClient('ws://test.com', { logger: mockLogger });
   });
 
   afterEach(() => {
