@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { randomUUID } from 'crypto';
 import type { EnhancedWebSocket } from './types/enhanced-websocket.js';
-import type { Logger } from './types/index.js';
+import type { Logger, NostrWSMessage } from './types/index.js';
 
 export class ConnectionManager extends EventEmitter {
   private connections: Map<string, EnhancedWebSocket> = new Map();
@@ -50,10 +50,10 @@ export class ConnectionManager extends EventEmitter {
   }
 
   /**
-   * Get all active connections
+   * Get all connections
    */
-  getAllConnections(): Map<string, EnhancedWebSocket> {
-    return this.connections;
+  getAllConnections(): EnhancedWebSocket[] {
+    return Array.from(this.connections.values());
   }
 
   /**
@@ -71,17 +71,18 @@ export class ConnectionManager extends EventEmitter {
   /**
    * Handle client authentication
    */
-  async handleAuth(client: EnhancedWebSocket, message: any): Promise<void> {
+  async handleAuth(ws: EnhancedWebSocket, message: NostrWSMessage): Promise<void> {
     try {
-      const [_, event] = message;
-      if (await this.verifyAuth(event)) {
-        client.authenticated = true;
-        client.pubkey = event.pubkey;
-        this.logger.debug('Client authenticated:', { id: client.id, pubkey: client.pubkey });
-        this.emit('auth', client);
+      const [command, event] = message as [string, { pubkey: string }];
+      if (command !== 'AUTH') {
+        throw new Error('Invalid auth message');
       }
+      ws.authenticated = true;
+      ws.pubkey = event.pubkey;
+      this.emit('auth', ws);
     } catch (error) {
       this.logger.error('Error handling auth:', error);
+      throw error;
     }
   }
 
@@ -97,28 +98,33 @@ export class ConnectionManager extends EventEmitter {
   /**
    * Broadcast a message to all connected clients
    */
-  broadcast(message: any, filter?: (client: EnhancedWebSocket) => boolean): void {
-    const clients = Array.from(this.connections.values());
-    const targetClients = filter ? clients.filter(filter) : clients;
-
-    for (const client of targetClients) {
-      if (client.readyState === client.OPEN) {
-        client.send(JSON.stringify(message));
+  broadcast(message: NostrWSMessage): void {
+    this.getAllConnections().forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
       }
-    }
+    });
   }
 
   /**
    * Broadcast a message to authenticated clients only
    */
-  broadcastAuthenticated(message: any): void {
-    this.broadcast(message, client => client.authenticated);
+  broadcastAuthenticated(message: NostrWSMessage): void {
+    this.getAllConnections().forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN && ws.authenticated) {
+        ws.send(JSON.stringify(message));
+      }
+    });
   }
 
   /**
    * Broadcast a message to clients subscribed to a specific channel
    */
-  broadcastToChannel(channel: string, message: any): void {
-    this.broadcast(message, client => client.subscriptions?.has(channel));
+  broadcastToChannel(channel: string, message: NostrWSMessage): void {
+    this.getAllConnections().forEach((ws) => {
+      if (ws.readyState === WebSocket.OPEN && ws.subscriptions?.has(channel)) {
+        ws.send(JSON.stringify(message));
+      }
+    });
   }
 }

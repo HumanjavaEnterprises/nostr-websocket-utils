@@ -38,7 +38,10 @@ const mockLogger = {
 
 describe('NostrWSClient', () => {
   let client: NostrWSClient;
-  let mockWs: any;
+  let mockWs: EnhancedWebSocket;
+  const messageHandler = vi.fn();
+  const errorHandler = vi.fn();
+  const closeHandler = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -46,11 +49,14 @@ describe('NostrWSClient', () => {
     client = new NostrWSClient('ws://localhost:8080', {
       logger: mockLogger,
       handlers: {
-        message: async () => {},
-        error: () => {},
-        close: () => {},
+        message: messageHandler,
+        error: errorHandler,
+        close: closeHandler,
       },
     });
+    client.connect();
+    mockWs = (client as { ws: EnhancedWebSocket }).ws;
+    mockWs.emit('open');
   });
 
   afterEach(() => {
@@ -61,15 +67,10 @@ describe('NostrWSClient', () => {
 
   describe('connection management', () => {
     it('should connect successfully', () => {
-      client.connect();
-      mockWs = (client as any).ws;
-      mockWs.emit('open');
       expect(mockLogger.info).toHaveBeenCalledWith('WebSocket connection established');
     });
 
     it('should handle reconnection', () => {
-      client.connect();
-      mockWs = (client as any).ws;
       mockWs.emit('close');
       vi.advanceTimersByTime(1000);
       expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('Attempting to reconnect'));
@@ -78,9 +79,6 @@ describe('NostrWSClient', () => {
     it('should handle max reconnection attempts', () => {
       const maxReconnectSpy = vi.fn();
       client.on('max_reconnects', maxReconnectSpy);
-      
-      client.connect();
-      mockWs = (client as any).ws;
       
       // Simulate 5 failed reconnection attempts
       for (let i = 0; i < 6; i++) {
@@ -94,8 +92,6 @@ describe('NostrWSClient', () => {
 
   describe('authentication', () => {
     beforeEach(() => {
-      client.connect();
-      mockWs = (client as any).ws;
       mockWs.emit('open');
     });
 
@@ -112,15 +108,13 @@ describe('NostrWSClient', () => {
 
     it('should track authentication state', () => {
       expect(client.isAuthenticated()).toBe(false);
-      (client as any).ws.authenticated = true;
+      (client as { ws: EnhancedWebSocket }).ws.authenticated = true;
       expect(client.isAuthenticated()).toBe(true);
     });
   });
 
   describe('subscription management', () => {
     beforeEach(() => {
-      client.connect();
-      mockWs = (client as any).ws;
       mockWs.emit('open');
     });
 
@@ -139,25 +133,8 @@ describe('NostrWSClient', () => {
   });
 
   describe('message handling', () => {
-    let messageHandler: ReturnType<typeof vi.fn>;
-
-    beforeEach(() => {
-      messageHandler = vi.fn();
-      client = new NostrWSClient('ws://localhost:8080', {
-        logger: mockLogger,
-        handlers: {
-          message: messageHandler,
-          error: () => {},
-          close: () => {},
-        },
-      });
-      client.connect();
-      mockWs = (client as any).ws;
-      mockWs.emit('open');
-    });
-
     it('should handle incoming messages', async () => {
-      const message = { type: 'test', data: 'test-data' };
+      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
       mockWs.isAlive = true;  // Ensure WebSocket is alive
       mockWs.emit('message', JSON.stringify(message));
       await vi.runAllTimersAsync();
@@ -165,7 +142,7 @@ describe('NostrWSClient', () => {
     });
 
     it('should queue messages when not connected', () => {
-      const message = { type: 'test', data: 'test-data' };
+      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
       mockWs.readyState = WebSocket.CLOSING;
       client.send(message);
       expect(mockWs.send).not.toHaveBeenCalled();
@@ -173,7 +150,7 @@ describe('NostrWSClient', () => {
     });
 
     it('should process queued messages after reconnection', () => {
-      const message = { type: 'test', data: 'test-data' };
+      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
       mockWs.readyState = WebSocket.CLOSING;
       client.send(message);
       mockWs.readyState = WebSocket.OPEN;
@@ -184,8 +161,6 @@ describe('NostrWSClient', () => {
 
   describe('heartbeat', () => {
     beforeEach(() => {
-      client.connect();
-      mockWs = (client as any).ws;
       mockWs.emit('open');
     });
 

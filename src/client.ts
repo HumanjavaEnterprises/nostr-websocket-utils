@@ -165,7 +165,7 @@ export class NostrWSClient extends EventEmitter {
     this.ws.send(JSON.stringify(message));
   }
 
-  public async authenticate(event: any): Promise<void> {
+  public async authenticate(event: NostrWSMessage): Promise<void> {
     this.send(['AUTH', event]);
   }
 

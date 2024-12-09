@@ -1,16 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { WebSocket } from 'ws';
 import { NostrWSServer } from '../server.js';
-import { createServer } from 'http';
-import { WebSocket, WebSocketServer } from 'ws';
-import type { EnhancedWebSocket } from '../types/enhanced-websocket.js';
+import { mockLogger } from './mocks/logger.js';
 
 // Mock logger
-const mockLogger = {
-  debug: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
 
 describe('NostrWSServer', () => {
   let server: NostrWSServer;
