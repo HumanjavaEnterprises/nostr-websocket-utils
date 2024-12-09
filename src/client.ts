@@ -170,19 +170,22 @@ export class NostrWSClient extends EventEmitter {
   }
 
   public subscribe(channel: string): void {
-    if (this.ws) {
-      this.ws.subscriptions?.add(channel);
-      // Send subscription message if needed
-      // this.send(['SUB', channel]);
+    if (!this.ws || !this.isAuthenticated()) {
+      throw new Error('Must be connected and authenticated to subscribe');
     }
+    if (!this.ws.subscriptions) {
+      this.ws.subscriptions = new Set();
+    }
+    this.ws.subscriptions.add(channel);
+    this.send(['SUB', channel]);
   }
 
   public unsubscribe(channel: string): void {
-    if (this.ws) {
-      this.ws.subscriptions?.delete(channel);
-      // Send unsubscription message if needed
-      // this.send(['UNSUB', channel]);
+    if (!this.ws || !this.isAuthenticated()) {
+      throw new Error('Must be connected and authenticated to unsubscribe');
     }
+    this.ws.subscriptions?.delete(channel);
+    this.send(['UNSUB', channel]);
   }
 
   public isConnected(): boolean {
@@ -197,6 +200,7 @@ export class NostrWSClient extends EventEmitter {
     this.cleanup();
     if (this.ws) {
       this.ws.close();
+      this.ws = null;
     }
     if (this.reconnectTimeout) {
       clearTimeout(this.reconnectTimeout);

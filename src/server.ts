@@ -105,11 +105,11 @@ export class NostrWSServer extends EventEmitter {
           if (!ws.isAlive) {
             return ws.terminate();
           }
-          ws.ping();
           ws.isAlive = false;
+          ws.ping();
         }
       });
-    }, this.options.heartbeatInterval || 30000);
+    }, this.options.heartbeatInterval);
   }
 
   /**

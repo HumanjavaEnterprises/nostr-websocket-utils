@@ -19,6 +19,7 @@ A TypeScript library providing WebSocket utilities for Nostr applications, with 
 - 🛡️ Comprehensive error handling and propagation
 - 🧪 100% test coverage
 - 🔌 Ready-to-use with NestJS and other frameworks
+- ⚡ Full Nostr protocol support with type-safe events
 
 ## Installation
 
@@ -33,6 +34,7 @@ npm install @humanjavaenterprises/nostr-websocket-utils
 - Improved test coverage and reliability
 - Better TypeScript type safety
 - Updated documentation
+- Added comprehensive Nostr event support
 
 ## Breaking Changes in v0.2.0
 
@@ -40,15 +42,50 @@ npm install @humanjavaenterprises/nostr-websocket-utils
 - Added subscription management
 - NestJS integration support
 
-## What's New in v0.2.0
+## Nostr Protocol Support
 
-- Enhanced error handling and propagation
-- Improved WebSocket cleanup and termination
-- Fixed message handler context in client
-- Added subscription management
-- Better TypeScript type safety
-- Comprehensive test coverage
-- NestJS integration support
+### Event Types
+
+The library provides full support for Nostr event types:
+
+```typescript
+type NostrEvent = {
+  id?: string;        // Event identifier
+  pubkey?: string;    // Author's public key
+  created_at?: number; // Unix timestamp
+  kind: NostrEventKind; // Event type (0-44)
+  tags: string[][];   // Event tags
+  content: string;    // Event content
+  sig?: string;       // Event signature
+};
+```
+
+### Supported Event Kinds
+
+- 0: Metadata
+- 1: Text Note
+- 2: Recommend Server
+- 3: Contacts
+- 4: Encrypted Direct Message
+- 40: Channel Creation
+- 41: Channel Metadata
+- 42: Channel Message
+- 43: Channel Hide Message
+- 44: Channel Mute User
+
+### Message Types
+
+The library supports all standard Nostr message types:
+
+```typescript
+type NostrWSMessage = [string, NostrEvent] | [string, string];
+```
+
+Common message formats:
+- `['AUTH', event]`: Authentication messages
+- `['EVENT', event]`: Event messages
+- `['REQ', subscription_id, filters]`: Subscription requests
+- `['CLOSE', subscription_id]`: Close subscription
 
 ## Usage
 
@@ -78,8 +115,29 @@ const wsServer = new NostrWSServer(server, {
     message: async (ws, message) => {
       // Handle incoming messages
       console.log('Received:', message);
-      // You can use ws.authenticated and ws.subscriptions
-      // to manage client state
+      // Access client state
+      console.log('Client authenticated:', ws.authenticated);
+      console.log('Client subscriptions:', ws.subscriptions);
+      
+      // Handle different message types
+      if (message[0] === 'AUTH') {
+        // Handle authentication
+        ws.authenticated = true;
+        ws.pubkey = message[1].pubkey;
+      } else if (message[0] === 'EVENT') {
+        // Handle events
+        const event = message[1];
+        // Process event based on kind
+        switch (event.kind) {
+          case 1: // Text Note
+            // Handle text note
+            break;
+          case 4: // Encrypted Direct Message
+            // Handle DM
+            break;
+          // ... handle other kinds
+        }
+      }
     },
     error: (ws, error) => {
       console.error('WebSocket error:', error);
@@ -100,16 +158,29 @@ server.listen(3000, () => {
 
 ```typescript
 import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
+import winston from 'winston';
 
+// Create a logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()]
+});
+
+// Create WebSocket client
 const client = new NostrWSClient('ws://localhost:3000', {
-  logger: console,
+  logger,
   heartbeatInterval: 30000,
   handlers: {
     message: async (ws, message) => {
-      console.log('Received:', message);
+      // Handle different message types
+      if (message[0] === 'EVENT') {
+        const event = message[1];
+        console.log('Received event:', event);
+      }
     },
     error: (ws, error) => {
-      console.error('Error:', error);
+      console.error('Connection error:', error);
     },
     close: (ws) => {
       console.log('Connection closed');
@@ -120,44 +191,60 @@ const client = new NostrWSClient('ws://localhost:3000', {
 // Connect to server
 client.connect();
 
-// Send a message
-client.send({ type: 'EVENT', data: { /* ... */ } });
+// Authenticate
+const authEvent = {
+  id: 'unique-event-id',
+  pubkey: 'your-public-key',
+  kind: 1,
+  content: 'authentication message',
+  tags: [],
+  created_at: Math.floor(Date.now() / 1000),
+  sig: 'event-signature'
+};
+client.authenticate(['AUTH', authEvent]);
 
 // Subscribe to a channel
-client.subscribe('channel1');
+client.subscribe('test-channel');
 
-// Authenticate (if needed)
-client.authenticate({ /* auth event */ });
-
-// Close connection when done
-client.close();
+// Send an event
+const event = {
+  id: 'event-id',
+  pubkey: 'your-public-key',
+  kind: 1,
+  content: 'Hello, Nostr!',
+  tags: [],
+  created_at: Math.floor(Date.now() / 1000),
+  sig: 'event-signature'
+};
+client.send(['EVENT', event]);
 ```
 
-## Framework Integration
+## Advanced Features
 
-### NestJS Integration
+### Connection Management
 
-The library provides seamless integration with NestJS through a custom WebSocket adapter. See our [NestJS integration guide](docs/nestjs-integration.md) for details.
-
-## Key Features
-
-### 1. Nostr Protocol Support
-- Built-in support for core Nostr protocol message types
-- Perfectly aligned with Nostr's pub/sub model
-- Type-safe message handling for all Nostr events
-
-### 2. Advanced WebSocket Management
 - Automatic reconnection with exponential backoff
-- Heartbeat monitoring to detect stale connections
+- Configurable heartbeat intervals
 - Message queueing during disconnections
-- Clean connection termination
+- Connection state tracking
 
-### 3. Enterprise Features
-- Comprehensive error handling and propagation
-- Built-in logging with customizable logger
-- Connection statistics and monitoring
-- Channel-based broadcasting
-- Authentication support
+### Authentication
+
+- Support for Nostr authentication protocol
+- Client state tracking (authenticated, subscriptions)
+- Public key verification
+
+### Subscription Management
+
+- Channel-based subscriptions
+- Subscription state tracking
+- Automatic resubscription after reconnection
+
+### Error Handling
+
+- Comprehensive error propagation
+- Custom error handlers
+- Connection error recovery
 
 ## Contributing
 

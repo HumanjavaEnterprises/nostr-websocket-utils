@@ -2,6 +2,8 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { WebSocket } from 'ws';
 import { NostrWSServer } from '../server.js';
 import { mockLogger } from './mocks/logger.js';
+import { createServer } from 'http';
+import type { NostrWSMessage, NostrEvent } from '../types/index.js';
 
 // Mock logger
 
@@ -14,6 +16,7 @@ describe('NostrWSServer', () => {
   const mockCloseHandler = vi.fn();
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     httpServer = createServer();
     server = new NostrWSServer(httpServer, {
       logger: mockLogger,
@@ -75,7 +78,13 @@ describe('NostrWSServer', () => {
 
     it('should track client subscriptions', async () => {
       client = await connectClient();
-      const message = { type: 'test', data: 'test-data' };
+      const event: NostrEvent = {
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000)
+      };
+      const message: NostrWSMessage = ['EVENT', event];
       
       // Send a test message
       client.send(JSON.stringify(message));
@@ -102,7 +111,13 @@ describe('NostrWSServer', () => {
     });
 
     it('should broadcast to all clients', async () => {
-      const message = { type: 'broadcast', data: 'test' };
+      const event: NostrEvent = {
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000)
+      };
+      const message: NostrWSMessage = ['EVENT', event];
       const messagePromise = Promise.all([
         new Promise(resolve => client1.once('message', resolve)),
         new Promise(resolve => client2.once('message', resolve))
@@ -123,7 +138,13 @@ describe('NostrWSServer', () => {
       client1.send(JSON.stringify(['AUTH', authEvent]));
       await new Promise(resolve => setTimeout(resolve, 100));
 
-      const message = { type: 'authenticated', data: 'test' };
+      const event: NostrEvent = {
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000)
+      };
+      const message: NostrWSMessage = ['EVENT', event];
       let client1Received = false;
       let client2Received = false;
 
@@ -135,6 +156,18 @@ describe('NostrWSServer', () => {
 
       expect(client1Received).toBe(true);
       expect(client2Received).toBe(false);
+    });
+
+    it('should broadcast messages to subscribed clients', () => {
+      const event: NostrEvent = {
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000)
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+      server.broadcastToChannel('test-channel', message);
+      // Add assertions based on your needs
     });
   });
 

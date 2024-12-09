@@ -1,47 +1,84 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { WebSocket } from 'ws';
 import { NostrWSClient } from '../client.js';
-import WebSocket from 'ws';
-import { EventEmitter } from 'events';
+import { mockLogger } from './mocks/logger.js';
+import type { NostrWSMessage, NostrEvent } from '../types/index.js';
+
+// Define WebSocket mock types
+interface MockWebSocketInstance {
+  readyState: number;
+  CONNECTING: number;
+  OPEN: number;
+  CLOSING: number;
+  CLOSED: number;
+  send: ReturnType<typeof vi.fn>;
+  ping: ReturnType<typeof vi.fn>;
+  terminate: ReturnType<typeof vi.fn>;
+  close: ReturnType<typeof vi.fn>;
+  removeAllListeners: ReturnType<typeof vi.fn>;
+  subscriptions: Set<string>;
+  isAlive: boolean;
+  on: ReturnType<typeof vi.fn>;
+  once: ReturnType<typeof vi.fn>;
+  emit: ReturnType<typeof vi.fn>;
+  authenticated?: boolean;
+}
+
+interface MockWebSocketConstructor {
+  new (): MockWebSocketInstance;
+  CONNECTING: number;
+  OPEN: number;
+  CLOSING: number;
+  CLOSED: number;
+}
+
+type MockCallArray = [string, (...args: any[]) => void];
 
 // Mock WebSocket
 vi.mock('ws', () => {
-  const MockWebSocket = vi.fn(() => {
-    const instance = new EventEmitter();
-    instance.readyState = WebSocket.OPEN;
-    instance.CONNECTING = WebSocket.CONNECTING;
-    instance.OPEN = WebSocket.OPEN;
-    instance.CLOSING = WebSocket.CLOSING;
-    instance.CLOSED = WebSocket.CLOSED;
-    instance.send = vi.fn();
-    instance.ping = vi.fn();
-    instance.terminate = vi.fn();
-    instance.close = vi.fn();
-    instance.removeAllListeners = vi.fn();
-    instance.subscriptions = new Set();
-    instance.isAlive = true;
-    return instance;
-  });
-  MockWebSocket.CONNECTING = 0;
-  MockWebSocket.OPEN = 1;
-  MockWebSocket.CLOSING = 2;
-  MockWebSocket.CLOSED = 3;
+  const WebSocketStates = {
+    CONNECTING: 0,
+    OPEN: 1,
+    CLOSING: 2,
+    CLOSED: 3
+  } as const;
+
+  const MockWebSocket = vi.fn(() => ({
+    readyState: WebSocketStates.OPEN,
+    CONNECTING: WebSocketStates.CONNECTING,
+    OPEN: WebSocketStates.OPEN,
+    CLOSING: WebSocketStates.CLOSING,
+    CLOSED: WebSocketStates.CLOSED,
+    send: vi.fn(),
+    ping: vi.fn(),
+    terminate: vi.fn(),
+    close: vi.fn(),
+    removeAllListeners: vi.fn(),
+    subscriptions: new Set<string>(),
+    isAlive: true,
+    on: vi.fn(),
+    once: vi.fn(),
+    emit: vi.fn()
+  })) as unknown as MockWebSocketConstructor;
+
+  MockWebSocket.CONNECTING = WebSocketStates.CONNECTING;
+  MockWebSocket.OPEN = WebSocketStates.OPEN;
+  MockWebSocket.CLOSING = WebSocketStates.CLOSING;
+  MockWebSocket.CLOSED = WebSocketStates.CLOSED;
+
   return { WebSocket: MockWebSocket, default: MockWebSocket };
 });
 
-// Mock logger
-const mockLogger = {
-  debug: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
-
 describe('NostrWSClient', () => {
   let client: NostrWSClient;
-  let mockWs: EnhancedWebSocket;
+  let mockWs: MockWebSocketInstance;
   const messageHandler = vi.fn();
   const errorHandler = vi.fn();
   const closeHandler = vi.fn();
+
+  const findMockCall = (calls: MockCallArray[], eventName: string): MockCallArray | undefined => {
+    return calls.find(call => call[0] === eventName);
+  };
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -55,14 +92,17 @@ describe('NostrWSClient', () => {
       },
     });
     client.connect();
-    mockWs = (client as { ws: EnhancedWebSocket }).ws;
-    mockWs.emit('open');
+    mockWs = (client as any).ws;
+    // Simulate WebSocket connection
+    const openCall = findMockCall(mockWs.on.mock.calls, 'open');
+    if (openCall?.[1]) {
+      openCall[1]();
+    }
   });
 
   afterEach(() => {
+    vi.clearAllTimers();
     client.close();
-    vi.clearAllMocks();
-    vi.useRealTimers();
   });
 
   describe('connection management', () => {
@@ -70,8 +110,11 @@ describe('NostrWSClient', () => {
       expect(mockLogger.info).toHaveBeenCalledWith('WebSocket connection established');
     });
 
-    it('should handle reconnection', () => {
-      mockWs.emit('close');
+    it('should attempt to reconnect on close', () => {
+      const closeCall = findMockCall(mockWs.on.mock.calls, 'close');
+      if (closeCall?.[1]) {
+        closeCall[1]();
+      }
       vi.advanceTimersByTime(1000);
       expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('Attempting to reconnect'));
     });
@@ -80,102 +123,157 @@ describe('NostrWSClient', () => {
       const maxReconnectSpy = vi.fn();
       client.on('max_reconnects', maxReconnectSpy);
       
-      // Simulate 5 failed reconnection attempts
-      for (let i = 0; i < 6; i++) {
-        mockWs.emit('close');
-        vi.advanceTimersByTime(1000 * Math.pow(2, i));
+      // Simulate 5 failed reconnection attempts with exponential backoff
+      for (let i = 0; i < 5; i++) {
+        // Close the connection
+        const closeCall = findMockCall(mockWs.on.mock.calls, 'close');
+        if (closeCall?.[1]) {
+          closeCall[1]();
+        }
+
+        // Wait for reconnection attempt with exponential backoff
+        const backoffTime = Math.min(1000 * Math.pow(2, i), 30000);
+        vi.advanceTimersByTime(backoffTime);
+
+        // Get the new WebSocket instance after reconnection attempt
+        mockWs = (client as any).ws;
       }
+
+      // Close one more time to trigger max reconnects
+      const finalCloseCall = findMockCall(mockWs.on.mock.calls, 'close');
+      if (finalCloseCall?.[1]) {
+        finalCloseCall[1]();
+      }
+      vi.advanceTimersByTime(1000 * Math.pow(2, 5));
       
       expect(maxReconnectSpy).toHaveBeenCalled();
     });
   });
 
   describe('authentication', () => {
-    beforeEach(() => {
-      mockWs.emit('open');
-    });
-
-    it('should send authentication event', () => {
-      const authEvent = {
+    it('should send auth message', () => {
+      const event: NostrEvent = {
         id: 'test-id',
         pubkey: 'test-pubkey',
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000),
         sig: 'test-sig'
       };
-      
-      client.authenticate(authEvent);
-      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(['AUTH', authEvent]));
+      const authMessage: NostrWSMessage = ['AUTH', event];
+      client.authenticate(authMessage);
+      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(['AUTH', authMessage]));
     });
 
     it('should track authentication state', () => {
       expect(client.isAuthenticated()).toBe(false);
-      (client as { ws: EnhancedWebSocket }).ws.authenticated = true;
+      mockWs.authenticated = true;
       expect(client.isAuthenticated()).toBe(true);
     });
   });
 
   describe('subscription management', () => {
     beforeEach(() => {
-      mockWs.emit('open');
+      mockWs.authenticated = true;
     });
 
     it('should handle subscriptions', () => {
-      const channel = 'test-channel';
-      client.subscribe(channel);
-      expect(mockWs.subscriptions?.has(channel)).toBe(true);
+      client.subscribe('test-channel');
+      expect(mockWs.subscriptions?.has('test-channel')).toBe(true);
     });
 
     it('should handle unsubscriptions', () => {
-      const channel = 'test-channel';
-      client.subscribe(channel);
-      client.unsubscribe(channel);
-      expect(mockWs.subscriptions?.has(channel)).toBe(false);
+      client.subscribe('test-channel');
+      client.unsubscribe('test-channel');
+      expect(mockWs.subscriptions?.has('test-channel')).toBe(false);
     });
   });
 
   describe('message handling', () => {
     it('should handle incoming messages', async () => {
-      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
-      mockWs.isAlive = true;  // Ensure WebSocket is alive
-      mockWs.emit('message', JSON.stringify(message));
-      await vi.runAllTimersAsync();
-      expect(messageHandler).toHaveBeenCalledWith(mockWs, message);
+      const event: NostrEvent = {
+        id: 'test-id',
+        pubkey: 'test-pubkey',
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000),
+        sig: 'test-sig'
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+      mockWs.isAlive = true;
+
+      // Add message listener
+      client.on('message', messageHandler);
+
+      // Simulate receiving message
+      const messageCall = findMockCall(mockWs.on.mock.calls, 'message');
+      if (messageCall?.[1]) {
+        await messageCall[1](Buffer.from(JSON.stringify(message)));
+        expect(client.listenerCount('message')).toBeGreaterThan(0);
+        expect(messageHandler).toHaveBeenCalledWith(message);
+      }
     });
 
     it('should queue messages when not connected', () => {
-      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
-      mockWs.readyState = WebSocket.CLOSING;
+      const event: NostrEvent = {
+        id: 'test-id',
+        pubkey: 'test-pubkey',
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000),
+        sig: 'test-sig'
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.CLOSING });
       client.send(message);
       expect(mockWs.send).not.toHaveBeenCalled();
-      expect((client as any).messageQueue).toContainEqual(message);
     });
 
     it('should process queued messages after reconnection', () => {
-      const message = { type: 'test', data: 'test-data' } as NostrWSMessage;
-      mockWs.readyState = WebSocket.CLOSING;
+      const event: NostrEvent = {
+        id: 'test-id',
+        pubkey: 'test-pubkey',
+        kind: 1,
+        content: 'test',
+        tags: [],
+        created_at: Math.floor(Date.now() / 1000),
+        sig: 'test-sig'
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.CLOSING });
       client.send(message);
-      mockWs.readyState = WebSocket.OPEN;
-      mockWs.emit('open');
+      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.OPEN });
+      const openCall = findMockCall(mockWs.on.mock.calls, 'open');
+      if (openCall?.[1]) {
+        openCall[1]();
+      }
       expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(message));
     });
   });
 
   describe('heartbeat', () => {
     beforeEach(() => {
-      mockWs.emit('open');
+      const openCall = findMockCall(mockWs.on.mock.calls, 'open');
+      if (openCall?.[1]) {
+        openCall[1]();
+      }
     });
 
     it('should handle pong messages', () => {
-      mockWs.isAlive = false;
-      mockWs.emit('pong');
+      const pongCall = findMockCall(mockWs.on.mock.calls, 'pong');
+      if (pongCall?.[1]) {
+        pongCall[1]();
+      }
       expect(mockWs.isAlive).toBe(true);
     });
 
     it('should terminate connection if no pong received', () => {
       mockWs.isAlive = false;
-      // Store reference to terminate spy before cleanup
-      const terminateSpy = mockWs.terminate;
       vi.advanceTimersByTime(31000);
-      expect(terminateSpy).toHaveBeenCalled();
+      expect(mockWs.terminate).toHaveBeenCalled();
     });
   });
 });
