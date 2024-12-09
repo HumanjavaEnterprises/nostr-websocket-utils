@@ -1,127 +1,206 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { NostrWSClient } from '../client.js';
 import WebSocket from 'ws';
-import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest';
-import type { NostrWSMessage } from '../types/index.js';
+import { EventEmitter } from 'events';
 
-vi.mock('ws');
+// Mock WebSocket
+vi.mock('ws', () => {
+  const MockWebSocket = vi.fn(() => {
+    const instance = new EventEmitter();
+    instance.readyState = WebSocket.OPEN;
+    instance.CONNECTING = WebSocket.CONNECTING;
+    instance.OPEN = WebSocket.OPEN;
+    instance.CLOSING = WebSocket.CLOSING;
+    instance.CLOSED = WebSocket.CLOSED;
+    instance.send = vi.fn();
+    instance.ping = vi.fn();
+    instance.terminate = vi.fn();
+    instance.close = vi.fn();
+    instance.removeAllListeners = vi.fn();
+    instance.subscriptions = new Set();
+    instance.isAlive = true;
+    return instance;
+  });
+  MockWebSocket.CONNECTING = 0;
+  MockWebSocket.OPEN = 1;
+  MockWebSocket.CLOSING = 2;
+  MockWebSocket.CLOSED = 3;
+  return { WebSocket: MockWebSocket, default: MockWebSocket };
+});
 
-interface MockWebSocket {
-  binaryType: string;
-  bufferedAmount: number;
-  extensions: string;
-  protocol: string;
-  readyState: number;
-  url: string;
-  CONNECTING: number;
-  OPEN: number;
-  CLOSING: number;
-  CLOSED: number;
-  onopen: ((this: WebSocket, ev: any) => any) | null;
-  onclose: ((this: WebSocket, ev: any) => any) | null;
-  onerror: ((this: WebSocket, ev: any) => any) | null;
-  onmessage: ((this: WebSocket, ev: any) => any) | null;
-  close: ReturnType<typeof vi.fn>;
-  send: ReturnType<typeof vi.fn>;
-  on(event: string, listener: (...args: any[]) => void): this;
-  removeAllListeners: ReturnType<typeof vi.fn>;
-  removeListener: ReturnType<typeof vi.fn>;
-  emit: ReturnType<typeof vi.fn>;
-}
+// Mock logger
+const mockLogger = {
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
 
 describe('NostrWSClient', () => {
   let client: NostrWSClient;
-  let mockWs: MockWebSocket;
-  const wsEventHandlers: { [key: string]: ((...args: any[]) => void) } = {};
+  let mockWs: any;
 
   beforeEach(() => {
-    mockWs = {
-      binaryType: 'nodebuffer',
-      bufferedAmount: 0,
-      extensions: '',
-      protocol: '',
-      readyState: WebSocket.OPEN,
-      url: '',
-      CONNECTING: 0,
-      OPEN: 1,
-      CLOSING: 2,
-      CLOSED: 3,
-      onopen: null,
-      onclose: null,
-      onerror: null,
-      onmessage: null,
-      close: vi.fn(),
-      send: vi.fn(),
-      on(event: string, listener: (...args: any[]) => void) {
-        wsEventHandlers[event] = listener;
-        return this;
-      },
-      removeAllListeners: vi.fn(),
-      removeListener: vi.fn(),
-      emit: vi.fn()
-    };
-
-    vi.mocked(WebSocket).mockImplementation(() => mockWs as unknown as WebSocket);
-
+    vi.clearAllMocks();
+    vi.useFakeTimers();
     client = new NostrWSClient('ws://localhost:8080', {
-      logger: {
-        debug: vi.fn(),
-        info: vi.fn(),
-        error: vi.fn()
-      },
+      logger: mockLogger,
       handlers: {
         message: async () => {},
         error: () => {},
-        close: () => {}
-      }
+        close: () => {},
+      },
     });
-    client.connect();
-    // Simulate connection success
-    wsEventHandlers['open']?.();
   });
 
   afterEach(() => {
-    if (client) {
-      client.close();
-    }
+    client.close();
     vi.clearAllMocks();
+    vi.useRealTimers();
   });
 
-  describe('constructor', () => {
-    it('should create a WebSocket connection', () => {
-      expect(WebSocket).toHaveBeenCalledWith('ws://localhost:8080');
+  describe('connection management', () => {
+    it('should connect successfully', () => {
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('open');
+      expect(mockLogger.info).toHaveBeenCalledWith('WebSocket connection established');
+    });
+
+    it('should handle reconnection', () => {
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('close');
+      vi.advanceTimersByTime(1000);
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('Attempting to reconnect'));
+    });
+
+    it('should handle max reconnection attempts', () => {
+      const maxReconnectSpy = vi.fn();
+      client.on('max_reconnects', maxReconnectSpy);
+      
+      client.connect();
+      mockWs = (client as any).ws;
+      
+      // Simulate 5 failed reconnection attempts
+      for (let i = 0; i < 6; i++) {
+        mockWs.emit('close');
+        vi.advanceTimersByTime(1000 * Math.pow(2, i));
+      }
+      
+      expect(maxReconnectSpy).toHaveBeenCalled();
     });
   });
 
-  describe('event handling', () => {
-    it('should handle message event', () => {
-      const messageHandler = vi.fn();
-      client.on('message', messageHandler);
-
-      const testMessage: NostrWSMessage = { type: 'event', data: { test: true } };
-      wsEventHandlers['message']?.(Buffer.from(JSON.stringify(testMessage)));
-
-      expect(messageHandler).toHaveBeenCalledWith(testMessage);
+  describe('authentication', () => {
+    beforeEach(() => {
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('open');
     });
 
-    it('should handle close event', () => {
-      const closeHandler = vi.fn();
-      client.on('close', closeHandler);
+    it('should send authentication event', () => {
+      const authEvent = {
+        id: 'test-id',
+        pubkey: 'test-pubkey',
+        sig: 'test-sig'
+      };
       
-      // First emit close to the WebSocket handlers
-      wsEventHandlers['close']?.();
-      
-      // Emit close event to the client handlers
-      client.emit('close');
-      
-      // The close handler should be called
-      expect(closeHandler).toHaveBeenCalled();
+      client.authenticate(authEvent);
+      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(['AUTH', authEvent]));
+    });
+
+    it('should track authentication state', () => {
+      expect(client.isAuthenticated()).toBe(false);
+      (client as any).ws.authenticated = true;
+      expect(client.isAuthenticated()).toBe(true);
     });
   });
 
-  describe('close', () => {
-    it('should close the WebSocket connection', () => {
-      client.close();
-      expect(mockWs.close).toHaveBeenCalled();
+  describe('subscription management', () => {
+    beforeEach(() => {
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('open');
+    });
+
+    it('should handle subscriptions', () => {
+      const channel = 'test-channel';
+      client.subscribe(channel);
+      expect(mockWs.subscriptions?.has(channel)).toBe(true);
+    });
+
+    it('should handle unsubscriptions', () => {
+      const channel = 'test-channel';
+      client.subscribe(channel);
+      client.unsubscribe(channel);
+      expect(mockWs.subscriptions?.has(channel)).toBe(false);
+    });
+  });
+
+  describe('message handling', () => {
+    let messageHandler: ReturnType<typeof vi.fn>;
+
+    beforeEach(() => {
+      messageHandler = vi.fn();
+      client = new NostrWSClient('ws://localhost:8080', {
+        logger: mockLogger,
+        handlers: {
+          message: messageHandler,
+          error: () => {},
+          close: () => {},
+        },
+      });
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('open');
+    });
+
+    it('should handle incoming messages', async () => {
+      const message = { type: 'test', data: 'test-data' };
+      mockWs.isAlive = true;  // Ensure WebSocket is alive
+      mockWs.emit('message', JSON.stringify(message));
+      await vi.runAllTimersAsync();
+      expect(messageHandler).toHaveBeenCalledWith(mockWs, message);
+    });
+
+    it('should queue messages when not connected', () => {
+      const message = { type: 'test', data: 'test-data' };
+      mockWs.readyState = WebSocket.CLOSING;
+      client.send(message);
+      expect(mockWs.send).not.toHaveBeenCalled();
+      expect((client as any).messageQueue).toContainEqual(message);
+    });
+
+    it('should process queued messages after reconnection', () => {
+      const message = { type: 'test', data: 'test-data' };
+      mockWs.readyState = WebSocket.CLOSING;
+      client.send(message);
+      mockWs.readyState = WebSocket.OPEN;
+      mockWs.emit('open');
+      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(message));
+    });
+  });
+
+  describe('heartbeat', () => {
+    beforeEach(() => {
+      client.connect();
+      mockWs = (client as any).ws;
+      mockWs.emit('open');
+    });
+
+    it('should handle pong messages', () => {
+      mockWs.isAlive = false;
+      mockWs.emit('pong');
+      expect(mockWs.isAlive).toBe(true);
+    });
+
+    it('should terminate connection if no pong received', () => {
+      mockWs.isAlive = false;
+      // Store reference to terminate spy before cleanup
+      const terminateSpy = mockWs.terminate;
+      vi.advanceTimersByTime(31000);
+      expect(terminateSpy).toHaveBeenCalled();
     });
   });
 });

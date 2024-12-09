@@ -1,16 +1,18 @@
 import { EventEmitter } from 'events';
 import { Server as HttpServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
+import { ConnectionManager } from './connection-manager.js';
 import type {
   NostrWSOptions,
   NostrWSMessage,
-  ExtendedWebSocket
+  EnhancedWebSocket
 } from './types/index.js';
 
 export class NostrWSServer extends EventEmitter {
   private wss: WebSocketServer;
   private options: NostrWSOptions;
   private heartbeatInterval: NodeJS.Timeout | null = null;
+  private connectionManager: ConnectionManager;
 
   constructor(server: HttpServer, options: Partial<NostrWSOptions> = {}) {
     super();
@@ -30,19 +32,43 @@ export class NostrWSServer extends EventEmitter {
       }
     };
 
+    this.connectionManager = new ConnectionManager(this.options.logger);
+    this.setupConnectionManager();
+    
     this.wss = new WebSocketServer({ server });
     this.setupServer();
   }
 
+  private setupConnectionManager(): void {
+    // Forward connection manager events to server events
+    this.connectionManager.on('connect', (client: EnhancedWebSocket) => {
+      this.emit('connect', client);
+    });
+
+    this.connectionManager.on('disconnect', (client: EnhancedWebSocket) => {
+      this.emit('disconnect', client);
+    });
+
+    this.connectionManager.on('auth', (client: EnhancedWebSocket) => {
+      this.emit('auth', client);
+    });
+  }
+
   private setupServer(): void {
     this.wss.on('connection', (ws: WebSocket) => {
-      const extWs = ws as ExtendedWebSocket;
-      extWs.subscriptions = new Set();
-      extWs.isAlive = true;
+      const extWs = ws as EnhancedWebSocket;
+      this.connectionManager.registerConnection(extWs);
 
       ws.on('message', async (data: Buffer) => {
         try {
           const message = JSON.parse(data.toString()) as NostrWSMessage;
+          
+          // Handle AUTH messages
+          if (Array.isArray(message) && message[0] === 'AUTH') {
+            await this.connectionManager.handleAuth(extWs, message);
+            return;
+          }
+          
           await this.options.handlers.message(extWs, message);
         } catch (error) {
           if (this.options.handlers.error) {
@@ -52,7 +78,7 @@ export class NostrWSServer extends EventEmitter {
       });
 
       ws.on('close', () => {
-        extWs.isAlive = false;
+        this.connectionManager.removeConnection(extWs);
         if (this.options.handlers.close) {
           this.options.handlers.close(ws);
         }
@@ -62,6 +88,7 @@ export class NostrWSServer extends EventEmitter {
         if (this.options.handlers.error) {
           this.options.handlers.error(ws, error);
         }
+        this.emit('error', error);
       });
     });
 
@@ -72,39 +99,54 @@ export class NostrWSServer extends EventEmitter {
 
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(() => {
-      this.wss.clients.forEach((ws) => {
+      const connections = this.connectionManager.getAllConnections();
+      connections.forEach((ws) => {
         if (ws.readyState === WebSocket.OPEN) {
-          const extWs = ws as ExtendedWebSocket;
-          if (!extWs.isAlive) {
+          if (!ws.isAlive) {
             return ws.terminate();
           }
           ws.ping();
-          extWs.isAlive = false;
+          ws.isAlive = false;
         }
       });
     }, this.options.heartbeatInterval || 30000);
   }
 
+  /**
+   * Broadcast a message to all connected clients
+   */
   public broadcast(message: NostrWSMessage): void {
-    this.wss.clients.forEach((client) => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(JSON.stringify(message));
-      }
-    });
+    this.connectionManager.broadcast(message);
   }
 
+  /**
+   * Broadcast a message to authenticated clients only
+   */
+  public broadcastAuthenticated(message: NostrWSMessage): void {
+    this.connectionManager.broadcastAuthenticated(message);
+  }
+
+  /**
+   * Broadcast a message to clients subscribed to a specific channel
+   */
   public broadcastToChannel(channel: string, message: NostrWSMessage): void {
-    this.wss.clients.forEach((client) => {
-      const extClient = client as ExtendedWebSocket;
-      if (client.readyState === WebSocket.OPEN && extClient.subscriptions?.has(channel)) {
-        client.send(JSON.stringify(message));
-      }
-    });
+    this.connectionManager.broadcastToChannel(channel, message);
   }
 
+  /**
+   * Get server statistics
+   */
+  public getStats(): { total: number; authenticated: number } {
+    return this.connectionManager.getStats();
+  }
+
+  /**
+   * Close the WebSocket server and clean up resources
+   */
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
     }
     this.wss.close();
   }
