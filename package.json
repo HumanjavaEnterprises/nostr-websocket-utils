@@ -1,5 +1,5 @@
 {
-  "name": "@humanjavaenterprises/nostr-websocket-utils",
+  "name": "nostr-websocket-utils",
   "version": "0.2.0",
   "description": "WebSocket utilities for Nostr applications",
   "main": "dist/index.js",
@@ -7,9 +7,9 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "test": "jest",
-    "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint src --ext .ts",
     "prepare": "npm run build",
     "prepublishOnly": "npm test && npm run lint"
@@ -33,15 +33,14 @@
     "nostr-tools": "^2.1.4"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.11",
     "@types/node": "^20.11.0",
     "@types/ws": "^8.5.10",
     "@typescript-eslint/eslint-plugin": "^6.18.1",
     "@typescript-eslint/parser": "^6.18.1",
+    "@vitest/coverage-v8": "^1.0.0",
     "eslint": "^8.56.0",
-    "jest": "^29.7.0",
-    "ts-jest": "^29.1.1",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "vitest": "^1.0.0"
   },
   "files": [
     "dist",
