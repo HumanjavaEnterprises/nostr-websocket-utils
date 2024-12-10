@@ -4,11 +4,11 @@ import type { Server as HttpServer } from 'http';
 import { ConnectionManager } from './connection-manager.js';
 import { NostrWSErrorHandler, NostrWSError, ErrorCodes } from './error-handler.js';
 import type {
-  NostrWSOptions,
   NostrWSMessage,
+  EnhancedWebSocket,
+  NostrWSOptions,
   NostrWSServerEvents,
 } from './types/index.js';
-import { EnhancedWebSocket } from './types/enhanced-websocket.js';
 
 function createLogger() {
   return console;
@@ -103,7 +103,12 @@ export class NostrWSServer extends EventEmitter {
     await this.connectionManager.broadcastToSubscription(subscription, message);
   }
 
-  public getStats() {
+  public getStats(): {
+    totalConnections: number;
+    authenticatedConnections: number;
+    totalSubscriptions: number;
+    uptime: number;
+  } {
     return this.connectionManager.getStats();
   }
 

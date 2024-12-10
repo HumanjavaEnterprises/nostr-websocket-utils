@@ -3,30 +3,28 @@ import { WebSocket } from 'ws';
 export type NostrEventKind = number;
 
 export interface NostrEvent {
-  id?: string;
-  pubkey?: string;
-  created_at?: number;
-  kind: NostrEventKind;
+  id: string;
+  pubkey: string;
+  created_at: number;
+  kind: number;
   tags: string[][];
   content: string;
-  sig?: string;
+  sig: string;
 }
 
-export type NostrWSMessage = 
-  | ['EVENT', NostrEvent]
-  | ['REQ', string]
-  | ['CLOSE', string]
-  | ['AUTH', { pubkey: string }]
-  | ['SUB', string]
-  | ['UNSUB', string];
+export type NostrWSMessage = [string, ...any[]];
+
+export interface Logger {
+  info: (message: string, ...args: any[]) => void;
+  warn: (message: string, ...args: any[]) => void;
+  error: (message: string, ...args: any[]) => void;
+  debug: (message: string, ...args: any[]) => void;
+}
 
 export interface EnhancedWebSocket extends WebSocket {
   id: string;
-  pubkey?: string;
-  authenticated: boolean;
   isAlive: boolean;
-  subscriptions: Set<string>;
-  connectedAt: Date;
+  subscriptions?: Set<string>;
 }
 
 export type NostrWSValidationResult = {
@@ -39,13 +37,6 @@ export enum NostrWSConnectionState {
   OPEN = 1,
   CLOSING = 2,
   CLOSED = 3,
-}
-
-export interface Logger {
-  debug(message: string, ...meta: unknown[]): void;
-  info(message: string, ...meta: unknown[]): void;
-  warn(message: string, ...meta: unknown[]): void;
-  error(message: string, ...meta: unknown[]): void;
 }
 
 export type NostrWSHandlers = {
@@ -71,16 +62,28 @@ export type NostrWSStats = {
 export type NostrWSSubscription = string;
 
 export interface NostrWSClientEvents {
-  open: () => void;
-  close: () => void;
-  error: (error: Error) => void;
   message: (message: NostrWSMessage) => void;
+  error: (error: Error) => void;
+  close: () => void;
 }
 
 export interface NostrWSServerEvents {
-  connection: (ws: EnhancedWebSocket) => void;
-  close: (ws: EnhancedWebSocket) => void;
+  message: (ws: EnhancedWebSocket, message: NostrWSMessage) => void;
   error: (ws: EnhancedWebSocket, error: Error) => void;
+  close: (ws: EnhancedWebSocket) => void;
+}
+
+export interface NostrWSServerOptions {
+  logger?: Logger;
+  handlers?: Partial<NostrWSServerEvents>;
+}
+
+export interface NostrWSClientOptions {
+  logger?: Logger;
+  handlers?: Partial<NostrWSClientEvents>;
+  autoReconnect?: boolean;
+  maxReconnectAttempts?: number;
+  reconnectDelay?: number;
 }
 
 export interface ExtendedWebSocket extends WebSocket {

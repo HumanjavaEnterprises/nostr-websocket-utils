@@ -23,11 +23,11 @@
   "author": "Human Java Enterprises",
   "license": "MIT",
   "dependencies": {
-    "ws": "^8.16.0",
-    "winston": "^3.11.0",
     "@noble/curves": "^1.3.0",
     "@noble/hashes": "^1.3.3",
-    "nostr-tools": "^2.1.4"
+    "nostr-tools": "^2.1.4",
+    "winston": "^3.11.0",
+    "ws": "^8.16.0"
   },
   "peerDependencies": {
     "nostr-tools": "^2.1.4"
@@ -39,7 +39,7 @@
     "@typescript-eslint/parser": "^6.18.1",
     "@vitest/coverage-v8": "^1.0.0",
     "eslint": "^8.56.0",
-    "typescript": "^5.3.3",
+    "typescript": "^4.9.5",
     "vitest": "^1.0.0"
   },
   "files": [

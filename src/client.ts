@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import WebSocket from 'ws';
 import { NostrWSErrorHandler, NostrWSError, ErrorCodes } from './error-handler.js';
-import type { NostrEvent, NostrWSMessage, NostrWSClientEvents } from './types/index.js';
+import type { NostrWSMessage } from './types/index.js';
 
 export class NostrWSClient extends EventEmitter {
   private ws: WebSocket | null = null;
@@ -12,7 +12,7 @@ export class NostrWSClient extends EventEmitter {
     heartbeatInterval: number;
   };
   private reconnectTimeout: NodeJS.Timeout | null = null;
-  private heartbeatInterval: NodeJS.Timeout | null = null;
+  private heartbeatIntervalId: NodeJS.Timeout | null = null;
   private errorHandler: NostrWSErrorHandler;
 
   constructor(url: string, options: Partial<{
@@ -126,11 +126,11 @@ export class NostrWSClient extends EventEmitter {
   }
 
   private startHeartbeat(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
+    if (this.heartbeatIntervalId) {
+      clearInterval(this.heartbeatIntervalId);
     }
 
-    this.heartbeatInterval = setInterval(() => {
+    this.heartbeatIntervalId = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.ping();
       }
@@ -138,9 +138,9 @@ export class NostrWSClient extends EventEmitter {
   }
 
   private stopHeartbeat(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
+    if (this.heartbeatIntervalId) {
+      clearInterval(this.heartbeatIntervalId);
+      this.heartbeatIntervalId = null;
     }
   }
 
@@ -149,6 +149,7 @@ export class NostrWSClient extends EventEmitter {
       this.reconnectTimeout = setTimeout(() => {
         this.connect().catch(error => {
           this.errorHandler.handleConnectionError(error, 'Reconnection failed');
+          this.scheduleReconnect(); // Try again if still disconnected
         });
       }, this.options.reconnectInterval);
     }

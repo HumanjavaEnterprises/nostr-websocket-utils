@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import { randomUUID } from 'crypto';
 import { WebSocket } from 'ws';
-import type { EnhancedWebSocket, NostrWSMessage, Logger } from './types/index.js';
+import type { EnhancedWebSocket, NostrWSMessage, NostrEvent, Logger } from './types/index.js';
 
 export class ConnectionManager extends EventEmitter {
   private connections: Map<string, EnhancedWebSocket> = new Map();
@@ -50,9 +50,20 @@ export class ConnectionManager extends EventEmitter {
     }
   }
 
-  private async handleEvent(ws: EnhancedWebSocket, event: any): Promise<void> {
-    this.logger.info(`Received event from ${ws.id}:`, event);
-    // Handle event logic here
+  private async handleEvent(ws: EnhancedWebSocket, event: NostrEvent): Promise<void> {
+    try {
+      // Handle event based on kind
+      switch (event.kind) {
+        case 1: // Text Note
+          break;
+        case 4: // Encrypted Direct Message
+          break;
+        default:
+          this.logger.warn(`Unhandled event kind: ${event.kind}`);
+      }
+    } catch (error) {
+      this.logger.error(`Error handling event: ${(error as Error).message}`);
+    }
   }
 
   private async handleSubscription(ws: EnhancedWebSocket, channel: string): Promise<void> {
@@ -120,7 +131,7 @@ export class ConnectionManager extends EventEmitter {
         try {
           ws.send(messageStr);
         } catch (error) {
-          this.logger.error(`Error broadcasting to client in channel ${channel}:`, error);
+          this.logger.error('Error broadcasting to subscribed client:', error);
         }
       }
     }

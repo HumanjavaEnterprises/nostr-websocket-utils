@@ -20,8 +20,8 @@ vi.mock('ws', () => ({
 
 describe('NostrWSClient', () => {
   let client: NostrWSClient;
-  let mockWs: any;
-  let eventHandlers: Record<string, Function> = {};
+  let mockWs: WebSocket;
+  let eventHandlers: Record<string, (event?: Error | string) => void> = {};
 
   beforeEach(() => {
     vi.clearAllMocks();

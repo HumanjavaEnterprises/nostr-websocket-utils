@@ -2,43 +2,36 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ConnectionManager } from '../connection-manager.js';
 import { mockLogger } from './mocks/logger.js';
 import { WebSocket } from 'ws';
-import type { EnhancedWebSocket } from '../types/index.js';
+import type { EnhancedWebSocket, Logger } from '../types/index.js';
 
 describe('ConnectionManager', () => {
   let connectionManager: ConnectionManager;
-  let mockWebSocket: Partial<WebSocket> & { id?: string; authenticated?: boolean; subscriptions?: Set<string>; send: any };
+  let mockLogger: Logger;
+  let mockWebSocket: EnhancedWebSocket;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    // Cast mockLogger to any to avoid type issues
-    connectionManager = new ConnectionManager(mockLogger as any);
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn()
+    };
 
     mockWebSocket = {
-      id: undefined,
+      id: 'test-id',
       authenticated: false,
       subscriptions: new Set(),
+      readyState: 1,
       send: vi.fn(),
-      on: vi.fn(),
       close: vi.fn(),
-      readyState: 1, // WebSocket.OPEN
-      terminate: vi.fn(),
-      ping: vi.fn(),
-      pong: vi.fn(),
-      removeAllListeners: vi.fn(),
-      removeListener: vi.fn(),
-      addListener: vi.fn(),
-      emit: vi.fn(),
-      eventNames: vi.fn(),
-      getMaxListeners: vi.fn(),
-      listenerCount: vi.fn(),
-      listeners: vi.fn(),
-      off: vi.fn(),
+      on: vi.fn(),
       once: vi.fn(),
-      prependListener: vi.fn(),
-      prependOnceListener: vi.fn(),
-      rawListeners: vi.fn(),
-      setMaxListeners: vi.fn()
-    };
+      emit: vi.fn(),
+      removeListener: vi.fn()
+    } as unknown as EnhancedWebSocket;
+
+    connectionManager = new ConnectionManager(mockLogger);
   });
 
   describe('connection management', () => {

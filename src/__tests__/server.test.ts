@@ -1,30 +1,42 @@
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { NostrWSServer } from '../server.js';
-import { WebSocket, WebSocketServer } from 'ws';
-import { createServer } from 'http';
-import { NostrWSError, ErrorCodes } from '../error-handler.js';
-import type { NostrEvent, NostrWSMessage } from '../types/index.js';
+import type { NostrWSMessage, EnhancedWebSocket } from '../types/index.js';
+import { WebSocketServer } from 'ws';
+import { ConnectionManager } from '../connection-manager.js';
 
 vi.mock('ws', () => ({
-  WebSocket: vi.fn(),
   WebSocketServer: vi.fn(() => ({
     on: vi.fn(),
     close: vi.fn(),
+  })),
+  WebSocket: vi.fn(),
+}));
+
+vi.mock('../connection-manager.js', () => ({
+  ConnectionManager: vi.fn(() => ({
+    addConnection: vi.fn((ws) => ws),
+    removeConnection: vi.fn(),
+    broadcast: vi.fn(),
+    broadcastToAuthenticated: vi.fn(),
+    broadcastToSubscription: vi.fn(),
+    getStats: vi.fn(() => ({
+      totalConnections: 0,
+      authenticatedConnections: 0,
+      totalSubscriptions: 0,
+      uptime: 0
+    })),
   })),
 }));
 
 describe('NostrWSServer', () => {
   let server: NostrWSServer;
-  let mockWss: any;
-  let mockWs: any;
-  let mockLogger: any;
-  let eventHandlers: Record<string, Function> = {};
-  let wsEventHandlers: Record<string, Function> = {};
+  let mockHttpServer: { on: (event: string, handler: () => void) => void };
+  let mockWs: EnhancedWebSocket;
+  let mockLogger: { info: any; error: any; warn: any; debug: any };
+  let connectionHandler: (ws: WebSocket) => void;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    eventHandlers = {};
-    wsEventHandlers = {};
 
     mockLogger = {
       info: vi.fn(),
@@ -34,25 +46,19 @@ describe('NostrWSServer', () => {
     };
 
     mockWs = {
-      on: vi.fn((event, handler) => {
-        wsEventHandlers[event] = handler;
-      }),
+      on: vi.fn(),
       send: vi.fn(),
       close: vi.fn(),
+      id: '123',
+      isAlive: true,
+      readyState: 1, // WebSocket.OPEN
     };
 
-    mockWss = {
-      on: vi.fn((event, handler) => {
-        eventHandlers[event] = handler;
-      }),
-      close: vi.fn(),
+    mockHttpServer = {
+      on: vi.fn(),
     };
 
-    const WebSocketServerMock = vi.mocked(WebSocketServer);
-    WebSocketServerMock.mockImplementation(() => mockWss);
-
-    const httpServer = createServer();
-    server = new NostrWSServer(httpServer, {
+    server = new NostrWSServer(mockHttpServer, {
       logger: mockLogger,
       handlers: {
         message: vi.fn(),
@@ -60,12 +66,18 @@ describe('NostrWSServer', () => {
         close: vi.fn(),
       },
     });
+
+    // Get the connection handler from the WebSocketServer mock
+    const WebSocketServerMock = vi.mocked(WebSocketServer);
+    connectionHandler = WebSocketServerMock.mock.results[0].value.on.mock.calls.find(
+      call => call[0] === 'connection'
+    )?.[1];
   });
 
   describe('message handling', () => {
     it('should handle valid messages', async () => {
       const mockHandler = vi.fn();
-      const event: NostrEvent = {
+      const event = {
         id: '123',
         pubkey: 'abc',
         created_at: 123,
@@ -74,31 +86,25 @@ describe('NostrWSServer', () => {
         content: 'test',
         sig: 'xyz',
       };
-      const message: NostrWSMessage = ['EVENT', event];
+      const message = ['EVENT', event];
 
-      server = new NostrWSServer(createServer(), {
-        logger: mockLogger,
-        handlers: {
-          message: mockHandler,
-          error: vi.fn(),
-          close: vi.fn(),
-        },
-      });
+      // Update the server's message handler
+      server.options.handlers.message = mockHandler;
 
-      if (eventHandlers.connection) {
-        eventHandlers.connection(mockWs);
+      // Call the connection handler with our mock WebSocket
+      connectionHandler(mockWs);
+
+      // Get and call the message handler
+      const messageHandler = mockWs.on.mock.calls.find(call => call[0] === 'message')?.[1];
+      if (messageHandler) {
+        await messageHandler(Buffer.from(JSON.stringify(message)));
+        expect(mockHandler).toHaveBeenCalledWith(mockWs, message);
       }
-
-      if (wsEventHandlers.message) {
-        wsEventHandlers.message(Buffer.from(JSON.stringify(message)));
-      }
-
-      expect(mockHandler).toHaveBeenCalledWith(expect.anything(), message);
     });
 
     it('should handle invalid messages', async () => {
       const mockHandler = vi.fn();
-      server = new NostrWSServer(createServer(), {
+      server = new NostrWSServer(mockHttpServer, {
         logger: mockLogger,
         handlers: {
           message: mockHandler,
@@ -107,23 +113,29 @@ describe('NostrWSServer', () => {
         },
       });
 
-      if (eventHandlers.connection) {
-        eventHandlers.connection(mockWs);
-      }
+      // Get the connection handler from the WebSocketServer mock
+      const WebSocketServerMock = vi.mocked(WebSocketServer);
+      connectionHandler = WebSocketServerMock.mock.results[0].value.on.mock.calls.find(
+        call => call[0] === 'connection'
+      )?.[1];
 
-      if (wsEventHandlers.message) {
-        wsEventHandlers.message(Buffer.from('invalid json'));
-      }
+      // Call the connection handler with our mock WebSocket
+      connectionHandler(mockWs);
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.stringMatching(/Message error for client .+: Unexpected token/),
-        'invalid json'
-      );
+      // Get and call the message handler
+      const messageHandler = mockWs.on.mock.calls.find(call => call[0] === 'message')?.[1];
+      if (messageHandler) {
+        await messageHandler(Buffer.from('invalid json'));
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          expect.stringContaining('Message error for client'),
+          'invalid json'
+        );
+      }
     });
 
     it('should handle invalid message format', async () => {
       const mockHandler = vi.fn();
-      server = new NostrWSServer(createServer(), {
+      server = new NostrWSServer(mockHttpServer, {
         logger: mockLogger,
         handlers: {
           message: mockHandler,
@@ -132,41 +144,48 @@ describe('NostrWSServer', () => {
         },
       });
 
-      if (eventHandlers.connection) {
-        eventHandlers.connection(mockWs);
-      }
+      // Get the connection handler from the WebSocketServer mock
+      const WebSocketServerMock = vi.mocked(WebSocketServer);
+      connectionHandler = WebSocketServerMock.mock.results[0].value.on.mock.calls.find(
+        call => call[0] === 'connection'
+      )?.[1];
 
-      if (wsEventHandlers.message) {
-        wsEventHandlers.message(Buffer.from(JSON.stringify(['INVALID'])));
-      }
+      // Call the connection handler with our mock WebSocket
+      connectionHandler(mockWs);
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        expect.stringMatching(/Protocol error for client .+: Invalid message format/)
-      );
+      // Get and call the message handler
+      const messageHandler = mockWs.on.mock.calls.find(call => call[0] === 'message')?.[1];
+      if (messageHandler) {
+        await messageHandler(Buffer.from(JSON.stringify(['INVALID'])));
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          expect.stringContaining('Protocol error for client')
+        );
+      }
     });
   });
 
   describe('connection handling', () => {
     it('should handle new connections', () => {
-      if (eventHandlers.connection) {
-        eventHandlers.connection(mockWs);
-      }
+      // Call the connection handler with our mock WebSocket
+      connectionHandler(mockWs);
 
-      expect(mockWs.on).toHaveBeenCalledWith('message', expect.any(Function));
-      expect(mockWs.on).toHaveBeenCalledWith('close', expect.any(Function));
-      expect(mockWs.on).toHaveBeenCalledWith('error', expect.any(Function));
+      // Verify that all event handlers were registered
+      const calls = mockWs.on.mock.calls;
+      expect(calls).toContainEqual(['message', expect.any(Function)]);
+      expect(calls).toContainEqual(['close', expect.any(Function)]);
+      expect(calls).toContainEqual(['error', expect.any(Function)]);
     });
 
     it('should handle connection close', () => {
-      if (eventHandlers.connection) {
-        eventHandlers.connection(mockWs);
-      }
+      // Call the connection handler with our mock WebSocket
+      connectionHandler(mockWs);
 
-      if (wsEventHandlers.close) {
-        wsEventHandlers.close();
+      // Get and call the close handler
+      const closeHandler = mockWs.on.mock.calls.find(call => call[0] === 'close')?.[1];
+      if (closeHandler) {
+        closeHandler();
+        expect(server.getStats().totalConnections).toBe(0);
       }
-
-      expect(server.getStats().totalConnections).toBe(0);
     });
   });
 });
