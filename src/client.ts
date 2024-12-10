@@ -1,113 +1,128 @@
-import WebSocket from 'ws';
 import { EventEmitter } from 'events';
-import type {
-  NostrWSOptions,
-  NostrWSMessage,
-  EnhancedWebSocket
-} from './types/index.js';
+import WebSocket from 'ws';
+import { NostrWSErrorHandler, NostrWSError, ErrorCodes } from './error-handler.js';
+import type { NostrEvent, NostrWSMessage, NostrWSClientEvents } from './types/index.js';
 
 export class NostrWSClient extends EventEmitter {
-  private ws: EnhancedWebSocket | null = null;
-  private options: NostrWSOptions;
+  private ws: WebSocket | null = null;
+  private url: string;
+  private options: {
+    autoReconnect: boolean;
+    reconnectInterval: number;
+    heartbeatInterval: number;
+  };
   private reconnectTimeout: NodeJS.Timeout | null = null;
   private heartbeatInterval: NodeJS.Timeout | null = null;
-  private reconnectAttempts = 0;
-  private messageQueue: NostrWSMessage[] = [];
+  private errorHandler: NostrWSErrorHandler;
 
-  constructor(private url: string, options: Partial<NostrWSOptions> = {}) {
+  constructor(url: string, options: Partial<{
+    autoReconnect: boolean;
+    reconnectInterval: number;
+    heartbeatInterval: number;
+  }> = {}) {
     super();
-    if (!options.logger) {
-      throw new Error('Logger is required');
-    }
+    this.url = url;
     this.options = {
-      heartbeatInterval: options.heartbeatInterval || 30000,
-      logger: options.logger,
-      handlers: {
-        message: options.handlers?.message || (async () => {}),
-        error: options.handlers?.error || (() => {}),
-        close: options.handlers?.close || (() => {})
-      }
+      autoReconnect: options.autoReconnect ?? true,
+      reconnectInterval: options.reconnectInterval ?? 5000,
+      heartbeatInterval: options.heartbeatInterval ?? 30000
     };
+    this.errorHandler = new NostrWSErrorHandler(console);
+    this.setupErrorHandling();
   }
 
-  public connect(): void {
-    if (this.ws) {
-      this.options.logger.info('WebSocket connection already exists');
-      return;
-    }
-
-    try {
-      const ws = new WebSocket(this.url) as EnhancedWebSocket;
-      ws.connectedAt = new Date();
-      ws.isAlive = true;
-      ws.authenticated = false;
-      ws.subscriptions = new Set();
-      this.ws = ws;
-      this.setupEventHandlers();
-    } catch (error) {
-      this.options.logger.error('Failed to create WebSocket connection:', error);
-      this.handleReconnect();
-    }
-  }
-
-  private setupEventHandlers(): void {
-    if (!this.ws) return;
-
-    this.ws.on('open', () => {
-      this.options.logger.info('WebSocket connection established');
-      this.reconnectAttempts = 0;
-      this.emit('open');
-
-      // Process any queued messages
-      while (this.messageQueue.length > 0) {
-        const message = this.messageQueue.shift();
-        if (message) {
-          this.send(message);
-        }
-      }
-
-      // Start heartbeat
-      if (this.options.heartbeatInterval && this.options.heartbeatInterval > 0) {
-        this.startHeartbeat();
-      }
-    });
-
-    this.ws.on('message', async (data: Buffer) => {
-      try {
-        const message = JSON.parse(data.toString()) as NostrWSMessage;
-        await this.options.handlers.message(this.ws!, message);
-        this.emit('message', message);
-      } catch (error) {
-        this.options.logger.error('Failed to process message:', error);
-        if (this.options.handlers.error) {
-          this.options.handlers.error(this.ws!, error as Error);
-        }
-      }
-    });
-
-    this.ws.on('close', () => {
-      this.options.logger.info('WebSocket connection closed');
-      this.cleanup();
-      if (this.options.handlers.close) {
-        this.options.handlers.close(this.ws!);
-      }
-      this.emit('close');
-      this.handleReconnect();
-    });
-
-    this.ws.on('error', (error: Error) => {
-      this.options.logger.error('WebSocket error:', error);
-      if (this.options.handlers.error) {
-        this.options.handlers.error(this.ws!, error);
-      }
+  private setupErrorHandling(): void {
+    this.errorHandler.on('error', (error: Error) => {
       this.emit('error', error);
     });
+  }
 
-    this.ws.on('pong', () => {
-      if (this.ws) {
-        this.ws.isAlive = true;
+  public async connect(): Promise<void> {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+
+    return new Promise((resolve, reject) => {
+      try {
+        this.ws = new WebSocket(this.url);
+
+        this.ws.on('open', () => {
+          this.startHeartbeat();
+          resolve();
+        });
+
+        this.ws.on('message', (data: string) => {
+          try {
+            const message = JSON.parse(data) as NostrWSMessage;
+            this.emit('message', message);
+          } catch (error) {
+            const wsError = new NostrWSError(
+              'Failed to parse message',
+              ErrorCodes.MESSAGE_PARSE_ERROR,
+              error as Error
+            );
+            this.emit('error', wsError);
+          }
+        });
+
+        this.ws.on('error', (error: Error) => {
+          const wsError = new NostrWSError(
+            error.message,
+            ErrorCodes.CONNECTION_ERROR,
+            error
+          );
+          this.emit('error', wsError);
+          reject(wsError);
+          this.ws = null;
+        });
+
+        this.ws.on('close', () => {
+          this.stopHeartbeat();
+          this.scheduleReconnect();
+          this.emit('close');
+        });
+      } catch (error) {
+        const wsError = new NostrWSError(
+          'Failed to establish connection',
+          ErrorCodes.CONNECTION_ERROR,
+          error as Error
+        );
+        reject(wsError);
+        this.ws = null;
       }
     });
+  }
+
+  public async disconnect(): Promise<void> {
+    if (this.reconnectTimeout) {
+      clearTimeout(this.reconnectTimeout);
+      this.reconnectTimeout = null;
+    }
+
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
+
+  public send(message: NostrWSMessage): void {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
+      throw new NostrWSError(
+        'WebSocket is not connected',
+        ErrorCodes.CONNECTION_ERROR
+      );
+    }
+
+    this.ws.send(JSON.stringify(message));
+  }
+
+  public subscribe(subscription: string): void {
+    this.send(['SUB', subscription]);
+  }
+
+  public unsubscribe(subscription: string): void {
+    this.send(['UNSUB', subscription]);
   }
 
   private startHeartbeat(): void {
@@ -117,94 +132,25 @@ export class NostrWSClient extends EventEmitter {
 
     this.heartbeatInterval = setInterval(() => {
       if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-        if (!this.ws.isAlive) {
-          this.cleanup();
-          this.ws.terminate();
-          return;
-        }
         this.ws.ping();
-        this.ws.isAlive = false;
       }
-    }, this.options.heartbeatInterval || 30000);
+    }, this.options.heartbeatInterval);
   }
 
-  private cleanup(): void {
+  private stopHeartbeat(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
       this.heartbeatInterval = null;
     }
-    if (this.ws) {
-      this.ws.isAlive = false;
-      this.ws.removeAllListeners();
-      // Don't set ws to null here to avoid issues with terminate
-    }
   }
 
-  private handleReconnect(): void {
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout);
-    }
-
-    this.reconnectTimeout = setTimeout(() => {
-      if (this.reconnectAttempts < 5) {
-        this.reconnectAttempts++;
-        this.options.logger.info(`Attempting to reconnect (${this.reconnectAttempts}/5)...`);
-        this.connect();
-      } else {
-        this.options.logger.error('Max reconnection attempts reached');
-        this.emit('max_reconnects');
-      }
-    }, Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000));
-  }
-
-  public send(message: NostrWSMessage): void {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      this.messageQueue.push(message);
-      return;
-    }
-    this.ws.send(JSON.stringify(message));
-  }
-
-  public async authenticate(event: NostrWSMessage): Promise<void> {
-    this.send(['AUTH', event]);
-  }
-
-  public subscribe(channel: string): void {
-    if (!this.ws || !this.isAuthenticated()) {
-      throw new Error('Must be connected and authenticated to subscribe');
-    }
-    if (!this.ws.subscriptions) {
-      this.ws.subscriptions = new Set();
-    }
-    this.ws.subscriptions.add(channel);
-    this.send(['SUB', channel]);
-  }
-
-  public unsubscribe(channel: string): void {
-    if (!this.ws || !this.isAuthenticated()) {
-      throw new Error('Must be connected and authenticated to unsubscribe');
-    }
-    this.ws.subscriptions?.delete(channel);
-    this.send(['UNSUB', channel]);
-  }
-
-  public isConnected(): boolean {
-    return !!(this.ws && this.ws.readyState === WebSocket.OPEN);
-  }
-
-  public isAuthenticated(): boolean {
-    return !!(this.ws && this.ws.authenticated);
-  }
-
-  public close(): void {
-    this.cleanup();
-    if (this.ws) {
-      this.ws.close();
-      this.ws = null;
-    }
-    if (this.reconnectTimeout) {
-      clearTimeout(this.reconnectTimeout);
-      this.reconnectTimeout = null;
+  private scheduleReconnect(): void {
+    if (this.options.autoReconnect && !this.reconnectTimeout) {
+      this.reconnectTimeout = setTimeout(() => {
+        this.connect().catch(error => {
+          this.errorHandler.handleConnectionError(error, 'Reconnection failed');
+        });
+      }, this.options.reconnectInterval);
     }
   }
 }

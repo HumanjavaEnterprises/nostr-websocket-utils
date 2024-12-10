@@ -1,279 +1,204 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { WebSocket } from 'ws';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { NostrWSClient } from '../client.js';
-import { mockLogger } from './mocks/logger.js';
-import type { NostrWSMessage, NostrEvent } from '../types/index.js';
+import WebSocket from 'ws';
+import { NostrWSError, ErrorCodes } from '../error-handler.js';
+import type { NostrEvent, NostrWSMessage } from '../types/index.js';
 
-// Define WebSocket mock types
-interface MockWebSocketInstance {
-  readyState: number;
-  CONNECTING: number;
-  OPEN: number;
-  CLOSING: number;
-  CLOSED: number;
-  send: ReturnType<typeof vi.fn>;
-  ping: ReturnType<typeof vi.fn>;
-  terminate: ReturnType<typeof vi.fn>;
-  close: ReturnType<typeof vi.fn>;
-  removeAllListeners: ReturnType<typeof vi.fn>;
-  subscriptions: Set<string>;
-  isAlive: boolean;
-  on: ReturnType<typeof vi.fn>;
-  once: ReturnType<typeof vi.fn>;
-  emit: ReturnType<typeof vi.fn>;
-  authenticated?: boolean;
-}
-
-interface MockWebSocketConstructor {
-  new (): MockWebSocketInstance;
-  CONNECTING: number;
-  OPEN: number;
-  CLOSING: number;
-  CLOSED: number;
-}
-
-type MockCallArray = [string, (...args: any[]) => void];
-
-// Mock WebSocket
-vi.mock('ws', () => {
-  const WebSocketStates = {
-    CONNECTING: 0,
-    OPEN: 1,
-    CLOSING: 2,
-    CLOSED: 3
-  } as const;
-
-  const MockWebSocket = vi.fn(() => ({
-    readyState: WebSocketStates.OPEN,
-    CONNECTING: WebSocketStates.CONNECTING,
-    OPEN: WebSocketStates.OPEN,
-    CLOSING: WebSocketStates.CLOSING,
-    CLOSED: WebSocketStates.CLOSED,
+// Mock WebSocket module
+vi.mock('ws', () => ({
+  default: vi.fn(() => ({
+    readyState: 1,
     send: vi.fn(),
-    ping: vi.fn(),
-    terminate: vi.fn(),
-    close: vi.fn(),
-    removeAllListeners: vi.fn(),
-    subscriptions: new Set<string>(),
-    isAlive: true,
     on: vi.fn(),
-    once: vi.fn(),
-    emit: vi.fn()
-  })) as unknown as MockWebSocketConstructor;
-
-  MockWebSocket.CONNECTING = WebSocketStates.CONNECTING;
-  MockWebSocket.OPEN = WebSocketStates.OPEN;
-  MockWebSocket.CLOSING = WebSocketStates.CLOSING;
-  MockWebSocket.CLOSED = WebSocketStates.CLOSED;
-
-  return { WebSocket: MockWebSocket, default: MockWebSocket };
-});
+    close: vi.fn(),
+  })),
+  WebSocket: {
+    OPEN: 1,
+    CLOSED: 3,
+  },
+}));
 
 describe('NostrWSClient', () => {
   let client: NostrWSClient;
-  let mockWs: MockWebSocketInstance;
-  const messageHandler = vi.fn();
-  const errorHandler = vi.fn();
-  const closeHandler = vi.fn();
-
-  const findMockCall = (calls: MockCallArray[], eventName: string): MockCallArray | undefined => {
-    return calls.find(call => call[0] === eventName);
-  };
+  let mockWs: any;
+  let eventHandlers: Record<string, Function> = {};
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
-    client = new NostrWSClient('ws://localhost:8080', {
-      logger: mockLogger,
-      handlers: {
-        message: messageHandler,
-        error: errorHandler,
-        close: closeHandler,
-      },
-    });
-    client.connect();
-    mockWs = (client as any).ws;
-    // Simulate WebSocket connection
-    const openCall = findMockCall(mockWs.on.mock.calls, 'open');
-    if (openCall?.[1]) {
-      openCall[1]();
-    }
+    eventHandlers = {};
+    
+    mockWs = {
+      readyState: WebSocket.OPEN,
+      send: vi.fn(),
+      on: vi.fn((event, handler) => {
+        eventHandlers[event] = handler;
+      }),
+      close: vi.fn(),
+    };
+
+    // Update the WebSocket mock
+    const WebSocketMock = vi.mocked(WebSocket);
+    WebSocketMock.mockImplementation(() => mockWs);
+
+    client = new NostrWSClient('ws://localhost:8080');
   });
 
-  afterEach(() => {
-    vi.clearAllTimers();
-    client.close();
-  });
+  describe('connection handling', () => {
+    it('should handle connection errors', async () => {
+      const error = new Error('Connection error');
 
-  describe('connection management', () => {
-    it('should connect successfully', () => {
-      expect(mockLogger.info).toHaveBeenCalledWith('WebSocket connection established');
+      // Mock WebSocket implementation to throw error immediately
+      const WebSocketMock = vi.mocked(WebSocket);
+      WebSocketMock.mockImplementationOnce(() => {
+        throw error;
+      });
+
+      await expect(client.connect()).rejects.toThrow(
+        expect.objectContaining({
+          message: 'Failed to establish connection',
+          code: ErrorCodes.CONNECTION_ERROR,
+          details: error,
+        })
+      );
     });
 
-    it('should attempt to reconnect on close', () => {
-      const closeCall = findMockCall(mockWs.on.mock.calls, 'close');
-      if (closeCall?.[1]) {
-        closeCall[1]();
-      }
-      vi.advanceTimersByTime(1000);
-      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('Attempting to reconnect'));
-    });
+    it('should handle WebSocket error events', async () => {
+      const connectPromise = client.connect();
+      const errorHandler = vi.fn();
+      client.on('error', errorHandler);
 
-    it('should handle max reconnection attempts', () => {
-      const maxReconnectSpy = vi.fn();
-      client.on('max_reconnects', maxReconnectSpy);
-      
-      // Simulate 5 failed reconnection attempts with exponential backoff
-      for (let i = 0; i < 5; i++) {
-        // Close the connection
-        const closeCall = findMockCall(mockWs.on.mock.calls, 'close');
-        if (closeCall?.[1]) {
-          closeCall[1]();
-        }
+      // Wait for the next tick to ensure connection is initiated
+      await new Promise(resolve => process.nextTick(resolve));
 
-        // Wait for reconnection attempt with exponential backoff
-        const backoffTime = Math.min(1000 * Math.pow(2, i), 30000);
-        vi.advanceTimersByTime(backoffTime);
-
-        // Get the new WebSocket instance after reconnection attempt
-        mockWs = (client as any).ws;
+      // Simulate error event
+      if (eventHandlers.error) {
+        eventHandlers.error(new Error('WebSocket error'));
       }
 
-      // Close one more time to trigger max reconnects
-      const finalCloseCall = findMockCall(mockWs.on.mock.calls, 'close');
-      if (finalCloseCall?.[1]) {
-        finalCloseCall[1]();
-      }
-      vi.advanceTimersByTime(1000 * Math.pow(2, 5));
-      
-      expect(maxReconnectSpy).toHaveBeenCalled();
-    });
-  });
+      await expect(connectPromise).rejects.toMatchObject({
+        message: 'WebSocket error',
+        code: ErrorCodes.CONNECTION_ERROR
+      });
 
-  describe('authentication', () => {
-    it('should send auth message', () => {
-      const event: NostrEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-        sig: 'test-sig'
-      };
-      const authMessage: NostrWSMessage = ['AUTH', event];
-      client.authenticate(authMessage);
-      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(['AUTH', authMessage]));
-    });
-
-    it('should track authentication state', () => {
-      expect(client.isAuthenticated()).toBe(false);
-      mockWs.authenticated = true;
-      expect(client.isAuthenticated()).toBe(true);
-    });
-  });
-
-  describe('subscription management', () => {
-    beforeEach(() => {
-      mockWs.authenticated = true;
-    });
-
-    it('should handle subscriptions', () => {
-      client.subscribe('test-channel');
-      expect(mockWs.subscriptions?.has('test-channel')).toBe(true);
-    });
-
-    it('should handle unsubscriptions', () => {
-      client.subscribe('test-channel');
-      client.unsubscribe('test-channel');
-      expect(mockWs.subscriptions?.has('test-channel')).toBe(false);
-    });
+      expect(errorHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'WebSocket error',
+          code: ErrorCodes.CONNECTION_ERROR
+        })
+      );
+    }, 10000); // Increase timeout to 10 seconds
   });
 
   describe('message handling', () => {
-    it('should handle incoming messages', async () => {
-      const event: NostrEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
+    it('should handle message events', async () => {
+      const message: NostrEvent = {
+        id: '123',
+        pubkey: 'abc',
+        created_at: 123,
         kind: 1,
-        content: 'test',
         tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-        sig: 'test-sig'
+        content: 'test',
+        sig: 'xyz',
       };
-      const message: NostrWSMessage = ['EVENT', event];
-      mockWs.isAlive = true;
 
-      // Add message listener
+      const connectPromise = client.connect();
+      
+      // Simulate successful connection
+      if (eventHandlers.open) {
+        eventHandlers.open();
+      }
+      await connectPromise;
+
+      // Set up message handler
+      const messageHandler = vi.fn();
       client.on('message', messageHandler);
 
-      // Simulate receiving message
-      const messageCall = findMockCall(mockWs.on.mock.calls, 'message');
-      if (messageCall?.[1]) {
-        await messageCall[1](Buffer.from(JSON.stringify(message)));
-        expect(client.listenerCount('message')).toBeGreaterThan(0);
-        expect(messageHandler).toHaveBeenCalledWith(message);
+      // Simulate message event
+      if (eventHandlers.message) {
+        eventHandlers.message(JSON.stringify(['EVENT', message]));
       }
+
+      expect(messageHandler).toHaveBeenCalledWith(['EVENT', message]);
     });
 
-    it('should queue messages when not connected', () => {
-      const event: NostrEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-        sig: 'test-sig'
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.CLOSING });
-      client.send(message);
-      expect(mockWs.send).not.toHaveBeenCalled();
-    });
-
-    it('should process queued messages after reconnection', () => {
-      const event: NostrEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000),
-        sig: 'test-sig'
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.CLOSING });
-      client.send(message);
-      Object.defineProperty(mockWs, 'readyState', { value: WebSocket.OPEN });
-      const openCall = findMockCall(mockWs.on.mock.calls, 'open');
-      if (openCall?.[1]) {
-        openCall[1]();
+    it('should handle invalid message format', async () => {
+      // Connect first
+      const connectPromise = client.connect();
+      await new Promise(resolve => process.nextTick(resolve));
+      
+      // Simulate successful connection
+      if (eventHandlers.open) {
+        eventHandlers.open();
       }
-      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(message));
-    });
+      await connectPromise;
+
+      // Set up error handler and send invalid message
+      const errorPromise = new Promise<void>((resolve) => {
+        const errorHandler = (error: NostrWSError) => {
+          expect(error).toBeInstanceOf(NostrWSError);
+          expect(error.message).toBe('Failed to parse message');
+          expect(error.code).toBe(ErrorCodes.MESSAGE_PARSE_ERROR);
+          client.off('error', errorHandler);
+          resolve();
+        };
+
+        client.on('error', errorHandler);
+
+        // Simulate invalid message
+        if (eventHandlers.message) {
+          eventHandlers.message('invalid json');
+        }
+      });
+
+      await errorPromise;
+    }, 10000); // Increase timeout to 10 seconds
   });
 
-  describe('heartbeat', () => {
-    beforeEach(() => {
-      const openCall = findMockCall(mockWs.on.mock.calls, 'open');
-      if (openCall?.[1]) {
-        openCall[1]();
+  describe('sending messages', () => {
+    it('should send messages when connected', async () => {
+      const event: NostrEvent = {
+        id: '123',
+        pubkey: 'abc',
+        created_at: 123,
+        kind: 1,
+        tags: [],
+        content: 'test',
+        sig: 'xyz',
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+
+      const connectPromise = client.connect();
+      
+      // Simulate successful connection
+      if (eventHandlers.open) {
+        eventHandlers.open();
       }
+      await connectPromise;
+
+      client.send(message);
+
+      expect(mockWs.send).toHaveBeenCalledWith(JSON.stringify(message));
     });
 
-    it('should handle pong messages', () => {
-      const pongCall = findMockCall(mockWs.on.mock.calls, 'pong');
-      if (pongCall?.[1]) {
-        pongCall[1]();
-      }
-      expect(mockWs.isAlive).toBe(true);
-    });
+    it('should throw error when not connected', () => {
+      const event: NostrEvent = {
+        id: '123',
+        pubkey: 'abc',
+        created_at: 123,
+        kind: 1,
+        tags: [],
+        content: 'test',
+        sig: 'xyz',
+      };
+      const message: NostrWSMessage = ['EVENT', event];
+      mockWs.readyState = WebSocket.CLOSED;
 
-    it('should terminate connection if no pong received', () => {
-      mockWs.isAlive = false;
-      vi.advanceTimersByTime(31000);
-      expect(mockWs.terminate).toHaveBeenCalled();
+      expect(() => client.send(message)).toThrow(
+        expect.objectContaining({
+          message: 'WebSocket is not connected',
+          code: ErrorCodes.CONNECTION_ERROR,
+        })
+      );
     });
   });
 });

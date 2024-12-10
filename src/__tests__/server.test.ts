@@ -1,204 +1,172 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { WebSocket } from 'ws';
+import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { NostrWSServer } from '../server.js';
-import { mockLogger } from './mocks/logger.js';
+import { WebSocket, WebSocketServer } from 'ws';
 import { createServer } from 'http';
-import type { NostrWSMessage, NostrEvent } from '../types/index.js';
+import { NostrWSError, ErrorCodes } from '../error-handler.js';
+import type { NostrEvent, NostrWSMessage } from '../types/index.js';
 
-// Mock logger
+vi.mock('ws', () => ({
+  WebSocket: vi.fn(),
+  WebSocketServer: vi.fn(() => ({
+    on: vi.fn(),
+    close: vi.fn(),
+  })),
+}));
 
 describe('NostrWSServer', () => {
   let server: NostrWSServer;
-  let httpServer: ReturnType<typeof createServer>;
-  let client: WebSocket;
-  const mockMessageHandler = vi.fn();
-  const mockErrorHandler = vi.fn();
-  const mockCloseHandler = vi.fn();
+  let mockWss: any;
+  let mockWs: any;
+  let mockLogger: any;
+  let eventHandlers: Record<string, Function> = {};
+  let wsEventHandlers: Record<string, Function> = {};
 
-  beforeEach(async () => {
+  beforeEach(() => {
     vi.clearAllMocks();
-    httpServer = createServer();
+    eventHandlers = {};
+    wsEventHandlers = {};
+
+    mockLogger = {
+      info: vi.fn(),
+      error: vi.fn(),
+      warn: vi.fn(),
+      debug: vi.fn(),
+    };
+
+    mockWs = {
+      on: vi.fn((event, handler) => {
+        wsEventHandlers[event] = handler;
+      }),
+      send: vi.fn(),
+      close: vi.fn(),
+    };
+
+    mockWss = {
+      on: vi.fn((event, handler) => {
+        eventHandlers[event] = handler;
+      }),
+      close: vi.fn(),
+    };
+
+    const WebSocketServerMock = vi.mocked(WebSocketServer);
+    WebSocketServerMock.mockImplementation(() => mockWss);
+
+    const httpServer = createServer();
     server = new NostrWSServer(httpServer, {
       logger: mockLogger,
       handlers: {
-        message: mockMessageHandler,
-        error: mockErrorHandler,
-        close: mockCloseHandler,
+        message: vi.fn(),
+        error: vi.fn(),
+        close: vi.fn(),
       },
     });
-
-    await new Promise<void>((resolve) => {
-      httpServer.listen(0, 'localhost', resolve);
-    });
   });
 
-  afterEach(async () => {
-    if (client) {
-      client.close();
-    }
-    server.close();
-    await new Promise<void>((resolve) => {
-      httpServer.close(() => resolve());
-    });
-    vi.clearAllMocks();
-  });
+  describe('message handling', () => {
+    it('should handle valid messages', async () => {
+      const mockHandler = vi.fn();
+      const event: NostrEvent = {
+        id: '123',
+        pubkey: 'abc',
+        created_at: 123,
+        kind: 1,
+        tags: [],
+        content: 'test',
+        sig: 'xyz',
+      };
+      const message: NostrWSMessage = ['EVENT', event];
 
-  const connectClient = async (): Promise<WebSocket> => {
-    const port = (httpServer.address() as { port: number }).port;
-    const ws = new WebSocket(`ws://localhost:${port}`);
-    await new Promise<void>((resolve) => {
-      ws.on('open', resolve);
+      server = new NostrWSServer(createServer(), {
+        logger: mockLogger,
+        handlers: {
+          message: mockHandler,
+          error: vi.fn(),
+          close: vi.fn(),
+        },
+      });
+
+      if (eventHandlers.connection) {
+        eventHandlers.connection(mockWs);
+      }
+
+      if (wsEventHandlers.message) {
+        wsEventHandlers.message(Buffer.from(JSON.stringify(message)));
+      }
+
+      expect(mockHandler).toHaveBeenCalledWith(expect.anything(), message);
     });
-    return ws;
-  };
+
+    it('should handle invalid messages', async () => {
+      const mockHandler = vi.fn();
+      server = new NostrWSServer(createServer(), {
+        logger: mockLogger,
+        handlers: {
+          message: mockHandler,
+          error: vi.fn(),
+          close: vi.fn(),
+        },
+      });
+
+      if (eventHandlers.connection) {
+        eventHandlers.connection(mockWs);
+      }
+
+      if (wsEventHandlers.message) {
+        wsEventHandlers.message(Buffer.from('invalid json'));
+      }
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringMatching(/Message error for client .+: Unexpected token/),
+        'invalid json'
+      );
+    });
+
+    it('should handle invalid message format', async () => {
+      const mockHandler = vi.fn();
+      server = new NostrWSServer(createServer(), {
+        logger: mockLogger,
+        handlers: {
+          message: mockHandler,
+          error: vi.fn(),
+          close: vi.fn(),
+        },
+      });
+
+      if (eventHandlers.connection) {
+        eventHandlers.connection(mockWs);
+      }
+
+      if (wsEventHandlers.message) {
+        wsEventHandlers.message(Buffer.from(JSON.stringify(['INVALID'])));
+      }
+
+      expect(mockLogger.error).toHaveBeenCalledWith(
+        expect.stringMatching(/Protocol error for client .+: Invalid message format/)
+      );
+    });
+  });
 
   describe('connection handling', () => {
-    it('should handle new connections with enhanced features', async () => {
-      client = await connectClient();
-      const stats = server.getStats();
-      expect(stats.total).toBe(1);
-      expect(stats.authenticated).toBe(0);
+    it('should handle new connections', () => {
+      if (eventHandlers.connection) {
+        eventHandlers.connection(mockWs);
+      }
+
+      expect(mockWs.on).toHaveBeenCalledWith('message', expect.any(Function));
+      expect(mockWs.on).toHaveBeenCalledWith('close', expect.any(Function));
+      expect(mockWs.on).toHaveBeenCalledWith('error', expect.any(Function));
     });
 
-    it('should handle client authentication', async () => {
-      client = await connectClient();
-      const authEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        sig: 'test-sig'
-      };
-      client.send(JSON.stringify(['AUTH', authEvent]));
-      
-      // Wait for authentication to process
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const stats = server.getStats();
-      expect(stats.authenticated).toBe(1);
-    });
+    it('should handle connection close', () => {
+      if (eventHandlers.connection) {
+        eventHandlers.connection(mockWs);
+      }
 
-    it('should track client subscriptions', async () => {
-      client = await connectClient();
-      const event: NostrEvent = {
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000)
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      
-      // Send a test message
-      client.send(JSON.stringify(message));
-      
-      // Wait for message processing
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      expect(mockMessageHandler).toHaveBeenCalled();
-    });
-  });
+      if (wsEventHandlers.close) {
+        wsEventHandlers.close();
+      }
 
-  describe('broadcasting', () => {
-    let client1: WebSocket;
-    let client2: WebSocket;
-
-    beforeEach(async () => {
-      client1 = await connectClient();
-      client2 = await connectClient();
-    });
-
-    afterEach(() => {
-      client1.close();
-      client2.close();
-    });
-
-    it('should broadcast to all clients', async () => {
-      const event: NostrEvent = {
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000)
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      const messagePromise = Promise.all([
-        new Promise(resolve => client1.once('message', resolve)),
-        new Promise(resolve => client2.once('message', resolve))
-      ]);
-
-      server.broadcast(message);
-      await messagePromise;
-    });
-
-    it('should broadcast only to authenticated clients', async () => {
-      const authEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        sig: 'test-sig'
-      };
-      
-      // Authenticate client1
-      client1.send(JSON.stringify(['AUTH', authEvent]));
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      const event: NostrEvent = {
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000)
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      let client1Received = false;
-      let client2Received = false;
-
-      client1.on('message', () => { client1Received = true; });
-      client2.on('message', () => { client2Received = true; });
-
-      server.broadcastAuthenticated(message);
-      await new Promise(resolve => setTimeout(resolve, 100));
-
-      expect(client1Received).toBe(true);
-      expect(client2Received).toBe(false);
-    });
-
-    it('should broadcast messages to subscribed clients', () => {
-      const event: NostrEvent = {
-        kind: 1,
-        content: 'test',
-        tags: [],
-        created_at: Math.floor(Date.now() / 1000)
-      };
-      const message: NostrWSMessage = ['EVENT', event];
-      server.broadcastToChannel('test-channel', message);
-      // Add assertions based on your needs
-    });
-  });
-
-  describe('error handling', () => {
-    it('should handle client errors', async () => {
-      client = await connectClient();
-      const errorSpy = vi.fn();
-      server.on('error', errorSpy);
-      
-      // Wait for the connection to be established on the server side
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Get the server's WebSocket instance and emit error
-      server['wss'].clients.forEach((ws: WebSocket) => {
-        ws.emit('error', new Error('test error'));
-      });
-      
-      // Wait for error to be processed
-      await new Promise(resolve => setTimeout(resolve, 100));
-      expect(errorSpy).toHaveBeenCalled();
-    });
-
-    it('should handle client disconnection', async () => {
-      client = await connectClient();
-      client.close();
-      
-      // Wait for close event to process
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      const stats = server.getStats();
-      expect(stats.total).toBe(0);
+      expect(server.getStats().totalConnections).toBe(0);
     });
   });
 });

@@ -1,18 +1,8 @@
-import type { WebSocket } from 'ws';
+import { WebSocket } from 'ws';
 
-export type NostrEventKind = 
-  | 0    // Metadata
-  | 1    // Text Note
-  | 2    // Recommend Server
-  | 3    // Contacts
-  | 4    // Encrypted Direct Message
-  | 40   // Channel Creation
-  | 41   // Channel Metadata
-  | 42   // Channel Message
-  | 43   // Channel Hide Message
-  | 44   // Channel Mute User;
+export type NostrEventKind = number;
 
-export type NostrEvent = {
+export interface NostrEvent {
   id?: string;
   pubkey?: string;
   created_at?: number;
@@ -20,53 +10,81 @@ export type NostrEvent = {
   tags: string[][];
   content: string;
   sig?: string;
-};
-
-export type NostrWSMessage = [string, NostrEvent] | [string, string];
-
-export interface NostrWSOptions {
-  heartbeatInterval?: number;
-  reconnectInterval?: number;
-  maxReconnectAttempts?: number;
-  logger: Logger;
-  handlers: {
-    message: (ws: EnhancedWebSocket, message: NostrWSMessage) => Promise<void> | void;
-    error?: (ws: WebSocket, error: Error) => void;
-    close?: (ws: WebSocket) => void;
-  };
 }
 
-export interface NostrWSSubscription {
-  channel: string;
-  filter?: Record<string, unknown>;
-}
-
-export interface NostrWSClientEvents {
-  connect: () => void;
-  disconnect: () => void;
-  reconnect: () => void;
-  message: (message: NostrWSMessage) => void;
-  error: (error: Error) => void;
-}
-
-export interface NostrWSServerEvents {
-  connection: (client: EnhancedWebSocket) => void;
-  message: (message: NostrWSMessage, client: EnhancedWebSocket) => void;
-  error: (error: Error) => void;
-}
+export type NostrWSMessage = 
+  | ['EVENT', NostrEvent]
+  | ['REQ', string]
+  | ['CLOSE', string]
+  | ['AUTH', { pubkey: string }]
+  | ['SUB', string]
+  | ['UNSUB', string];
 
 export interface EnhancedWebSocket extends WebSocket {
-  id?: string;
+  id: string;
   pubkey?: string;
-  isAlive?: boolean;
-  authenticated?: boolean;
-  subscriptions?: Set<string>;
-  connectedAt?: Date;
+  authenticated: boolean;
+  isAlive: boolean;
+  subscriptions: Set<string>;
+  connectedAt: Date;
+}
+
+export type NostrWSValidationResult = {
+  valid: boolean;
+  error?: string;
+}
+
+export enum NostrWSConnectionState {
+  CONNECTING = 0,
+  OPEN = 1,
+  CLOSING = 2,
+  CLOSED = 3,
 }
 
 export interface Logger {
-  debug: (message: string, ...args: unknown[]) => void;
-  info: (message: string, ...args: unknown[]) => void;
-  warn: (message: string, ...args: unknown[]) => void;
-  error: (message: string, ...args: unknown[]) => void;
+  debug(message: string, ...meta: unknown[]): void;
+  info(message: string, ...meta: unknown[]): void;
+  warn(message: string, ...meta: unknown[]): void;
+  error(message: string, ...meta: unknown[]): void;
+}
+
+export type NostrWSHandlers = {
+  message: (ws: EnhancedWebSocket, message: NostrWSMessage | any) => Promise<void> | void;
+  error: (ws: EnhancedWebSocket, error: Error) => void;
+  close: (ws: EnhancedWebSocket) => void;
+}
+
+export type NostrWSOptions = {
+  logger: Logger;
+  handlers: NostrWSHandlers;
+  heartbeatInterval?: number;
+  maxReconnectAttempts?: number;
+}
+
+export type NostrWSStats = {
+  totalConnections: number;
+  authenticatedConnections: number;
+  totalSubscriptions: number;
+  uptime: number;
+}
+
+export type NostrWSSubscription = string;
+
+export interface NostrWSClientEvents {
+  open: () => void;
+  close: () => void;
+  error: (error: Error) => void;
+  message: (message: NostrWSMessage) => void;
+}
+
+export interface NostrWSServerEvents {
+  connection: (ws: EnhancedWebSocket) => void;
+  close: (ws: EnhancedWebSocket) => void;
+  error: (ws: EnhancedWebSocket, error: Error) => void;
+}
+
+export interface ExtendedWebSocket extends WebSocket {
+  isAlive?: boolean;
+  authenticated?: boolean;
+  subscriptions?: Set<string>;
 }

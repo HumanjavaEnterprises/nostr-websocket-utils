@@ -1,153 +1,115 @@
 import { EventEmitter } from 'events';
-import { Server as HttpServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
+import type { Server as HttpServer } from 'http';
 import { ConnectionManager } from './connection-manager.js';
+import { NostrWSErrorHandler, NostrWSError, ErrorCodes } from './error-handler.js';
 import type {
   NostrWSOptions,
   NostrWSMessage,
-  EnhancedWebSocket
+  NostrWSServerEvents,
 } from './types/index.js';
+import { EnhancedWebSocket } from './types/enhanced-websocket.js';
+
+function createLogger() {
+  return console;
+}
 
 export class NostrWSServer extends EventEmitter {
   private wss: WebSocketServer;
+  protected connectionManager: ConnectionManager;
   private options: NostrWSOptions;
-  private heartbeatInterval: NodeJS.Timeout | null = null;
-  private connectionManager: ConnectionManager;
+  private errorHandler: NostrWSErrorHandler;
 
   constructor(server: HttpServer, options: Partial<NostrWSOptions> = {}) {
     super();
-    if (!options.logger) {
-      throw new Error('Logger is required');
-    }
-    if (!options.handlers?.message) {
-      throw new Error('Message handler is required');
-    }
     this.options = {
+      logger: options.logger || createLogger(),
       heartbeatInterval: options.heartbeatInterval || 30000,
-      logger: options.logger,
       handlers: {
-        message: options.handlers.message,
-        error: options.handlers.error || (() => {}),
-        close: options.handlers.close || (() => {})
+        message: options.handlers?.message || (async () => {}),
+        error: options.handlers?.error || (() => {}),
+        close: options.handlers?.close || (() => {})
       }
     };
 
-    this.connectionManager = new ConnectionManager(this.options.logger);
-    this.setupConnectionManager();
-    
     this.wss = new WebSocketServer({ server });
+    this.connectionManager = new ConnectionManager(this.options.logger);
+    this.errorHandler = new NostrWSErrorHandler(this.options.logger);
+    
+    this.setupErrorHandling();
     this.setupServer();
   }
 
-  private setupConnectionManager(): void {
-    // Forward connection manager events to server events
-    this.connectionManager.on('connect', (client: EnhancedWebSocket) => {
-      this.emit('connect', client);
+  private setupErrorHandling(): void {
+    this.errorHandler.on('error', (error: Error) => {
+      this.options.handlers.error(null as any, error);
     });
 
-    this.connectionManager.on('disconnect', (client: EnhancedWebSocket) => {
-      this.emit('disconnect', client);
+    this.errorHandler.on('messageError', ({ ws, error }) => {
+      this.options.handlers.error(ws, error);
     });
 
-    this.connectionManager.on('auth', (client: EnhancedWebSocket) => {
-      this.emit('auth', client);
+    this.errorHandler.on('protocolError', ({ ws, error }) => {
+      this.options.handlers.error(ws, error);
     });
   }
 
   private setupServer(): void {
-    this.wss.on('connection', (ws: WebSocket) => {
-      const extWs = ws as EnhancedWebSocket;
-      this.connectionManager.registerConnection(extWs);
-
-      ws.on('message', async (data: Buffer) => {
+    this.wss.on('connection', (ws: WebSocket & Partial<EnhancedWebSocket>) => {
+      const extWs = this.connectionManager.addConnection(ws);
+      
+      extWs.on('message', async (data: Buffer) => {
+        const messageStr = data.toString();
         try {
-          const message = JSON.parse(data.toString()) as NostrWSMessage;
-          
-          // Handle AUTH messages
-          if (Array.isArray(message) && message[0] === 'AUTH') {
-            await this.connectionManager.handleAuth(extWs, message);
+          const message = JSON.parse(messageStr) as NostrWSMessage;
+          if (!Array.isArray(message) || message.length !== 2) {
+            this.errorHandler.handleProtocolError(
+              extWs,
+              new NostrWSError('Invalid message format', ErrorCodes.INVALID_MESSAGE_FORMAT, messageStr)
+            );
             return;
           }
           
           await this.options.handlers.message(extWs, message);
         } catch (error) {
-          if (this.options.handlers.error) {
-            this.options.handlers.error(ws, error as Error);
-          }
+          this.errorHandler.handleMessageError(extWs, error as Error, messageStr);
         }
       });
 
-      ws.on('close', () => {
+      extWs.on('close', () => {
         this.connectionManager.removeConnection(extWs);
-        if (this.options.handlers.close) {
-          this.options.handlers.close(ws);
-        }
+        this.options.handlers.close(extWs);
       });
 
-      ws.on('error', (error: Error) => {
-        if (this.options.handlers.error) {
-          this.options.handlers.error(ws, error);
-        }
-        this.emit('error', error);
+      extWs.on('error', (error: Error) => {
+        this.errorHandler.handleConnectionError(error, `Client ${extWs.id}`);
       });
     });
 
-    if (this.options.heartbeatInterval && this.options.heartbeatInterval > 0) {
-      this.startHeartbeat();
-    }
+    this.wss.on('error', (error: Error) => {
+      this.errorHandler.handleServerError(error);
+    });
   }
 
-  private startHeartbeat(): void {
-    this.heartbeatInterval = setInterval(() => {
-      const connections = this.connectionManager.getAllConnections();
-      connections.forEach((ws) => {
-        if (ws.readyState === WebSocket.OPEN) {
-          if (!ws.isAlive) {
-            return ws.terminate();
-          }
-          ws.isAlive = false;
-          ws.ping();
-        }
-      });
-    }, this.options.heartbeatInterval);
+  public async broadcast(message: NostrWSMessage): Promise<void> {
+    await this.connectionManager.broadcast(message);
   }
 
-  /**
-   * Broadcast a message to all connected clients
-   */
-  public broadcast(message: NostrWSMessage): void {
-    this.connectionManager.broadcast(message);
+  public async broadcastToAuthenticated(message: NostrWSMessage): Promise<void> {
+    await this.connectionManager.broadcastToAuthenticated(message);
   }
 
-  /**
-   * Broadcast a message to authenticated clients only
-   */
-  public broadcastAuthenticated(message: NostrWSMessage): void {
-    this.connectionManager.broadcastAuthenticated(message);
+  public async broadcastToSubscription(subscription: string, message: NostrWSMessage): Promise<void> {
+    await this.connectionManager.broadcastToSubscription(subscription, message);
   }
 
-  /**
-   * Broadcast a message to clients subscribed to a specific channel
-   */
-  public broadcastToChannel(channel: string, message: NostrWSMessage): void {
-    this.connectionManager.broadcastToChannel(channel, message);
-  }
-
-  /**
-   * Get server statistics
-   */
-  public getStats(): { total: number; authenticated: number } {
+  public getStats() {
     return this.connectionManager.getStats();
   }
 
-  /**
-   * Close the WebSocket server and clean up resources
-   */
   public close(): void {
-    if (this.heartbeatInterval) {
-      clearInterval(this.heartbeatInterval);
-      this.heartbeatInterval = null;
-    }
-    this.wss.close();
+    this.wss.close(() => {
+      this.options.logger.info('WebSocket server closed');
+    });
   }
 }

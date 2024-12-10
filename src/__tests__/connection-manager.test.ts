@@ -1,172 +1,154 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ConnectionManager } from '../connection-manager.js';
-import type { EnhancedWebSocket } from '../types/enhanced-websocket.js';
-import { EventEmitter } from 'events';
-import WebSocket from 'ws';
-
-// Mock logger
-const mockLogger = {
-  debug: vi.fn(),
-  info: vi.fn(),
-  warn: vi.fn(),
-  error: vi.fn(),
-};
-
-// Mock WebSocket class
-class MockWebSocket extends EventEmitter {
-  public readyState = WebSocket.OPEN;
-  public OPEN = WebSocket.OPEN;  
-  public send = vi.fn();
-  public ping = vi.fn();
-  public terminate = vi.fn();
-  public close = vi.fn();
-  public subscriptions = new Set<string>();
-  public isAlive = true;
-  public authenticated = false;
-  public id?: string;
-  public pubkey?: string;
-  public connectedAt?: Date;
-
-  constructor() {
-    super();
-  }
-}
+import { mockLogger } from './mocks/logger.js';
+import { WebSocket } from 'ws';
+import type { EnhancedWebSocket } from '../types/index.js';
 
 describe('ConnectionManager', () => {
   let connectionManager: ConnectionManager;
-  let mockWs: EnhancedWebSocket;
+  let mockWebSocket: Partial<WebSocket> & { id?: string; authenticated?: boolean; subscriptions?: Set<string>; send: any };
 
   beforeEach(() => {
-    connectionManager = new ConnectionManager(mockLogger);
-    mockWs = new MockWebSocket() as unknown as EnhancedWebSocket;
     vi.clearAllMocks();
+    // Cast mockLogger to any to avoid type issues
+    connectionManager = new ConnectionManager(mockLogger as any);
+
+    mockWebSocket = {
+      id: undefined,
+      authenticated: false,
+      subscriptions: new Set(),
+      send: vi.fn(),
+      on: vi.fn(),
+      close: vi.fn(),
+      readyState: 1, // WebSocket.OPEN
+      terminate: vi.fn(),
+      ping: vi.fn(),
+      pong: vi.fn(),
+      removeAllListeners: vi.fn(),
+      removeListener: vi.fn(),
+      addListener: vi.fn(),
+      emit: vi.fn(),
+      eventNames: vi.fn(),
+      getMaxListeners: vi.fn(),
+      listenerCount: vi.fn(),
+      listeners: vi.fn(),
+      off: vi.fn(),
+      once: vi.fn(),
+      prependListener: vi.fn(),
+      prependOnceListener: vi.fn(),
+      rawListeners: vi.fn(),
+      setMaxListeners: vi.fn()
+    };
   });
 
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe('registerConnection', () => {
-    it('should register a new connection with generated ID', () => {
-      connectionManager.registerConnection(mockWs);
-      expect(mockWs.id).toBeDefined();
-      expect(mockWs.connectedAt).toBeInstanceOf(Date);
-      expect(mockWs.authenticated).toBe(false);
-      expect(mockWs.isAlive).toBe(true);
-      expect(mockWs.subscriptions).toBeInstanceOf(Set);
+  describe('connection management', () => {
+    it('should add a connection', () => {
+      const extWs = connectionManager.addConnection(mockWebSocket as WebSocket);
+      expect(extWs.id).toBeDefined();
+      expect(extWs.authenticated).toBe(false);
+      expect(extWs.subscriptions).toBeInstanceOf(Set);
+      expect(extWs.connectedAt).toBeInstanceOf(Date);
     });
 
-    it('should keep existing ID if provided', () => {
-      const existingId = 'test-id';
-      mockWs.id = existingId;
-      connectionManager.registerConnection(mockWs);
-      expect(mockWs.id).toBe(existingId);
-    });
-
-    it('should emit connect event', () => {
-      const spy = vi.fn();
-      connectionManager.on('connect', spy);
-      connectionManager.registerConnection(mockWs);
-      expect(spy).toHaveBeenCalledWith(mockWs);
-    });
-  });
-
-  describe('removeConnection', () => {
-    it('should remove an existing connection', () => {
-      connectionManager.registerConnection(mockWs);
-      const id = mockWs.id!;
-      connectionManager.removeConnection(mockWs);
-      expect(connectionManager.getConnection(id)).toBeUndefined();
-    });
-
-    it('should emit disconnect event', () => {
-      const spy = vi.fn();
-      connectionManager.on('disconnect', spy);
-      connectionManager.registerConnection(mockWs);
-      connectionManager.removeConnection(mockWs);
-      expect(spy).toHaveBeenCalledWith(mockWs);
-    });
-  });
-
-  describe('handleAuth', () => {
-    it('should authenticate a client with valid auth event', async () => {
-      const authEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        sig: 'test-sig'
-      };
-      connectionManager.registerConnection(mockWs);
-      await connectionManager.handleAuth(mockWs, ['AUTH', authEvent]);
-      expect(mockWs.authenticated).toBe(true);
-      expect(mockWs.pubkey).toBe(authEvent.pubkey);
-    });
-
-    it('should emit auth event on successful authentication', async () => {
-      const spy = vi.fn();
-      connectionManager.on('auth', spy);
-      const authEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        sig: 'test-sig'
-      };
-      connectionManager.registerConnection(mockWs);
-      await connectionManager.handleAuth(mockWs, ['AUTH', authEvent]);
-      expect(spy).toHaveBeenCalledWith(mockWs);
+    it('should remove a connection', () => {
+      const extWs = connectionManager.addConnection(mockWebSocket as WebSocket);
+      connectionManager.removeConnection(extWs);
+      expect(connectionManager.getConnection(extWs.id)).toBeUndefined();
     });
   });
 
-  describe('broadcast methods', () => {
-    let mockWs1: EnhancedWebSocket;
-    let mockWs2: EnhancedWebSocket;
+  describe('message handling', () => {
+    let extWs: EnhancedWebSocket;
 
     beforeEach(() => {
-      mockWs1 = new MockWebSocket() as unknown as EnhancedWebSocket;
-      mockWs2 = new MockWebSocket() as unknown as EnhancedWebSocket;
-      connectionManager.registerConnection(mockWs1);
-      connectionManager.registerConnection(mockWs2);
+      extWs = connectionManager.addConnection(mockWebSocket as WebSocket);
     });
 
-    it('should broadcast message to all connected clients', () => {
-      const message = { type: 'test' };
-      connectionManager.broadcast(message);
-      expect(mockWs1.send).toHaveBeenCalledWith(JSON.stringify(message));
-      expect(mockWs2.send).toHaveBeenCalledWith(JSON.stringify(message));
+    it('should handle unauthenticated messages', async () => {
+      await connectionManager.handleMessage(extWs, ['EVENT', {}]);
+      expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('Unauthenticated client'));
     });
 
-    it('should broadcast only to authenticated clients', async () => {
-      const message = { type: 'test' };
-      mockWs1.authenticated = true;
-      mockWs1.pubkey = 'test-pubkey';
-      connectionManager.broadcastAuthenticated(message);
-      expect(mockWs1.send).toHaveBeenCalledWith(JSON.stringify(message));
-      expect(mockWs2.send).not.toHaveBeenCalled();
+    it('should allow AUTH messages when unauthenticated', async () => {
+      await connectionManager.handleMessage(extWs, ['AUTH', { pubkey: 'test' }]);
+      expect(extWs.authenticated).toBe(true);
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('authenticated with pubkey'));
     });
 
-    it('should broadcast only to subscribed clients', () => {
-      const message = { type: 'test' };
-      const channel = 'test-channel';
-      mockWs1.subscriptions.add(channel);
-      connectionManager.broadcastToChannel(channel, message);
-      expect(mockWs1.send).toHaveBeenCalledWith(JSON.stringify(message));
-      expect(mockWs2.send).not.toHaveBeenCalled();
+    it('should handle subscriptions when authenticated', async () => {
+      extWs.authenticated = true;
+      await connectionManager.handleMessage(extWs, ['SUB', 'test-channel']);
+      expect(extWs.subscriptions.has('test-channel')).toBe(true);
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('subscribed to'));
+    });
+
+    it('should handle unsubscriptions', async () => {
+      extWs.authenticated = true;
+      extWs.subscriptions.add('test-channel');
+      await connectionManager.handleMessage(extWs, ['UNSUB', 'test-channel']);
+      expect(extWs.subscriptions.has('test-channel')).toBe(false);
+      expect(mockLogger.info).toHaveBeenCalledWith(expect.stringContaining('unsubscribed from'));
+    });
+
+    it('should handle unknown message types', async () => {
+      extWs.authenticated = true;
+      await connectionManager.handleMessage(extWs, ['UNKNOWN', {}]);
+      expect(mockLogger.warn).toHaveBeenCalledWith(expect.stringContaining('Unknown message type'));
     });
   });
 
-  describe('getStats', () => {
-    it('should return correct connection stats', async () => {
-      connectionManager.registerConnection(mockWs);
-      const authEvent = {
-        id: 'test-id',
-        pubkey: 'test-pubkey',
-        sig: 'test-sig'
-      };
-      await connectionManager.handleAuth(mockWs, ['AUTH', authEvent]);
-      
-      const stats = connectionManager.getStats();
-      expect(stats).toEqual({
-        total: 1,
-        authenticated: 1
+  describe('broadcasting', () => {
+    let extWs: EnhancedWebSocket;
+    const testMessage = ['EVENT', { id: 'test' }];
+
+    beforeEach(() => {
+      extWs = connectionManager.addConnection(mockWebSocket as WebSocket);
+    });
+
+    it('should broadcast to all connected clients', async () => {
+      await connectionManager.broadcast(testMessage);
+      expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify(testMessage));
+    });
+
+    it('should broadcast to authenticated clients only', async () => {
+      extWs.authenticated = true;
+      await connectionManager.broadcastToAuthenticated(testMessage);
+      expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify(testMessage));
+    });
+
+    it('should not broadcast to unauthenticated clients', async () => {
+      extWs.authenticated = false;
+      await connectionManager.broadcastToAuthenticated(testMessage);
+      expect(mockWebSocket.send).not.toHaveBeenCalled();
+    });
+
+    it('should broadcast to subscribed clients', async () => {
+      extWs.authenticated = true;
+      extWs.subscriptions.add('test-channel');
+      await connectionManager.broadcastToSubscription('test-channel', testMessage);
+      expect(mockWebSocket.send).toHaveBeenCalledWith(JSON.stringify(testMessage));
+    });
+
+    it('should handle broadcast errors', async () => {
+      mockWebSocket.send.mockImplementation(() => {
+        throw new Error('Send error');
       });
+      await connectionManager.broadcast(testMessage);
+      expect(mockLogger.error).toHaveBeenCalledWith(expect.stringContaining('Error broadcasting to client'), expect.any(Error));
+    });
+  });
+
+  describe('stats', () => {
+    it('should return connection statistics', () => {
+      const extWs = connectionManager.addConnection(mockWebSocket as WebSocket);
+      extWs.authenticated = true;
+      extWs.subscriptions.add('test-channel');
+
+      const stats = connectionManager.getStats();
+      expect(stats.totalConnections).toBe(1);
+      expect(stats.authenticatedConnections).toBe(1);
+      expect(stats.totalSubscriptions).toBe(1);
+      expect(stats.uptime).toBeGreaterThanOrEqual(0);
     });
   });
 });

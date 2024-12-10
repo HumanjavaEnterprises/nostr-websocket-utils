@@ -7,32 +7,27 @@ export interface EnhancedWebSocket extends WebSocket {
   id: string;
 
   /**
-   * Whether the client has been authenticated
-   */
-  authenticated: boolean;
-
-  /**
-   * Optional challenge string for authentication
-   */
-  challenge?: string;
-
-  /**
-   * Timestamp when the connection was established
-   */
-  connectedAt: Date;
-
-  /**
    * Optional public key of the authenticated client
    */
   pubkey?: string;
 
   /**
-   * Set of subscriptions for this client
+   * Whether the client has been authenticated
    */
-  subscriptions?: Set<string>;
+  authenticated: boolean;
 
   /**
    * Whether the client is still alive (used for heartbeat)
    */
   isAlive: boolean;
+
+  /**
+   * Set of subscriptions for this client
+   */
+  subscriptions: Set<string>;
+
+  /**
+   * Timestamp when the connection was established
+   */
+  connectedAt: Date;
 }
