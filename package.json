@@ -1,6 +1,6 @@
 {
-  "name": "@humanjavaenterprises/nostr-websocket-utils",
-  "version": "0.2.0",
+  "name": "nostr-websocket-utils",
+  "version": "0.2.2",
   "description": "WebSocket utilities for Nostr applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,14 +20,24 @@
     "utils",
     "maiqr"
   ],
-  "author": "Human Java Enterprises",
+  "author": "vveerrgg",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HumanjavaEnterprises/nostr-websocket-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues"
+  },
+  "homepage": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils#readme",
   "dependencies": {
-    "ws": "^8.16.0",
-    "winston": "^3.11.0",
     "@noble/curves": "^1.3.0",
     "@noble/hashes": "^1.3.3",
-    "nostr-tools": "^2.1.4"
+    "@types/uuid": "^10.0.0",
+    "nostr-tools": "^2.1.4",
+    "uuid": "^11.0.3",
+    "winston": "^3.11.0",
+    "ws": "^8.16.0"
   },
   "peerDependencies": {
     "nostr-tools": "^2.1.4"
@@ -48,14 +58,6 @@
     "README.md",
     "LICENSE"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/humanjavaenterprises/nostr-websocket-utils.git"
-  },
-  "bugs": {
-    "url": "https://github.com/humanjavaenterprises/nostr-websocket-utils/issues"
-  },
-  "homepage": "https://github.com/humanjavaenterprises/nostr-websocket-utils#readme",
   "publishConfig": {
     "access": "public"
   }

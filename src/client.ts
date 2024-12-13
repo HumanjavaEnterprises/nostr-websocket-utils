@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
 import { EventEmitter } from 'events';
 import type {
@@ -12,12 +13,14 @@ export class NostrWSClient extends EventEmitter {
   private heartbeatInterval: NodeJS.Timeout | null = null;
   private reconnectAttempts = 0;
   private messageQueue: NostrWSMessage[] = [];
+  private clientId: string;
 
   constructor(private url: string, options: Partial<NostrWSOptions> = {}) {
     super();
     if (!options.logger) {
       throw new Error('Logger is required');
     }
+    this.clientId = uuidv4();
     this.options = {
       heartbeatInterval: options.heartbeatInterval || 30000,
       logger: options.logger,
@@ -36,7 +39,9 @@ export class NostrWSClient extends EventEmitter {
     }
 
     try {
+      this.options.logger.debug('Creating new WebSocket connection');
       this.ws = new WebSocket(this.url);
+      this.options.logger.debug('WebSocket created successfully');
       this.setupEventHandlers();
     } catch (error) {
       this.options.logger.error('Failed to create WebSocket connection:', error);
@@ -139,6 +144,7 @@ export class NostrWSClient extends EventEmitter {
   }
 
   public async send(message: NostrWSMessage): Promise<void> {
+    message.id = message.id || uuidv4();
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
       this.messageQueue.push(message);
       return;

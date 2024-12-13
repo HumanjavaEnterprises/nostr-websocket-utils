@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events';
 import { Server as HttpServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
+import { v4 as uuidv4 } from 'uuid';
 import type {
   NostrWSOptions,
   NostrWSMessage,
@@ -36,33 +37,7 @@ export class NostrWSServer extends EventEmitter {
 
   private setupServer(): void {
     this.wss.on('connection', (ws: WebSocket) => {
-      const extWs = ws as ExtendedWebSocket;
-      extWs.subscriptions = new Set();
-      extWs.isAlive = true;
-
-      ws.on('message', async (data: Buffer) => {
-        try {
-          const message = JSON.parse(data.toString()) as NostrWSMessage;
-          await this.options.handlers.message(extWs, message);
-        } catch (error) {
-          if (this.options.handlers.error) {
-            this.options.handlers.error(ws, error as Error);
-          }
-        }
-      });
-
-      ws.on('close', () => {
-        extWs.isAlive = false;
-        if (this.options.handlers.close) {
-          this.options.handlers.close(ws);
-        }
-      });
-
-      ws.on('error', (error: Error) => {
-        if (this.options.handlers.error) {
-          this.options.handlers.error(ws, error);
-        }
-      });
+      this.handleConnection(ws as ExtendedWebSocket);
     });
 
     if (this.options.heartbeatInterval && this.options.heartbeatInterval > 0) {
@@ -70,23 +45,54 @@ export class NostrWSServer extends EventEmitter {
     }
   }
 
+  private handleConnection(ws: ExtendedWebSocket): void {
+    ws.isAlive = true;
+    ws.subscriptions = new Set();
+    ws.clientId = ws.clientId || uuidv4();
+
+    ws.on('message', async (data: Buffer) => {
+      try {
+        const message = JSON.parse(data.toString()) as NostrWSMessage;
+        await this.options.handlers.message(ws, message);
+      } catch (error) {
+        if (this.options.handlers.error) {
+          this.options.handlers.error(ws, error as Error);
+        }
+      }
+    });
+
+    ws.on('close', () => {
+      ws.isAlive = false;
+      if (this.options.handlers.close) {
+        this.options.handlers.close(ws);
+      }
+    });
+
+    ws.on('error', (error: Error) => {
+      if (this.options.handlers.error) {
+        this.options.handlers.error(ws, error);
+      }
+    });
+  }
+
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(() => {
-      this.wss.clients.forEach((ws) => {
+      this.wss.clients.forEach((ws: WebSocket) => {
+        const extWs = ws as ExtendedWebSocket;
+        if (!extWs.isAlive) {
+          extWs.terminate();
+          return;
+        }
+        extWs.isAlive = false;
         if (ws.readyState === WebSocket.OPEN) {
-          const extWs = ws as ExtendedWebSocket;
-          if (!extWs.isAlive) {
-            return ws.terminate();
-          }
           ws.ping();
-          extWs.isAlive = false;
         }
       });
-    }, this.options.heartbeatInterval || 30000);
+    }, this.options.heartbeatInterval);
   }
 
   public broadcast(message: NostrWSMessage): void {
-    this.wss.clients.forEach((client) => {
+    this.wss.clients.forEach((client: WebSocket) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message));
       }
@@ -94,10 +100,10 @@ export class NostrWSServer extends EventEmitter {
   }
 
   public broadcastToChannel(channel: string, message: NostrWSMessage): void {
-    this.wss.clients.forEach((client) => {
-      const extClient = client as ExtendedWebSocket;
-      if (client.readyState === WebSocket.OPEN && extClient.subscriptions?.has(channel)) {
-        client.send(JSON.stringify(message));
+    this.wss.clients.forEach((ws: WebSocket) => {
+      const extWs = ws as ExtendedWebSocket;
+      if (extWs.readyState === WebSocket.OPEN && extWs.subscriptions?.has(channel)) {
+        ws.send(JSON.stringify(message));
       }
     });
   }

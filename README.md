@@ -1,7 +1,7 @@
 Nostr Websocket Utils
 
-[![npm version](https://img.shields.io/npm/v/@humanjavaenterprises/nostr-websocket-utils.svg)](https://www.npmjs.com/package/@humanjavaenterprises/nostr-websocket-utils)
-[![License](https://img.shields.io/npm/l/@humanjavaenterprises/nostr-websocket-utils.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/nostr-websocket-utils.svg)](https://www.npmjs.com/package/nostr-websocket-utils)
+[![License](https://img.shields.io/npm/l/nostr-websocket-utils.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/LICENSE)
 [![Build Status](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/workflows/CI/badge.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
@@ -22,15 +22,15 @@ A TypeScript library providing WebSocket utilities for Nostr applications, with 
 ## Installation
 
 ```bash
-npm install @humanjavaenterprises/nostr-websocket-utils
+npm install nostr-websocket-utils
 ```
 
-## Breaking Changes in v0.2.0
+## Breaking Changes in v0.2.1
 
-- Introduced required handlers pattern for better type safety
-- Removed individual event handler properties (onMessage, onError, onClose)
-- Message handler is now required in server options
-- Client updated to match server interface
+- Added UUID support for message tracking and correlation
+- Fixed WebSocket mock implementation in tests
+- Improved TypeScript type safety across the codebase
+- Enhanced error handling for WebSocket connections
 
 ## Usage
 
@@ -39,7 +39,7 @@ npm install @humanjavaenterprises/nostr-websocket-utils
 ```typescript
 import express from 'express';
 import { createServer } from 'http';
-import { NostrWSServer } from '@humanjavaenterprises/nostr-websocket-utils';
+import { NostrWSServer } from 'nostr-websocket-utils';
 import winston from 'winston';
 
 const app = express();
@@ -89,10 +89,53 @@ const wss = new NostrWSServer(server, {
 server.listen(3000);
 ```
 
+### Server Example with UUID
+
+```typescript
+import express from 'express';
+import { createServer } from 'http';
+import { NostrWSServer } from 'nostr-websocket-utils';
+import winston from 'winston';
+
+const app = express();
+const server = createServer(app);
+
+// Create a logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.json(),
+  transports: [new winston.transports.Console()]
+});
+
+// Initialize the WebSocket server with UUID support
+const wsServer = new NostrWSServer({
+  server,
+  logger,
+  messageHandler: async (message, client) => {
+    // message.uuid will contain a unique identifier for the message
+    logger.info(`Received message with UUID: ${message.uuid}`);
+    
+    // Handle the message based on type
+    switch (message.type) {
+      case 'subscribe':
+        // Handle subscription
+        break;
+      case 'event':
+        // Handle event
+        break;
+      default:
+        // Handle unknown message type
+    }
+  }
+});
+
+server.listen(3000);
+```
+
 ### Client Example
 
 ```typescript
-import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
+import { NostrWSClient } from 'nostr-websocket-utils';
 import winston from 'winston';
 
 // Create a logger
@@ -128,6 +171,30 @@ client.on('connect', () => {
 });
 
 client.connect();
+```
+
+### Client Example with UUID
+
+```typescript
+import { NostrWSClient } from 'nostr-websocket-utils';
+
+const client = new NostrWSClient('ws://localhost:3000', {
+  logger: console
+});
+
+client.on('message', (message) => {
+  // Access the UUID of the received message
+  console.log(`Received message with UUID: ${message.uuid}`);
+});
+
+// Connect to the server
+client.connect();
+
+// Send a message (UUID will be automatically generated)
+client.send({
+  type: 'event',
+  data: { content: 'Hello, World!' }
+});
 ```
 
 ## Interface Reference
