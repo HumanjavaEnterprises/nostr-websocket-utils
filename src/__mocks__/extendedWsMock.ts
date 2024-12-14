@@ -12,7 +12,7 @@ const extendedMockWebSocket = {
   OPEN: 1,
   CLOSING: 2,
   CLOSED: 3,
-  on(event: string, listener: (...args: unknown[]) => void) {
+  on(_event: string, _listener: (...args: unknown[]) => void) {
     return this;
   },
   send: jest.fn(),
@@ -22,13 +22,13 @@ const extendedMockWebSocket = {
   terminate: jest.fn(),
   removeAllListeners: jest.fn(),
   removeListener: jest.fn(),
-  addEventListener: jest.fn(),
-  removeEventListener: jest.fn(),
-  emit: jest.fn(),
-  addListener: jest.fn(),
-  once: jest.fn(),
-  prependListener: jest.fn(),
-  prependOnceListener: jest.fn(),
+  addEventListener: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
+  removeEventListener: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
+  emit: jest.fn((_event: string, ..._args: unknown[]) => {}),
+  addListener: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
+  once: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
+  prependListener: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
+  prependOnceListener: jest.fn((_event: string, _listener: (..._args: unknown[]) => void) => {}),
   eventNames: jest.fn(),
   listenerCount: jest.fn(),
   // Additional methods for extended behavior

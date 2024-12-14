@@ -24,6 +24,7 @@ export class NostrWSServer extends EventEmitter {
     this.options = {
       heartbeatInterval: options.heartbeatInterval || 30000,
       logger: options.logger,
+      WebSocketImpl: options.WebSocketImpl || WebSocket,
       handlers: {
         message: options.handlers.message,
         error: options.handlers.error || (() => {}),

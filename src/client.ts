@@ -24,6 +24,7 @@ export class NostrWSClient extends EventEmitter {
     this.options = {
       heartbeatInterval: options.heartbeatInterval || 30000,
       logger: options.logger,
+      WebSocketImpl: options.WebSocketImpl || WebSocket,
       handlers: {
         message: options.handlers?.message || (async () => {}),
         error: options.handlers?.error || (() => {}),
@@ -40,7 +41,7 @@ export class NostrWSClient extends EventEmitter {
 
     try {
       this.options.logger.debug('Creating new WebSocket connection');
-      this.ws = new WebSocket(this.url);
+      this.ws = new this.options.WebSocketImpl(this.url);
       this.options.logger.debug('WebSocket created successfully');
       this.setupEventHandlers();
     } catch (error) {

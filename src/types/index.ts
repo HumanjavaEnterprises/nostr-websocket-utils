@@ -14,7 +14,7 @@ export interface NostrWSOptions {
   reconnectInterval?: number;
   maxReconnectAttempts?: number;
   logger: Logger;
-  WebSocketImpl?: typeof WebSocket;
+  WebSocketImpl: typeof WebSocket;
   handlers: {
     message: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
     error?: (ws: WebSocket, error: Error) => void;
@@ -70,5 +70,6 @@ export interface NostrWSConnectionState {
 export interface Logger {
   debug: (message: string, ...args: unknown[]) => void;
   info: (message: string, ...args: unknown[]) => void;
+  warn: (message: string, ...args: unknown[]) => void;
   error: (message: string, ...args: unknown[]) => void;
 }
