@@ -11,13 +11,14 @@ A TypeScript library providing WebSocket utilities for Nostr applications, focus
 ## Features
 
 - 🔄 Automatic reconnection with configurable attempts
-- 💓 Heartbeat monitoring
+- 💓 Heartbeat monitoring with configurable intervals
 - 📨 Message queueing during disconnections
-- 📢 Channel-based broadcasting
+- 📢 Channel-based broadcasting with filtered subscriptions
 - 🔒 Type-safe message handling with required handlers
-- 📝 Built-in logging
-- 🛡️ Comprehensive error handling
-- 🧪 Full test coverage
+- 📝 Built-in logging with Winston integration
+- 🛡️ Comprehensive error handling and validation
+- 🧪 100% test coverage with Jest
+- 📦 Zero DOM dependencies
 
 ## Installation
 
@@ -27,130 +28,172 @@ npm install nostr-websocket-utils
 
 ## Breaking Changes in v0.2.2
 
-- Removed all DOM-related code to focus solely on WebSocket functionality.
-- Added UUID support for message tracking and correlation.
-- Introduced a new `WebSocketImpl` option for custom WebSocket implementations.
-- Improved TypeScript type safety across the codebase.
-- Enhanced error handling for WebSocket connections.
+- 🔥 Removed all DOM-related code for better server-side compatibility
+- 🆔 Added UUID support for message tracking and correlation
+- 🔌 Introduced `WebSocketImpl` option for custom WebSocket implementations
+- 🛡️ Enhanced TypeScript type safety and validation
+- 🔄 Improved reconnection and error handling logic
+- 📝 Added comprehensive logging support
 
 ## Usage
 
 ### Server Example
 
 ```typescript
-import express from 'express';
-import { createServer } from 'http';
 import { NostrWSServer } from 'nostr-websocket-utils';
-import winston from 'winston';
+import { WebSocketServer } from 'ws';
+import { getLogger } from './utils/logger';
 
-const app = express();
-const server = createServer(app);
+// Create WebSocket server
+const wss = new WebSocketServer({ port: 8080 });
 
-// Create a logger
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [new winston.transports.Console()]
-});
-
-// Initialize the WebSocket server with custom WebSocket implementation
-const wsServer = new NostrWSServer(server, {
-  logger,
+// Initialize NostrWSServer with handlers
+const server = new NostrWSServer(wss, {
+  logger: getLogger('nostr-server'),
+  heartbeatInterval: 30000, // Optional: 30 seconds
   handlers: {
+    // Required: Handle incoming messages
     message: async (ws, message) => {
-      logger.info('Received message:', message);
-      // Handle message
+      switch (message.type) {
+        case 'subscribe':
+          // Handle subscription
+          ws.subscriptions?.add(message.data.channel);
+          break;
+        case 'event':
+          // Broadcast to relevant subscribers
+          server.broadcastToChannel(message.data.channel, message);
+          break;
+      }
     },
+    // Optional: Handle errors
     error: (ws, error) => {
       logger.error('WebSocket error:', error);
     },
+    // Optional: Handle client disconnection
     close: (ws) => {
-      logger.info('Connection closed');
+      logger.info(`Client ${ws.clientId} disconnected`);
     }
   }
 });
-
-server.listen(3000);
 ```
 
 ### Client Example
 
 ```typescript
 import { NostrWSClient } from 'nostr-websocket-utils';
-import winston from 'winston';
+import { getLogger } from './utils/logger';
 
-const logger = winston.createLogger({
-  level: 'info',
-  format: winston.format.json(),
-  transports: [new winston.transports.Console()]
+const client = new NostrWSClient('ws://localhost:8080', {
+  logger: getLogger('nostr-client'),
+  heartbeatInterval: 30000,
+  handlers: {
+    // Required: Handle incoming messages
+    message: async (ws, message) => {
+      console.log('Received:', message);
+    }
+  }
 });
 
-const client = new NostrWSClient('ws://localhost:3000', {
-  logger,
-  WebSocketImpl: CustomWebSocketImplementation // Optional custom WebSocket implementation
+// Listen for connection events
+client.on('connect', () => {
+  console.log('Connected to server');
+  
+  // Subscribe to a channel
+  client.subscribe('my-channel');
+  
+  // Send an event
+  client.send({
+    type: 'event',
+    data: {
+      channel: 'my-channel',
+      content: 'Hello, Nostr!'
+    }
+  });
 });
 
-client.on('message', (message) => {
-  console.log('Received message:', message);
-});
-
+// Connect to server
 client.connect();
 ```
 
-## Interface Reference
+## API Reference
 
-### NostrWSOptions
+### NostrWSServer
+
+The server-side WebSocket handler with support for channels and broadcasting.
 
 ```typescript
-interface NostrWSOptions {
-  // Interval for sending heartbeat pings (ms)
-  heartbeatInterval?: number;
-  // Interval between reconnection attempts (ms)
-  reconnectInterval?: number;
-  // Maximum number of reconnection attempts
-  maxReconnectAttempts?: number;
-  // Required logger instance
-  logger: Logger;
-  // Required handlers object
-  handlers: {
-    // Required message handler
-    message: (ws: ExtendedWebSocket, message: NostrWSMessage) => Promise<void> | void;
-    // Optional error handler
-    error?: (ws: WebSocket, error: Error) => void;
-    // Optional close handler
-    close?: (ws: WebSocket) => void;
-  };
-  // Optional custom WebSocket implementation
-  WebSocketImpl?: WebSocketImpl;
+class NostrWSServer {
+  constructor(wss: WebSocketServer, options: NostrWSOptions);
+  
+  // Broadcast to all connected clients
+  broadcast(message: NostrWSMessage): void;
+  
+  // Broadcast to specific channel subscribers
+  broadcastToChannel(channel: string, message: NostrWSMessage): void;
+  
+  // Close the server and all connections
+  close(): void;
 }
 ```
 
-## Why This Library is Perfect for Nostr Development
+### NostrWSClient
 
-This library is specifically designed to accelerate Nostr application development by providing a robust foundation for WebSocket communication. Here's what makes it particularly valuable:
+The client-side WebSocket handler with automatic reconnection and message queueing.
 
-### 1. Nostr-Specific Message Types
-- Built-in support for core Nostr protocol message types (`subscribe`, `unsubscribe`, `event`, `request/response`)
-- Perfectly aligned with Nostr's pub/sub model
+```typescript
+class NostrWSClient {
+  constructor(url: string, options: NostrWSOptions);
+  
+  // Connect to the server
+  connect(): void;
+  
+  // Subscribe to a channel
+  subscribe(channel: string, filter?: unknown): void;
+  
+  // Unsubscribe from a channel
+  unsubscribe(channel: string): void;
+  
+  // Send a message to the server
+  send(message: NostrWSMessage): Promise<void>;
+  
+  // Close the connection
+  close(): void;
+}
+```
+
+### NostrWSMessage
+
+The standard message format for communication.
+
+```typescript
+interface NostrWSMessage {
+  id?: string;           // Auto-generated UUID if not provided
+  type: string;          // Message type (e.g., 'subscribe', 'event')
+  data: {
+    channel?: string;    // Target channel for subscription/broadcast
+    [key: string]: any;  // Additional message data
+  };
+}
+```
+
+## Why Choose This Library
+
+### 1. Nostr-Optimized
+- Built specifically for Nostr protocol requirements
+- Efficient pub/sub model with filtered subscriptions
 - Type-safe message handling for all Nostr events
 
-### 2. Advanced WebSocket Management
-- Zero-config connection maintenance with automatic reconnection
-- Built-in heartbeat mechanism prevents stale connections
-- Smart message queuing ensures no events are lost during disconnections
-- Comprehensive connection state tracking
+### 2. Production-Ready
+- Comprehensive error handling and recovery
+- Memory-efficient subscription management
+- Built-in logging and monitoring
+- Extensive test coverage
 
-### 3. Efficient Event Distribution
-- Channel-based broadcasting for targeted event distribution
-- Support for filtered subscriptions (crucial for Nostr event filtering)
-- Memory-efficient subscription tracking
-- Optimized message routing to relevant subscribers
-
-### 4. Developer Experience
-- Full TypeScript support with comprehensive type definitions
-- Event-driven architecture matching Nostr's event-centric nature
-- Clear, consistent error handling and validation
-- Required handlers pattern ensures type safety
+### 3. Developer-Friendly
+- Clear TypeScript definitions
+- Flexible configuration options
+- Detailed documentation
+- Active maintenance
 
 ## Contributing
 

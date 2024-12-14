@@ -3,6 +3,8 @@ import WebSocket, { WebSocketServer } from 'ws';
 import type { NostrWSMessage, ExtendedWebSocket } from '../types/index.js';
 import { jest, describe, expect, it, beforeEach, afterEach } from '@jest/globals';
 import { EventEmitter } from 'events';
+import { IncomingMessage } from 'http';
+import { Socket } from 'net';
 
 jest.mock('ws');
 
@@ -10,7 +12,6 @@ describe('NostrWSServer', () => {
   let server: NostrWSServer;
   let mockWsServer: WebSocketServer;
   let mockClient: WebSocket & Partial<ExtendedWebSocket>;
-  const serverEventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
   let clientEventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
   let messageHandler: jest.Mock<(ws: ExtendedWebSocket, message: NostrWSMessage) => void>;
   let closeHandler: jest.Mock<(ws: ExtendedWebSocket) => void>;
@@ -45,11 +46,10 @@ describe('NostrWSServer', () => {
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
       getMaxListeners: jest.fn().mockReturnValue(10),
-      on: jest.fn().mockImplementation((...args: unknown[]) => {
-        const [event, handler] = args as [string, (...args: any[]) => void];
-        clientEventHandlers[event] = handler;
+      on: jest.fn((event: string, listener: (...args: any[]) => void) => {
+        clientEventHandlers[event] = listener;
         return mockClient;
-      }),
+      }) as jest.MockedFunction<(event: string, listener: (...args: any[]) => void) => WebSocket & Partial<ExtendedWebSocket>>,
       send: jest.fn(),
       close: jest.fn(),
       ping: jest.fn(),
@@ -142,12 +142,12 @@ describe('NostrWSServer', () => {
 });
 
 class MockServer extends EventEmitter {
-  options: any;
+  options: Record<string, unknown>;
   path: string;
   clients: Set<WebSocket & Partial<ExtendedWebSocket>>;
   address: string;
 
-  constructor(options?: any) {
+  constructor(options?: Record<string, unknown>) {
     super();
     this.options = options || {};
     this.path = '/';
@@ -159,12 +159,12 @@ class MockServer extends EventEmitter {
     // Mock close implementation
   }
 
-  handleUpgrade(request: any, socket: any, head: any, callback: (ws: WebSocket) => void) {
+  handleUpgrade(request: IncomingMessage, socket: Socket, head: Buffer, callback: (ws: WebSocket) => void) {
     // Mock handleUpgrade implementation
     callback(new WebSocket('ws://mock')); // Example callback
   }
 
-  shouldHandle(request: any) {
+  shouldHandle(_request: IncomingMessage): boolean {
     // Mock shouldHandle implementation
     return true; // Example logic
   }

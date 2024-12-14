@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import { NostrWSClient } from '../client.js';
 import { Duplex } from 'stream';
-import MockServer from '../__mocks__/mockserver.js';
 import type { WebSocket } from 'ws';
 import { jest, describe, expect, it, beforeEach } from '@jest/globals';
 
@@ -48,7 +47,7 @@ class MockWebSocket extends EventEmitter {
 }
 
 // Create constructor function
-const MockWebSocketConstructor = function(this: any, url: string) {
+const MockWebSocketConstructor = function(this: WebSocket, url: string) {
   return new MockWebSocket(url);
 } as unknown as typeof WebSocket;
 
@@ -61,7 +60,7 @@ Object.defineProperties(MockWebSocketConstructor, {
 });
 
 // Add required static method
-MockWebSocketConstructor.createWebSocketStream = function(ws: WebSocket): Duplex {
+MockWebSocketConstructor.createWebSocketStream = function(_ws: WebSocket): Duplex {
   return new Duplex();
 };
 
@@ -85,7 +84,7 @@ class MockNostrWSClient extends NostrWSClient {
     this.mockWs?.simulateOpen();
   }
 
-  simulateMessage(data: any) {
+  simulateMessage(data: unknown) {
     this.mockWs?.simulateMessage(data);
   }
 

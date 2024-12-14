@@ -1,14 +1,22 @@
 import { EventEmitter } from 'events';
 import WebSocket from 'ws';
+import { IncomingMessage } from 'http';
+import { Socket } from 'net';
 import { jest } from '@jest/globals';
 
+interface MockServerOptions {
+  port?: number;
+  host?: string;
+  [key: string]: unknown;
+}
+
 class MockServer extends EventEmitter {
-  options: any;
+  options: MockServerOptions;
   path: string;
   clients: Set<WebSocket>;
   address: string;
 
-  constructor(options?: any) {
+  constructor(options?: MockServerOptions) {
     super();
     this.options = options || {};
     this.path = '/';
@@ -21,13 +29,13 @@ class MockServer extends EventEmitter {
     if (cb) cb();
   }
 
-  handleUpgrade = jest.fn((request: any, socket: any, head: any, callback: (ws: WebSocket) => void) => {
+  handleUpgrade = jest.fn((request: IncomingMessage, socket: Socket, head: Buffer, callback: (ws: WebSocket) => void) => {
     const ws = new WebSocket('ws://mock');
     this.clients.add(ws);
     callback(ws);
   });
 
-  shouldHandle = jest.fn((request: any): boolean => {
+  shouldHandle = jest.fn((_request: IncomingMessage): boolean => {
     return true;
   });
 }

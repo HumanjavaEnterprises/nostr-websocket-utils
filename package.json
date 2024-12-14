@@ -1,7 +1,7 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.2.2",
-  "description": "WebSocket utilities for Nostr applications",
+  "version": "0.2.3",
+  "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, channel-based messaging, and type-safe handlers. Features heartbeat monitoring, message queueing, and comprehensive error handling.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
@@ -17,7 +17,15 @@
   "keywords": [
     "nostr",
     "websocket",
-    "utils",
+    "typescript",
+    "ws",
+    "realtime",
+    "pubsub",
+    "channel-based",
+    "reconnection",
+    "heartbeat",
+    "message-queue",
+    "type-safe",
     "maiqr"
   ],
   "author": "vveerrgg",
