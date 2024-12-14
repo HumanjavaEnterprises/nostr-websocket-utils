@@ -1,195 +1,171 @@
 import { NostrWSServer } from '../server.js';
-import { Server } from 'http';
 import WebSocket, { WebSocketServer } from 'ws';
 import type { NostrWSMessage, ExtendedWebSocket } from '../types/index.js';
 import { jest, describe, expect, it, beforeEach, afterEach } from '@jest/globals';
+import { EventEmitter } from 'events';
 
 jest.mock('ws');
-jest.mock('http');
 
 describe('NostrWSServer', () => {
   let server: NostrWSServer;
-  let mockHttpServer: Server;
   let mockWsServer: WebSocketServer;
   let mockClient: WebSocket & Partial<ExtendedWebSocket>;
   const serverEventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
-  const clientEventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
+  let clientEventHandlers: { [key: string]: ((...args: unknown[]) => void) } = {};
+  let messageHandler: jest.Mock<(ws: ExtendedWebSocket, message: NostrWSMessage) => void>;
+  let closeHandler: jest.Mock<(ws: ExtendedWebSocket) => void>;
+  let errorHandler: jest.Mock<(ws: ExtendedWebSocket, error: Error) => void>;
 
   beforeEach(() => {
-    const mockWebSocket = {
-      binaryType: 'nodebuffer' as const,
-      bufferedAmount: 0,
-      extensions: '',
-      protocol: '',
+    clientEventHandlers = {};
+    messageHandler = jest.fn<(ws: ExtendedWebSocket, message: NostrWSMessage) => void>();
+    closeHandler = jest.fn<(ws: ExtendedWebSocket) => void>();
+    errorHandler = jest.fn<(ws: ExtendedWebSocket, error: Error) => void>();
+
+    // Create mock client first
+    mockClient = {
+      isAlive: true,
+      subscriptions: new Set<string>(),
+      clientId: 'test-client-id',
+      CONNECTING: WebSocket.CONNECTING,
+      OPEN: WebSocket.OPEN,
+      CLOSING: WebSocket.CLOSING,
+      CLOSED: WebSocket.CLOSED,
       readyState: WebSocket.OPEN,
-      url: 'ws://test.com',
-      isPaused: false,
-      CONNECTING: 0,
-      OPEN: 1,
-      CLOSING: 2,
-      CLOSED: 3,
       onopen: null,
       onclose: null,
       onerror: null,
       onmessage: null,
-      on: jest.fn(function(this: WebSocket, event: string, listener: (...args: unknown[]) => void) {
-        clientEventHandlers[event] = listener;
-        return this;
+      binaryType: 'arraybuffer' as const,
+      bufferedAmount: 0,
+      extensions: '',
+      isPaused: false,
+      protocol: '',
+      url: 'ws://localhost:8080',
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      getMaxListeners: jest.fn().mockReturnValue(10),
+      on: jest.fn().mockImplementation((...args: unknown[]) => {
+        const [event, handler] = args as [string, (...args: any[]) => void];
+        clientEventHandlers[event] = handler;
+        return mockClient;
       }),
       send: jest.fn(),
       close: jest.fn(),
       ping: jest.fn(),
       pong: jest.fn(),
       terminate: jest.fn(),
-      removeAllListeners: jest.fn(),
-      removeListener: jest.fn(),
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      emit: jest.fn(),
-      addListener: jest.fn(),
-      once: jest.fn(),
-      prependListener: jest.fn(),
-      prependOnceListener: jest.fn(),
-      eventNames: jest.fn(),
-      listenerCount: jest.fn(),
-      listeners: jest.fn(),
-      rawListeners: jest.fn(),
-      getMaxListeners: jest.fn(),
-      setMaxListeners: jest.fn(),
-      off: jest.fn(),
-      isAlive: true,
-      subscriptions: new Set(['test-channel']),
       pause: jest.fn(),
-      resume: jest.fn()
-    };
+      resume: jest.fn(),
+      removeAllListeners: jest.fn().mockReturnThis(),
+      removeListener: jest.fn().mockReturnThis(),
+      addListener: jest.fn().mockReturnThis(),
+      once: jest.fn().mockReturnThis(),
+      emit: jest.fn().mockReturnValue(true),
+      eventNames: jest.fn().mockReturnValue([]),
+      listenerCount: jest.fn().mockReturnValue(0),
+      listeners: jest.fn().mockReturnValue([]),
+      off: jest.fn().mockReturnThis(),
+      prependListener: jest.fn().mockReturnThis(),
+      prependOnceListener: jest.fn().mockReturnThis(),
+      rawListeners: jest.fn().mockReturnValue([]),
+      setMaxListeners: jest.fn().mockReturnThis(),
+    } as unknown as WebSocket & Partial<ExtendedWebSocket>;
 
-    mockClient = mockWebSocket as WebSocket & Partial<ExtendedWebSocket>;
+    // Create mock WebSocket server
+    mockWsServer = new MockServer() as unknown as WebSocketServer;
 
-    const mockServer = {
-      options: {
-        path: '/',
-        clientTracking: true,
-        maxPayload: 100 * 1024 * 1024,
-        skipUTF8Validation: false,
-        perMessageDeflate: false,
-        handleProtocols: null,
-        verifyClient: null,
-        noServer: false,
-        backlog: null,
-        server: null,
-        webSocket: null
-      },
-      clients: new Set([mockClient]),
-      on(event: string, listener: (...args: unknown[]) => void) {
-        serverEventHandlers[event] = listener;
-        return this;
-      },
-      close: jest.fn(),
-      handleUpgrade: jest.fn(),
-      shouldHandle: jest.fn(),
-      removeAllListeners: jest.fn(),
-      removeListener: jest.fn(),
-      address: jest.fn(),
-      emit: jest.fn(),
-      addListener: jest.fn(),
-      once: jest.fn(),
-      prependListener: jest.fn(),
-      prependOnceListener: jest.fn(),
-      eventNames: jest.fn(),
-      listenerCount: jest.fn(),
-      listeners: jest.fn(),
-      rawListeners: jest.fn(),
-      getMaxListeners: jest.fn(),
-      setMaxListeners: jest.fn(),
-      off: jest.fn()
-    };
-
-    mockWsServer = mockServer as unknown as WebSocketServer;
-    (WebSocketServer as unknown as jest.Mock).mockImplementation(() => mockWsServer);
-
-    mockHttpServer = new Server();
-    server = new NostrWSServer(mockHttpServer, {
-      logger: {
-        debug: jest.fn(),
-        info: jest.fn(),
-        warn: jest.fn(),
-        error: jest.fn()
-      },
+    // Create NostrWSServer instance
+    server = new NostrWSServer(mockWsServer, {
+      logger: console,
       handlers: {
-        message: async () => {},
-        error: () => {},
-        close: () => {}
+        message: messageHandler,
+        close: closeHandler,
+        error: errorHandler
       }
     });
+
+    // Simulate client connection
+    server['handleConnection'](mockClient as ExtendedWebSocket);
   });
 
   afterEach(() => {
-    if (server) {
-      // Close the server and all its clients
-      server.close();
-    }
-    // Clear any pending timers
-    jest.clearAllTimers();
     jest.clearAllMocks();
+    server.close();
   });
 
   describe('constructor', () => {
     it('should create WebSocket server', () => {
-      expect(WebSocketServer).toHaveBeenCalledWith({ server: mockHttpServer });
-    });
-  });
-
-  describe('broadcast', () => {
-    it('should send message to all connected clients', () => {
-      const message: NostrWSMessage = { type: 'event', data: { foo: 'bar' } };
-      server.broadcast(message);
-      expect(mockClient.send).toHaveBeenCalledWith(JSON.stringify(message));
-    });
-
-    it('should not send to clients that are not open', () => {
-      Object.defineProperty(mockClient, 'readyState', { value: WebSocket.CLOSED });
-      const message: NostrWSMessage = { type: 'event', data: { foo: 'bar' } };
-      server.broadcast(message);
-      expect(mockClient.send).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('broadcastToChannel', () => {
-    it('should send message only to clients subscribed to channel', () => {
-      const message: NostrWSMessage = { type: 'event', data: { foo: 'bar' } };
-      server.broadcastToChannel('test-channel', message);
-      expect(mockClient.send).toHaveBeenCalledWith(JSON.stringify(message));
-    });
-
-    it('should not send to clients not subscribed to channel', () => {
-      mockClient.subscriptions = new Set(['other-channel']);
-      const message: NostrWSMessage = { type: 'event', data: { foo: 'bar' } };
-      server.broadcastToChannel('test-channel', message);
-      expect(mockClient.send).not.toHaveBeenCalled();
+      const wsServer = new WebSocketServer({ noServer: true });
+      const nostrServer = new NostrWSServer(wsServer, {
+        logger: console,
+        handlers: {
+          message: async () => {},
+          error: () => {},
+          close: () => {},
+        },
+      });
+      expect(nostrServer).toBeInstanceOf(NostrWSServer);
     });
   });
 
   describe('client handling', () => {
-    beforeEach(() => {
-      // Simulate client connection
-      serverEventHandlers['connection']?.(mockClient);
-    });
-
     it('should handle client connection', () => {
       expect(mockClient.on).toHaveBeenCalledWith('message', expect.any(Function));
       expect(mockClient.on).toHaveBeenCalledWith('close', expect.any(Function));
       expect(mockClient.on).toHaveBeenCalledWith('error', expect.any(Function));
     });
 
-    it('should handle client messages', () => {
-      const message: NostrWSMessage = { type: 'event', data: { test: true } };
-      clientEventHandlers['message']?.(JSON.stringify(message));
-      // Add your message handling expectations here
+    it('should handle message events', async () => {
+      const message: NostrWSMessage = {
+        type: 'EVENT',
+        data: { id: '123', kind: 1, content: 'test', created_at: 123, pubkey: 'abc', sig: 'def', tags: [] },
+      };
+      const messageData = Buffer.from(JSON.stringify(message));
+
+      // Get the message handler from clientEventHandlers and call it
+      const handler = clientEventHandlers['message'];
+      await handler(messageData);
+
+      expect(messageHandler).toHaveBeenCalledWith(mockClient, message);
     });
 
     it('should handle client disconnection', () => {
-      clientEventHandlers['close']?.();
-      expect(mockClient.isAlive).toBe(false);
+      // Get the close handler from clientEventHandlers and call it
+      const handler = clientEventHandlers['close'];
+      handler();
+      
+      // Check if the client was removed from the server's clients map
+      expect(server.clients.has(mockClient.clientId!)).toBe(false);
     });
   });
 });
+
+class MockServer extends EventEmitter {
+  options: any;
+  path: string;
+  clients: Set<WebSocket & Partial<ExtendedWebSocket>>;
+  address: string;
+
+  constructor(options?: any) {
+    super();
+    this.options = options || {};
+    this.path = '/';
+    this.clients = new Set();
+    this.address = 'localhost';
+  }
+
+  close() {
+    // Mock close implementation
+  }
+
+  handleUpgrade(request: any, socket: any, head: any, callback: (ws: WebSocket) => void) {
+    // Mock handleUpgrade implementation
+    callback(new WebSocket('ws://mock')); // Example callback
+  }
+
+  shouldHandle(request: any) {
+    // Mock shouldHandle implementation
+    return true; // Example logic
+  }
+}

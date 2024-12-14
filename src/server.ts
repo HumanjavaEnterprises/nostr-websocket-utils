@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-import { Server as HttpServer } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import type {
@@ -12,8 +11,9 @@ export class NostrWSServer extends EventEmitter {
   private wss: WebSocketServer;
   private options: NostrWSOptions;
   private heartbeatInterval: NodeJS.Timeout | null = null;
+  public clients: Map<string, ExtendedWebSocket> = new Map();
 
-  constructor(server: HttpServer, options: Partial<NostrWSOptions> = {}) {
+  constructor(wss: WebSocketServer, options: Partial<NostrWSOptions> = {}) {
     super();
     if (!options.logger) {
       throw new Error('Logger is required');
@@ -32,7 +32,7 @@ export class NostrWSServer extends EventEmitter {
       }
     };
 
-    this.wss = new WebSocketServer({ server });
+    this.wss = wss;
     this.setupServer();
   }
 
@@ -51,6 +51,8 @@ export class NostrWSServer extends EventEmitter {
     ws.subscriptions = new Set();
     ws.clientId = ws.clientId || uuidv4();
 
+    this.clients.set(ws.clientId, ws);
+
     ws.on('message', async (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString()) as NostrWSMessage;
@@ -63,13 +65,18 @@ export class NostrWSServer extends EventEmitter {
     });
 
     ws.on('close', () => {
-      ws.isAlive = false;
+      if (ws.clientId) {
+        this.clients.delete(ws.clientId);
+      }
       if (this.options.handlers.close) {
         this.options.handlers.close(ws);
       }
     });
 
     ws.on('error', (error: Error) => {
+      if (ws.clientId) {
+        this.clients.delete(ws.clientId);
+      }
       if (this.options.handlers.error) {
         this.options.handlers.error(ws, error);
       }

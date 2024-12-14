@@ -9,36 +9,45 @@ class MockWebSocket {
   onopen: ((event: Event) => void) | null = null;
   onclose: ((event: CloseEvent) => void) | null = null;
   onmessage: ((event: MessageEvent) => void) | null = null;
+  eventListeners: { [type: string]: ((data: Buffer) => void)[] } = {};
 
-  constructor(url: string) {
-    this.url = url;
+  constructor(url: string | URL, _protocols?: string | string[]) {
+    this.url = typeof url === 'string' ? url : url.toString();
     this.readyState = MockWebSocket.CONNECTING;
   }
 
-  send(_data: unknown) {
+  send(_data: unknown): void {
     // Implementation not needed for these tests
   }
 
-  close() {
+  close(): void {
     this.readyState = MockWebSocket.CLOSING;
     this.simulateClose();
   }
 
-  simulateOpen() {
+  simulateOpen(): void {
     this.readyState = MockWebSocket.OPEN;
     const event = new MockEvent('open');
     if (this.onopen) this.onopen(event);
   }
 
-  simulateMessage(data: unknown) {
-    const event = new MockMessageEvent(data);
-    if (this.onmessage) this.onmessage(event);
+  simulateMessage(data: unknown): void {
+    const messageData = Buffer.from(JSON.stringify(data));
+    const listeners = this.eventListeners['message'] || [];
+    listeners.forEach(listener => listener(messageData));
   }
 
-  simulateClose() {
+  simulateClose(): void {
     this.readyState = MockWebSocket.CLOSED;
     const event = new MockCloseEvent('close');
     if (this.onclose) this.onclose(event);
+  }
+
+  addEventListener(type: string, listener: (data: Buffer) => void): void {
+    if (!this.eventListeners[type]) {
+      this.eventListeners[type] = [];
+    }
+    this.eventListeners[type].push(listener);
   }
 
   dispatchEvent(event: Event | CloseEvent | MessageEvent): boolean {
@@ -53,8 +62,8 @@ class MockWebSocket {
   }
 }
 
-// Mock the global WebSocket
-(global as any).WebSocket = MockWebSocket;
+// Set up the global WebSocket with proper typing
+(global as { WebSocket: typeof WebSocket }).WebSocket = MockWebSocket as unknown as typeof WebSocket;
 
 class MockEvent implements Event {
   readonly NONE = 0 as const;
@@ -96,6 +105,7 @@ class MockCloseEvent extends MockEvent implements CloseEvent {
   }
 }
 
+/*
 class MockMessageEvent extends MockEvent implements MessageEvent {
   readonly data: unknown;
   readonly origin: string = '';
@@ -119,6 +129,7 @@ class MockMessageEvent extends MockEvent implements MessageEvent {
     _ports: MessagePort[] = []
   ): void {}
 }
+*/
 
 // Export an instance of MockWebSocket
 const mockWebSocket = new MockWebSocket('ws://test.com');
