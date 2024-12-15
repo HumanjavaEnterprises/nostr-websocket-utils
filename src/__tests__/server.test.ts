@@ -46,10 +46,10 @@ describe('NostrWSServer', () => {
       addEventListener: jest.fn(),
       removeEventListener: jest.fn(),
       getMaxListeners: jest.fn().mockReturnValue(10),
-      on: jest.fn((event: string, listener: (...args: any[]) => void) => {
+      on: jest.fn((event: string, listener: (...args: unknown[]) => void) => {
         clientEventHandlers[event] = listener;
         return mockClient;
-      }) as jest.MockedFunction<(event: string, listener: (...args: any[]) => void) => WebSocket & Partial<ExtendedWebSocket>>,
+      }) as jest.MockedFunction<(event: string, listener: (...args: unknown[]) => void) => WebSocket & Partial<ExtendedWebSocket>>,
       send: jest.fn(),
       close: jest.fn(),
       ping: jest.fn(),
