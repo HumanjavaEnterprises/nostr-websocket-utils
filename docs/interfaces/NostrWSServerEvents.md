@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.4**](../README.md)
+[**nostr-websocket-utils v0.2.5**](../README.md)
 
 ***
 

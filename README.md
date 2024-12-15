@@ -1,4 +1,4 @@
-# @humanjavaenterprises/nostr-websocket-utils
+# nostr-websocket-utils
 
 [![npm version](https://img.shields.io/npm/v/@humanjavaenterprises/nostr-websocket-utils.svg)](https://www.npmjs.com/package/@humanjavaenterprises/nostr-websocket-utils)
 [![License](https://img.shields.io/npm/l/@humanjavaenterprises/nostr-websocket-utils.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/LICENSE)
@@ -22,7 +22,7 @@ A TypeScript library for building Nostr protocol WebSocket clients and servers.
 ## Installation
 
 ```bash
-npm install @humanjavaenterprises/nostr-websocket-utils
+npm install nostr-websocket-utils
 ```
 
 ## Quick Start
@@ -30,7 +30,7 @@ npm install @humanjavaenterprises/nostr-websocket-utils
 ### Creating a Nostr WebSocket Client
 
 ```typescript
-import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
+import { NostrWSClient } from 'nostr-websocket-utils';
 
 const client = new NostrWSClient('wss://relay.example.com', {
   logger: console,
@@ -64,20 +64,26 @@ const server = await createNostrServer(8080, {
 
 ## Documentation
 
-Full API documentation is available in the [docs](./docs) directory. The documentation includes:
+Comprehensive API documentation is available in our [documentation site](https://humanjavaenterprises.github.io/nostr-websocket-utils/). Here's what you'll find:
 
-- Detailed API reference
-- Type definitions
-- Examples and usage patterns
-- Best practices
+### Core Components
+- [NostrWSClient](docs/classes/NostrWSClient.md) - WebSocket client implementation
+- [NostrWSServer](docs/classes/NostrWSServer.md) - WebSocket server implementation
+- [NostrServer](docs/classes/NostrServer.md) - High-level Nostr server
 
-To generate the documentation locally:
+### Types and Interfaces
+- [NostrWSMessage](docs/interfaces/NostrWSMessage.md) - Message structure
+- [NostrWSOptions](docs/interfaces/NostrWSOptions.md) - Configuration options
+- [NostrWSSubscription](docs/interfaces/NostrWSSubscription.md) - Subscription interface
+- [ExtendedWebSocket](docs/interfaces/ExtendedWebSocket.md) - Enhanced WebSocket interface
 
-```bash
-npm run docs
-```
+### Utility Functions
+- [createServer](docs/functions/createServer.md) - Server creation helper
+- [getLogger](docs/functions/getLogger.md) - Logging utility
 
-This will create a `docs` directory with the full API documentation.
+### Type Definitions
+- [MessageType](docs/enumerations/NostrWSMessageType.md) - Message type enumeration
+- [Global Types](docs/globals.md) - Global type definitions
 
 ## Examples
 
@@ -96,7 +102,7 @@ client.subscribe('my-channel', {
 
 ```typescript
 server.broadcast({
-  type: 'EVENT',
+  type: 'event',
   data: {
     content: 'Hello everyone!',
     kind: 1
@@ -121,6 +127,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 If you have any questions or need help, please:
 
-1. Check the [documentation](./docs)
+1. Check the [documentation](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
 2. Open an [issue](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues)
 3. Join our [Discord community](https://discord.gg/your-discord)

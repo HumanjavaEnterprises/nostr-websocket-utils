@@ -1,4 +1,4 @@
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { EventEmitter } from 'events';
 import { v4 as uuidv4 } from 'uuid';
 import type {
@@ -10,98 +10,64 @@ import type {
 /**
  * WebSocket server implementation for Nostr protocol
  * Extends EventEmitter to provide event-based message handling
- * 
- * @extends EventEmitter
- * @example
- * ```typescript
- * const server = new NostrWSServer({
- *   port: 8080,
- *   logger: console,
- *   handlers: {
- *     message: async (ws, msg) => console.log('Received:', msg),
- *     error: (ws, err) => console.error('Error:', err),
- *     close: (ws) => console.log('Client disconnected')
- *   }
- * });
- * 
- * server.start();
- * ```
  */
 export class NostrWSServer extends EventEmitter {
-  private wss: WebSocketServer;
+  private wss: WebSocketServer | null = null;
   private options: NostrWSOptions;
+  private clients: Map<string, ExtendedWebSocket> = new Map();
   private heartbeatInterval: NodeJS.Timeout | null = null;
-  public clients: Map<string, ExtendedWebSocket> = new Map();
 
-  /**
-   * Creates a new NostrWSServer instance
-   * 
-   * @param {Partial<NostrWSOptions>} options - Configuration options
-   * @param {number} [options.heartbeatInterval=30000] - Interval for checking client connections
-   * @param {object} options.logger - Logger instance (required)
-   * @param {object} [options.handlers] - Event handlers
-   * @param {Function} [options.handlers.message] - Message handler function
-   * @param {Function} [options.handlers.error] - Error handler function
-   * @param {Function} [options.handlers.close] - Connection close handler function
-   * @throws {Error} If logger is not provided
-   */
   constructor(wss: WebSocketServer, options: Partial<NostrWSOptions> = {}) {
     super();
     if (!options.logger) {
       throw new Error('Logger is required');
     }
-    if (!options.handlers?.message) {
-      throw new Error('Message handler is required');
-    }
-    this.options = {
-      heartbeatInterval: options.heartbeatInterval || 30000,
-      logger: options.logger,
-      WebSocketImpl: options.WebSocketImpl || WebSocket,
-      handlers: {
-        message: options.handlers.message,
-        error: options.handlers.error || (() => {}),
-        close: options.handlers.close || (() => {})
-      }
-    };
 
     this.wss = wss;
+    this.options = {
+      heartbeatInterval: 30000,
+      logger: options.logger,
+      WebSocketImpl: WebSocket,
+      ...options,
+      handlers: {
+        message: async (_ws: ExtendedWebSocket, _message: NostrWSMessage) => {},
+        ...options.handlers,
+      },
+    };
+
     this.setupServer();
   }
 
-  /**
-   * Sets up the WebSocket server
-   * 
-   * @private
-   */
   private setupServer(): void {
+    if (!this.wss) return;
+
     this.wss.on('connection', (ws: WebSocket) => {
-      this.handleConnection(ws as ExtendedWebSocket);
+      const extWs = ws as ExtendedWebSocket;
+      this.handleConnection(extWs);
     });
 
-    if (this.options.heartbeatInterval && this.options.heartbeatInterval > 0) {
+    if (this.options.heartbeatInterval) {
       this.startHeartbeat();
     }
   }
 
-  /**
-   * Handles a new client connection
-   * 
-   * @param {ExtendedWebSocket} ws - WebSocket client instance
-   * @private
-   */
   private handleConnection(ws: ExtendedWebSocket): void {
     ws.isAlive = true;
     ws.subscriptions = new Set();
-    ws.clientId = ws.clientId || uuidv4();
+    ws.clientId = uuidv4();
+    ws.messageQueue = [];
 
     this.clients.set(ws.clientId, ws);
 
     ws.on('message', async (data: Buffer) => {
       try {
         const message = JSON.parse(data.toString()) as NostrWSMessage;
-        await this.options.handlers.message(ws, message);
+        if (this.options.handlers?.message) {
+          await this.options.handlers.message(ws, message);
+        }
       } catch (error) {
-        if (this.options.handlers.error) {
+        this.options.logger.error('Error handling message:', error);
+        if (this.options.handlers?.error) {
           this.options.handlers.error(ws, error as Error);
         }
       }
@@ -111,55 +77,43 @@ export class NostrWSServer extends EventEmitter {
       if (ws.clientId) {
         this.clients.delete(ws.clientId);
       }
-      if (this.options.handlers.close) {
+      if (this.options.handlers?.close) {
         this.options.handlers.close(ws);
       }
     });
 
     ws.on('error', (error: Error) => {
-      if (ws.clientId) {
-        this.clients.delete(ws.clientId);
-      }
-      if (this.options.handlers.error) {
+      this.options.logger.error('WebSocket error:', error);
+      if (this.options.handlers?.error) {
         this.options.handlers.error(ws, error);
       }
     });
   }
 
-  /**
-   * Starts the heartbeat mechanism to check client connections
-   * 
-   * @private
-   */
   private startHeartbeat(): void {
+    if (this.heartbeatInterval) return;
+
     this.heartbeatInterval = setInterval(() => {
-      this.wss.clients.forEach((ws: WebSocket) => {
-        const extWs = ws as ExtendedWebSocket;
-        if (!extWs.isAlive) {
-          extWs.terminate();
-          return;
+      if (!this.wss) return;
+
+      this.wss.clients.forEach((client: WebSocket) => {
+        const extClient = client as ExtendedWebSocket;
+        if (extClient.isAlive === false) {
+          if (extClient.clientId) {
+            this.clients.delete(extClient.clientId);
+          }
+          return extClient.terminate();
         }
-        extWs.isAlive = false;
-        if (ws.readyState === WebSocket.OPEN) {
-          ws.ping();
-        }
+
+        extClient.isAlive = false;
+        extClient.ping();
       });
     }, this.options.heartbeatInterval);
   }
 
-  /**
-   * Broadcasts a message to all connected clients
-   * 
-   * @param {NostrWSMessage} message - Message to broadcast
-   * @example
-   * ```typescript
-   * server.broadcast({
-   *   type: 'EVENT',
-   *   data: { content: 'Hello everyone!' }
-   * });
-   * ```
-   */
   public broadcast(message: NostrWSMessage): void {
+    if (!this.wss) return;
+
     this.wss.clients.forEach((client: WebSocket) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify(message));
@@ -167,41 +121,35 @@ export class NostrWSServer extends EventEmitter {
     });
   }
 
-  /**
-   * Broadcasts a message to all connected clients subscribed to a specific channel
-   * 
-   * @param {string} channel - Channel to broadcast to
-   * @param {NostrWSMessage} message - Message to broadcast
-   * @example
-   * ```typescript
-   * server.broadcastToChannel('my-channel', {
-   *   type: 'EVENT',
-   *   data: { content: 'Hello channel!' }
-   * });
-   * ```
-   */
   public broadcastToChannel(channel: string, message: NostrWSMessage): void {
+    if (!this.wss) return;
+
     this.wss.clients.forEach((ws: WebSocket) => {
       const extWs = ws as ExtendedWebSocket;
       if (extWs.readyState === WebSocket.OPEN && extWs.subscriptions?.has(channel)) {
-        ws.send(JSON.stringify(message));
+        extWs.send(JSON.stringify(message));
       }
     });
   }
 
-  /**
-   * Stops the WebSocket server
-   * 
-   * @returns {Promise<void>}
-   * @example
-   * ```typescript
-   * await server.close();
-   * ```
-   */
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
+      this.heartbeatInterval = null;
     }
-    this.wss.close();
+
+    if (this.wss) {
+      this.wss.close();
+      this.wss = null;
+    }
+  }
+
+  /**
+   * Check if a client with the given ID exists
+   * @param clientId - The ID of the client to check
+   * @returns boolean indicating if the client exists
+   */
+  public hasClient(clientId: string): boolean {
+    return this.clients.has(clientId);
   }
 }

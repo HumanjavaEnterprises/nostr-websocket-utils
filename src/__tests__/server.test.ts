@@ -136,7 +136,7 @@ describe('NostrWSServer', () => {
       handler();
       
       // Check if the client was removed from the server's clients map
-      expect(server.clients.has(mockClient.clientId!)).toBe(false);
+      expect(server.hasClient(mockClient.clientId!)).toBe(false);
     });
   });
 });
