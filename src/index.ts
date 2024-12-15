@@ -1,3 +1,8 @@
+/**
+ * @file Main entry point for the nostr-websocket-utils library
+ * @module nostr-websocket-utils
+ */
+
 export { NostrWSClient } from './client.js';
 export { NostrWSServer } from './server.js';
 export { NostrWSServer as NostrServer } from './nostr-server.js';

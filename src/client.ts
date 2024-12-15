@@ -6,6 +6,27 @@ import type {
   NostrWSMessage
 } from './types/index.js';
 
+/**
+ * WebSocket client implementation for Nostr protocol communication
+ * Extends EventEmitter to provide event-based message handling
+ * 
+ * @extends EventEmitter
+ * @example
+ * ```typescript
+ * const client = new NostrWSClient('wss://relay.example.com', {
+ *   logger: console,
+ *   heartbeatInterval: 30000,
+ *   handlers: {
+ *     message: async (msg) => console.log('Received:', msg),
+ *     error: (err) => console.error('Error:', err),
+ *     close: () => console.log('Connection closed')
+ *   }
+ * });
+ * 
+ * await client.connect();
+ * client.send({ type: 'EVENT', data: { ... } });
+ * ```
+ */
 export class NostrWSClient extends EventEmitter {
   private ws: WebSocket | null = null;
   private options: NostrWSOptions;
@@ -15,6 +36,20 @@ export class NostrWSClient extends EventEmitter {
   private messageQueue: NostrWSMessage[] = [];
   private clientId: string;
 
+  /**
+   * Creates a new NostrWSClient instance
+   * 
+   * @param {string} url - The WebSocket server URL to connect to
+   * @param {Partial<NostrWSOptions>} options - Configuration options
+   * @param {number} [options.heartbeatInterval=30000] - Interval for sending heartbeat messages in milliseconds
+   * @param {object} options.logger - Logger instance (required)
+   * @param {Function} [options.WebSocketImpl=WebSocket] - WebSocket implementation to use
+   * @param {object} [options.handlers] - Event handlers
+   * @param {Function} [options.handlers.message] - Message handler function
+   * @param {Function} [options.handlers.error] - Error handler function
+   * @param {Function} [options.handlers.close] - Connection close handler function
+   * @throws {Error} If logger is not provided
+   */
   constructor(private url: string, options: Partial<NostrWSOptions> = {}) {
     super();
     if (!options.logger) {
@@ -33,6 +68,14 @@ export class NostrWSClient extends EventEmitter {
     };
   }
 
+  /**
+   * Establishes a connection to the WebSocket server
+   * 
+   * @example
+   * ```typescript
+   * client.connect();
+   * ```
+   */
   public connect(): void {
     if (this.ws) {
       this.options.logger.info('WebSocket connection already exists');
@@ -50,6 +93,11 @@ export class NostrWSClient extends EventEmitter {
     }
   }
 
+  /**
+   * Sets up event handlers for the WebSocket connection
+   * 
+   * @private
+   */
   private setupEventHandlers(): void {
     if (!this.ws) return;
 
@@ -93,6 +141,11 @@ export class NostrWSClient extends EventEmitter {
     });
   }
 
+  /**
+   * Starts sending heartbeat messages at the specified interval
+   * 
+   * @private
+   */
   private startHeartbeat(): void {
     if (this.heartbeatInterval) return;
 
@@ -103,6 +156,11 @@ export class NostrWSClient extends EventEmitter {
     }, this.options.heartbeatInterval || 30000);
   }
 
+  /**
+   * Stops sending heartbeat messages
+   * 
+   * @private
+   */
   private stopHeartbeat(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
@@ -110,6 +168,11 @@ export class NostrWSClient extends EventEmitter {
     }
   }
 
+  /**
+   * Handles reconnecting to the WebSocket server after a disconnection
+   * 
+   * @private
+   */
   private handleReconnect(): void {
     if (this.reconnectTimeout) return;
 
@@ -121,6 +184,16 @@ export class NostrWSClient extends EventEmitter {
     }, 5000);
   }
 
+  /**
+   * Subscribes to a channel with optional filter
+   * 
+   * @param {string} channel - Channel name
+   * @param {unknown} [filter] - Filter data
+   * @example
+   * ```typescript
+   * client.subscribe('channel-name', { ...filterData });
+   * ```
+   */
   public subscribe(channel: string, filter?: unknown): void {
     this.send({
       type: 'subscribe',
@@ -128,6 +201,15 @@ export class NostrWSClient extends EventEmitter {
     });
   }
 
+  /**
+   * Unsubscribes from a channel
+   * 
+   * @param {string} channel - Channel name
+   * @example
+   * ```typescript
+   * client.unsubscribe('channel-name');
+   * ```
+   */
   public unsubscribe(channel: string): void {
     this.send({
       type: 'unsubscribe',
@@ -135,6 +217,11 @@ export class NostrWSClient extends EventEmitter {
     });
   }
 
+  /**
+   * Flushes the message queue by sending pending messages
+   * 
+   * @private
+   */
   private flushMessageQueue(): void {
     while (this.messageQueue.length > 0 && this.ws?.readyState === WebSocket.OPEN) {
       const message = this.messageQueue.shift();
@@ -144,6 +231,16 @@ export class NostrWSClient extends EventEmitter {
     }
   }
 
+  /**
+   * Sends a message to the WebSocket server
+   * 
+   * @param {NostrWSMessage} message - Message to send
+   * @returns {Promise<void>}
+   * @example
+   * ```typescript
+   * client.send({ type: 'EVENT', data: { ... } });
+   * ```
+   */
   public async send(message: NostrWSMessage): Promise<void> {
     message.id = message.id || uuidv4();
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
@@ -159,6 +256,14 @@ export class NostrWSClient extends EventEmitter {
     }
   }
 
+  /**
+   * Closes the WebSocket connection
+   * 
+   * @example
+   * ```typescript
+   * client.close();
+   * ```
+   */
   public close(): void {
     this.stopHeartbeat();
     if (this.reconnectTimeout) {

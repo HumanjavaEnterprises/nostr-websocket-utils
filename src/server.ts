@@ -4,15 +4,48 @@ import { v4 as uuidv4 } from 'uuid';
 import type {
   NostrWSOptions,
   NostrWSMessage,
-  ExtendedWebSocket
+  ExtendedWebSocket,
+  NostrWSServerEvents
 } from './types/index.js';
 
+/**
+ * WebSocket server implementation for Nostr protocol
+ * Extends EventEmitter to provide event-based message handling
+ * 
+ * @extends EventEmitter
+ * @example
+ * ```typescript
+ * const server = new NostrWSServer({
+ *   port: 8080,
+ *   logger: console,
+ *   handlers: {
+ *     message: async (ws, msg) => console.log('Received:', msg),
+ *     error: (ws, err) => console.error('Error:', err),
+ *     close: (ws) => console.log('Client disconnected')
+ *   }
+ * });
+ * 
+ * server.start();
+ * ```
+ */
 export class NostrWSServer extends EventEmitter {
   private wss: WebSocketServer;
   private options: NostrWSOptions;
   private heartbeatInterval: NodeJS.Timeout | null = null;
   public clients: Map<string, ExtendedWebSocket> = new Map();
 
+  /**
+   * Creates a new NostrWSServer instance
+   * 
+   * @param {Partial<NostrWSOptions>} options - Configuration options
+   * @param {number} [options.heartbeatInterval=30000] - Interval for checking client connections
+   * @param {object} options.logger - Logger instance (required)
+   * @param {object} [options.handlers] - Event handlers
+   * @param {Function} [options.handlers.message] - Message handler function
+   * @param {Function} [options.handlers.error] - Error handler function
+   * @param {Function} [options.handlers.close] - Connection close handler function
+   * @throws {Error} If logger is not provided
+   */
   constructor(wss: WebSocketServer, options: Partial<NostrWSOptions> = {}) {
     super();
     if (!options.logger) {
@@ -36,6 +69,11 @@ export class NostrWSServer extends EventEmitter {
     this.setupServer();
   }
 
+  /**
+   * Sets up the WebSocket server
+   * 
+   * @private
+   */
   private setupServer(): void {
     this.wss.on('connection', (ws: WebSocket) => {
       this.handleConnection(ws as ExtendedWebSocket);
@@ -46,6 +84,12 @@ export class NostrWSServer extends EventEmitter {
     }
   }
 
+  /**
+   * Handles a new client connection
+   * 
+   * @param {ExtendedWebSocket} ws - WebSocket client instance
+   * @private
+   */
   private handleConnection(ws: ExtendedWebSocket): void {
     ws.isAlive = true;
     ws.subscriptions = new Set();
@@ -83,6 +127,11 @@ export class NostrWSServer extends EventEmitter {
     });
   }
 
+  /**
+   * Starts the heartbeat mechanism to check client connections
+   * 
+   * @private
+   */
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(() => {
       this.wss.clients.forEach((ws: WebSocket) => {
@@ -99,6 +148,18 @@ export class NostrWSServer extends EventEmitter {
     }, this.options.heartbeatInterval);
   }
 
+  /**
+   * Broadcasts a message to all connected clients
+   * 
+   * @param {NostrWSMessage} message - Message to broadcast
+   * @example
+   * ```typescript
+   * server.broadcast({
+   *   type: 'EVENT',
+   *   data: { content: 'Hello everyone!' }
+   * });
+   * ```
+   */
   public broadcast(message: NostrWSMessage): void {
     this.wss.clients.forEach((client: WebSocket) => {
       if (client.readyState === WebSocket.OPEN) {
@@ -107,6 +168,19 @@ export class NostrWSServer extends EventEmitter {
     });
   }
 
+  /**
+   * Broadcasts a message to all connected clients subscribed to a specific channel
+   * 
+   * @param {string} channel - Channel to broadcast to
+   * @param {NostrWSMessage} message - Message to broadcast
+   * @example
+   * ```typescript
+   * server.broadcastToChannel('my-channel', {
+   *   type: 'EVENT',
+   *   data: { content: 'Hello channel!' }
+   * });
+   * ```
+   */
   public broadcastToChannel(channel: string, message: NostrWSMessage): void {
     this.wss.clients.forEach((ws: WebSocket) => {
       const extWs = ws as ExtendedWebSocket;
@@ -116,6 +190,15 @@ export class NostrWSServer extends EventEmitter {
     });
   }
 
+  /**
+   * Stops the WebSocket server
+   * 
+   * @returns {Promise<void>}
+   * @example
+   * ```typescript
+   * await server.close();
+   * ```
+   */
   public close(): void {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);

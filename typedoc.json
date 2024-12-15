@@ -1,0 +1,22 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["./src/index.ts"],
+  "out": "docs",
+  "name": "nostr-websocket-utils",
+  "includeVersion": true,
+  "excludePrivate": false,
+  "excludeProtected": false,
+  "excludeExternals": true,
+  "readme": "README.md",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "markdown",
+  "hideGenerator": true,
+  "gitRevision": "main",
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "searchInComments": true,
+  "navigationLinks": {
+    "GitHub": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils",
+    "NPM": "https://www.npmjs.com/package/nostr-websocket-utils"
+  }
+}
