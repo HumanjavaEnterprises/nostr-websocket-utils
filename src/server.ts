@@ -1,11 +1,10 @@
+import { WebSocketServer } from 'ws';
 import { EventEmitter } from 'events';
-import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import type {
   NostrWSOptions,
   NostrWSMessage,
-  ExtendedWebSocket,
-  NostrWSServerEvents
+  ExtendedWebSocket
 } from './types/index.js';
 
 /**
