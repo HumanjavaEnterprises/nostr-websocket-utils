@@ -118,7 +118,7 @@ describe('NostrWSServer', () => {
 
     it('should handle message events', async () => {
       const message: NostrWSMessage = {
-        type: 'EVENT',
+        type: 'event',
         data: { id: '123', kind: 1, content: 'test', created_at: 123, pubkey: 'abc', sig: 'def', tags: [] },
       };
       const messageData = Buffer.from(JSON.stringify(message));
