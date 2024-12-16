@@ -114,9 +114,16 @@ server.broadcast({
 });
 ```
 
+## Getting Help
+
+1. Check the [documentation](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
+2. Open an [issue](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues)
+
 ## Contributing
 
-Contributions are welcome! Please read our [Contributing Guide](_media/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+1. Fork it
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Submit a Pull Request
 
 ## License
 
@@ -126,11 +133,3 @@ This project is licensed under the MIT License - see the [LICENSE](_media/LICENS
 
 - [nostr-protocol](https://github.com/nostr-protocol/nostr)
 - [nostr-tools](https://github.com/nbd-wtf/nostr-tools)
-
-## Support
-
-If you have any questions or need help, please:
-
-1. Check the [documentation](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
-2. Open an [issue](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues)
-3. Join our [Discord community](https://discord.gg/your-discord)
