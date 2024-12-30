@@ -1,10 +1,11 @@
 import WebSocket from 'ws';
 import { NostrWSServer, createWSServer } from '../nostr-server';
-import { NostrWSSocket, NostrWSMessageType, NostrWSEvent, NostrWSServerMessage } from '../types/nostr';
+import { NostrWSMessageType } from '../types/messages';
+import { NostrWSSocket, NostrWSEvent } from '../types/nostr';
 import { jest, describe, it, expect, beforeEach, afterEach } from '@jest/globals';
 
 // Define base handler types
-type MessageHandlerFn = (socket: NostrWSSocket, message: NostrWSServerMessage) => void | Promise<void>;
+type MessageHandlerFn = (socket: NostrWSSocket, message: any[]) => void | Promise<void>;
 type ErrorHandlerFn = (socket: NostrWSSocket, error: Error) => void;
 type CloseHandlerFn = (socket: NostrWSSocket) => void;
 

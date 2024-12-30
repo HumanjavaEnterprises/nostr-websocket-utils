@@ -116,6 +116,14 @@ const server = await createNostrServer(8080, {
 });
 ```
 
+## Dependencies
+
+This package relies on:
+- [nostr-crypto-utils](https://github.com/HumanjavaEnterprises/nostr-crypto-utils) - For all cryptographic operations
+- [ws](https://github.com/websockets/ws) - For WebSocket functionality
+- [pino](https://github.com/pinojs/pino) - For logging
+- [uuid](https://github.com/uuidjs/uuid) - For unique identifiers
+
 ## Documentation
 
 Comprehensive API documentation is available in our [documentation site](https://humanjavaenterprises.github.io/nostr-websocket-utils/). Here's what you'll find:
@@ -175,7 +183,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Related Projects
 
 - [nostr-protocol](https://github.com/nostr-protocol/nostr)
-- [nostr-tools](https://github.com/nbd-wtf/nostr-tools)
 
 ## Support
 

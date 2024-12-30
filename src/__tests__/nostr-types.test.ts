@@ -1,4 +1,4 @@
-import { NostrWSEvent, NostrWSFilter, NostrWSMessageType } from '../types/nostr';
+import { NostrWSEvent, NostrWSFilter, NostrWSMessageType } from '../types/messages';
 import { describe, it, expect } from '@jest/globals';
 
 describe('Nostr Types', () => {

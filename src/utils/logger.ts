@@ -1,39 +1,25 @@
 /**
- * @file Logger utility for Nostr WebSocket operations
- * @module logger
+ * @file Logger utility
+ * @module utils/logger
  */
 
-import winston from 'winston';
+import pino from 'pino';
+import { Logger } from '../types/logger';
 
-/**
- * Creates a logger instance with a specific context
- * 
- * @param {string} context - The context identifier for the logger
- * @returns {Logger} A logger instance with debug, info, warn, and error methods
- * 
- * @example
- * ```typescript
- * const logger = getLogger('MyComponent');
- * logger.info('Component initialized');
- * logger.error('An error occurred', new Error('Failed to connect'));
- * ```
- */
-const logger = winston.createLogger({
+const rootLogger = pino({
   level: process.env.LOG_LEVEL || 'info',
-  format: winston.format.combine(
-    winston.format.timestamp(),
-    winston.format.json()
-  ),
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      )
-    })
-  ]
+  timestamp: true,
+  formatters: {
+    level: (label) => ({ level: label }),
+    bindings: (bindings) => bindings,
+  },
 });
 
-export function getLogger(context: string): winston.Logger {
-  return logger.child({ service: context });
+/**
+ * Creates a logger instance for a specific component
+ * @param component Component name for the logger
+ * @returns Logger instance
+ */
+export function getLogger(component: string): Logger {
+  return rootLogger.child({ component }) as Logger;
 }
