@@ -5,14 +5,18 @@
 
 import type { WebSocket } from 'ws';
 import type { Logger } from './logger';
-import type { NostrWSMessage } from './messages';
+import type { NostrWSMessage, NostrEvent as MessageNostrEvent } from './messages';
 
-// Re-export all types
-export * from './messages';
-export * from './events';
+// Re-export specific types to avoid ambiguity
+export { NostrWSMessage } from './messages';
+export { QueueItem } from './messages';
 export * from './filters';
 export * from './relays';
 export * from './logger';
+export * from './priority';
+
+// Export the NostrEvent from messages.ts as our canonical version
+export type NostrEvent = MessageNostrEvent;
 
 /**
  * Extended WebSocket interface with client ID
@@ -70,15 +74,19 @@ export interface HeartbeatConfig {
  * WebSocket client options
  */
 export interface NostrWSOptions {
-  WebSocketImpl: typeof WebSocket;
-  handlers: NostrWSClientEvents;
+  WebSocketImpl?: typeof WebSocket;
+  connectionTimeout?: number;
+  retryAttempts?: number;
+  retryDelay?: number;
+  onMessage?: (message: string) => void;
+  onError?: (error: Error) => void;
   retry?: Partial<RetryConfig>;
   queue?: Partial<QueueConfig>;
   heartbeat?: Partial<HeartbeatConfig>;
   autoReconnect?: boolean;
   bufferMessages?: boolean;
   cleanStaleMessages?: boolean;
-  logger: Logger;
+  logger?: Logger;
 }
 
 /**

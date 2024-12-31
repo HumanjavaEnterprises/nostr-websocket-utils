@@ -39,14 +39,11 @@ export interface ChannelMetadata {
 export function createChannelCreationEvent(
   metadata: ChannelMetadata
 ): NostrWSMessage {
-  return {
-    type: 'EVENT',
-    data: {
-      kind: ChatEventKinds.CHANNEL_CREATION,
-      content: JSON.stringify(metadata),
-      tags: []
-    }
-  };
+  return ['EVENT', {
+    kind: ChatEventKinds.CHANNEL_CREATION,
+    content: JSON.stringify(metadata),
+    tags: []
+  }];
 }
 
 /**
@@ -66,14 +63,11 @@ export function createChannelMessage(
     tags.push(['e', replyTo, '', 'reply']);
   }
 
-  return {
-    type: 'EVENT',
-    data: {
-      kind: ChatEventKinds.CHANNEL_MESSAGE,
-      content,
-      tags
-    }
-  };
+  return ['EVENT', {
+    kind: ChatEventKinds.CHANNEL_MESSAGE,
+    content,
+    tags
+  }];
 }
 
 /**
@@ -88,17 +82,14 @@ export function createHideMessageEvent(
   messageId: string,
   reason: string
 ): NostrWSMessage {
-  return {
-    type: 'EVENT',
-    data: {
-      kind: ChatEventKinds.CHANNEL_HIDE_MESSAGE,
-      content: reason,
-      tags: [
-        ['e', channelId, '', 'root'],
-        ['e', messageId, '', 'reply']
-      ]
-    }
-  };
+  return ['EVENT', {
+    kind: ChatEventKinds.CHANNEL_HIDE_MESSAGE,
+    content: reason,
+    tags: [
+      ['e', channelId, '', 'root'],
+      ['e', messageId, '', 'reply']
+    ]
+  }];
 }
 
 /**
@@ -129,13 +120,13 @@ export function createChatMessageHandler(logger: Logger): ChatMessageHandler {
   return {
     async handleMessage(message: NostrWSMessage): Promise<void> {
       try {
-        if (message.type !== 'EVENT' || !message.data) return;
+        if (!Array.isArray(message) || message[0] !== 'EVENT') return;
 
-        const event = message.data as Record<string, unknown>;
+        const event = message[1] as NostrEvent;
         if (event.kind !== ChatEventKinds.CHANNEL_MESSAGE) return;
 
         // Extract channel ID and reply ID from tags
-        const tags = event.tags as string[][];
+        const { tags } = event;
         const channelId = tags.find(tag => 
           tag[0] === 'e' && tag[3] === 'root'
         )?.[1];
@@ -159,13 +150,13 @@ export function createChatMessageHandler(logger: Logger): ChatMessageHandler {
 
     async handleModeration(message: NostrWSMessage): Promise<void> {
       try {
-        if (message.type !== 'EVENT' || !message.data) return;
+        if (!Array.isArray(message) || message[0] !== 'EVENT') return;
 
-        const event = message.data as Record<string, unknown>;
+        const event = message[1] as NostrEvent;
         if (event.kind !== ChatEventKinds.CHANNEL_HIDE_MESSAGE) return;
 
         // Extract channel and message IDs
-        const tags = event.tags as string[][];
+        const { tags } = event;
         const channelId = tags.find(tag =>
           tag[0] === 'e' && tag[3] === 'root'
         )?.[1];
@@ -231,37 +222,37 @@ export function createChannelSubscriptionManager(
       const subscriptionId = `chat:${channelId}:${Date.now()}`;
       subscriptions.set(channelId, subscriptionId);
 
-      return {
-        type: 'REQ',
-        data: {
-          subscription_id: subscriptionId,
-          filter: {
-            kinds: [
-              ChatEventKinds.CHANNEL_MESSAGE,
-              ChatEventKinds.CHANNEL_HIDE_MESSAGE
-            ],
-            '#e': [channelId]
-          }
+      return ['REQ', {
+        subscription_id: subscriptionId,
+        filter: {
+          kinds: [
+            ChatEventKinds.CHANNEL_MESSAGE,
+            ChatEventKinds.CHANNEL_HIDE_MESSAGE
+          ],
+          '#e': [channelId]
         }
-      };
+      }];
     },
 
     unsubscribe(channelId: string): NostrWSMessage {
       const subscriptionId = subscriptions.get(channelId);
       if (!subscriptionId) {
         logger.debug(`No subscription found for channel ${channelId}`);
-        return { type: 'CLOSE', data: { subscription_id: '' } };
+        return ['CLOSE', { subscription_id: '' }];
       }
 
       subscriptions.delete(channelId);
-      return {
-        type: 'CLOSE',
-        data: { subscription_id: subscriptionId }
-      };
+      return ['CLOSE', { subscription_id: subscriptionId }];
     },
 
     async getMetadata(channelId: string): Promise<ChannelMetadata | undefined> {
       return metadata.get(channelId);
     }
   };
+}
+
+interface NostrEvent {
+  kind: number;
+  content: string;
+  tags: string[][];
 }

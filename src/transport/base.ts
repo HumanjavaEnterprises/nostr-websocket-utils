@@ -6,7 +6,13 @@
 import { EventEmitter } from 'events';
 import { getLogger } from '../utils/logger';
 import { DefaultScoringStrategy } from '../types/scoring';
-import type { MetricsProvider, ScoringStrategy, MetricUpdateEvent } from '../types/scoring';
+import type { 
+  MetricsProvider, 
+  ScoringStrategy, 
+  MetricUpdateEvent,
+  MetricValue,
+  TransportData 
+} from '../types/scoring';
 
 const logger = getLogger('BaseTransport');
 
@@ -52,7 +58,7 @@ export abstract class BaseTransport extends EventEmitter {
   /**
    * Track a metric update
    */
-  protected trackMetric(endpoint: string, metricType: string, value: any) {
+  protected trackMetric(endpoint: string, metricType: string, value: MetricValue) {
     if (!this.metricsEnabled) return;
 
     try {
@@ -128,5 +134,5 @@ export abstract class BaseTransport extends EventEmitter {
   // Abstract methods that specific transports must implement
   abstract connect(endpoint: string): Promise<void>;
   abstract disconnect(endpoint: string): Promise<void>;
-  abstract send(endpoint: string, data: any): Promise<void>;
+  abstract send(endpoint: string, data: TransportData): Promise<void>;
 }

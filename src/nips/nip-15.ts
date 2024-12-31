@@ -13,12 +13,7 @@ import type { Logger } from '../types/logger';
  * @returns {NostrWSMessage} EOSE message
  */
 export function createEOSEMessage(subscriptionId: string): NostrWSMessage {
-  return {
-    type: 'EOSE',
-    data: {
-      subscription_id: subscriptionId
-    }
-  };
+  return ['EOSE', subscriptionId];
 }
 
 /**

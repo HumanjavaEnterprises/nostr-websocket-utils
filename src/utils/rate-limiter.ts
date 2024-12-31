@@ -231,11 +231,11 @@ export class RateLimiterImpl implements RateLimiter {
     }
 
     // Get requests for message type
-    const requests = state.requests.get(message.type) || [];
+    const requests = state.requests.get(message[0]) || [];
     const validRequests = requests.filter(time => time > now - this.config.windowMs);
 
     // Update requests
-    state.requests.set(message.type, validRequests);
+    state.requests.set(message[0], validRequests);
 
     // Check if limit exceeded
     if (validRequests.length >= this.config.maxRequests) {
@@ -245,14 +245,15 @@ export class RateLimiterImpl implements RateLimiter {
 
     // Add new request
     validRequests.push(now);
+    state.requests.set(message[0], validRequests);
     return false;
   }
 
   public recordRequest(clientId: string, message: NostrWSMessage): void {
     const state = this.getClientState(clientId);
-    const requests = state.requests.get(message.type) || [];
+    const requests = state.requests.get(message[0]) || [];
     requests.push(Date.now());
-    state.requests.set(message.type, requests);
+    state.requests.set(message[0], requests);
   }
 
   public getRemainingRequests(clientId: string, messageType: string): number {

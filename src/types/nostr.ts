@@ -148,7 +148,7 @@ export interface NostrWSServerServerOptions {
 /**
  * Nostr WebSocket server message
  */
-export interface NostrWSServerServerMessage extends NostrWSMessage {
+export type NostrWSServerServerMessage = NostrWSMessage & {
   clientId?: string;
   timestamp?: number;
 }

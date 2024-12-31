@@ -11,13 +11,14 @@ A TypeScript library for building Nostr protocol WebSocket clients and servers.
 
 ## Features
 
-- 🚀 Full Nostr protocol support
+- 🚀 Full Nostr protocol support with nostr-crypto-utils integration
 - 🔒 Secure WebSocket connections
 - ♥️ Heartbeat mechanism for connection health
 - 🔄 Automatic reconnection handling
-- 📝 Comprehensive logging
+- 📝 Comprehensive logging with Pino v8
 - 🎯 Type-safe message handling
 - 📦 Easy to use API
+- 🧪 Vitest-powered test suite
 
 ## NIPs Support Status
 
@@ -118,11 +119,11 @@ const server = await createNostrServer(8080, {
 
 ## Dependencies
 
-This package relies on:
-- [nostr-crypto-utils](https://github.com/HumanjavaEnterprises/nostr-crypto-utils) - For all cryptographic operations
-- [ws](https://github.com/websockets/ws) - For WebSocket functionality
-- [pino](https://github.com/pinojs/pino) - For logging
-- [uuid](https://github.com/uuidjs/uuid) - For unique identifiers
+This package uses:
+- nostr-crypto-utils (^0.4.2) for cryptographic operations
+- pino (^8.17.2) for logging
+- ws (^8.16.0) for WebSocket functionality
+- uuid (^9.0.0) for unique identifiers
 
 ## Documentation
 

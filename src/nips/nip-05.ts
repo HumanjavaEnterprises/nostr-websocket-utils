@@ -5,6 +5,7 @@
  */
 
 import { fetchJson } from '../utils/http';
+import { Logger } from 'pino';
 
 /**
  * NIP-05 verification result
@@ -34,7 +35,7 @@ interface NIP05Response {
 export async function verifyNIP05Identifier(
   identifier: string,
   pubkey: string,
-  logger: any
+  logger: Logger
 ): Promise<NIP05VerificationResult> {
   try {
     // Parse identifier
@@ -228,7 +229,7 @@ export interface NIP05BatchVerifier {
  * @returns {NIP05BatchVerifier} Batch verifier
  */
 export function createNIP05BatchVerifier(
-  logger: any,
+  logger: Logger,
   cache?: NIP05VerificationCache
 ): NIP05BatchVerifier {
   const queue = new Map<string, string>();

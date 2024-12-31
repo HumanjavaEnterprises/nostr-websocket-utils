@@ -1,13 +1,13 @@
 /**
- * @file WebSocket type definitions and extensions
+ * @file WebSocket type definitions
  * @module types/websocket
  */
 
-import type { WebSocket } from 'ws';
-import type { NostrWSMessage } from './messages';
-import { MessageType } from './messages';
+import { WebSocket } from 'ws';
+import { MessageType, NostrWSMessage } from './messages';
+import { MessagePriority } from './priority';
 import { RateLimitConfig } from '../utils/rate-limiter';
-import type { Logger } from './logger';
+import { Logger } from 'pino';
 
 /**
  * Extended WebSocket interface with additional properties
@@ -46,37 +46,113 @@ export interface ExtendedWebSocket extends WebSocket {
 }
 
 /**
- * Configuration options for the NostrWSClient
- * @interface NostrWSOptions
+ * WebSocket client configuration options
  */
-export interface NostrWSOptions {
+export interface NostrWSClientOptions {
   /**
-   * Interval in milliseconds between heartbeat messages
-   * @default 30000
+   * Logger instance
    */
-  heartbeatInterval?: number;
+  logger?: Logger;
+  
+  /**
+   * Connection timeout in milliseconds
+   */
+  connectionTimeout?: number;
+  
+  /**
+   * Number of retry attempts for reconnection
+   */
+  retryAttempts?: number;
+  
+  /**
+   * Delay between retry attempts in milliseconds
+   */
+  retryDelay?: number;
+  
+  /**
+   * Maximum queue size
+   */
+  queueSize?: number;
 
   /**
-   * Interval in milliseconds between reconnect attempts
-   * @default 5000
+   * Maximum number of retries for sending messages
    */
-  reconnectInterval?: number;
+  maxRetries?: number;
 
   /**
-   * Maximum number of reconnect attempts
-   * @default 10
+   * Message handler callback
    */
-  maxReconnectAttempts?: number;
-
+  onMessage?: (message: string) => void;
+  
   /**
-   * Logger instance for handling log messages
+   * Error handler callback
    */
-  logger: Logger;
+  onError?: (error: Error) => void;
+}
 
+/**
+ * WebSocket client event handlers
+ */
+export interface NostrWSEventHandlers {
   /**
-   * WebSocket implementation to use
+   * Message handler callback
    */
-  WebSocketImpl: typeof WebSocket;
+  onMessage?: (message: string) => void;
+  
+  /**
+   * Error handler callback
+   */
+  onError?: (error: Error) => void;
+}
+
+/**
+ * Queue configuration options
+ */
+export interface QueueOptions {
+  /**
+   * Maximum size of the queue
+   */
+  maxSize?: number;
+  
+  /**
+   * Maximum number of retries for failed messages
+   */
+  maxRetries?: number;
+  
+  /**
+   * Delay between retries in milliseconds
+   */
+  retryDelay?: number;
+  
+  /**
+   * Timeout for stale messages in milliseconds
+   */
+  staleTimeout?: number;
+}
+
+/**
+ * Message queue item
+ */
+export interface QueueItem {
+  /**
+   * Message to be sent
+   */
+  message: NostrWSMessage;
+  
+  /**
+   * Message priority
+   */
+  priority: MessagePriority;
+  
+  /**
+   * Timestamp when the message was queued
+   */
+  queuedAt: number;
+  
+  /**
+   * Number of retries for the message
+   */
+  retryCount?: number;
 }
 
 /**
@@ -109,52 +185,57 @@ export interface NostrWSServerOptions {
    * Port to listen on
    */
   port: number;
-
+  
   /**
    * Host to bind to
    */
   host?: string;
-
+  
   /**
    * Path for the WebSocket endpoint
    */
   path?: string;
-
+  
   /**
    * Maximum payload size in bytes
    */
   maxPayload?: number;
-
+  
   /**
    * Maximum number of concurrent connections
    */
   maxConnections?: number;
-
+  
   /**
    * Ping interval in milliseconds
    */
   pingInterval?: number;
-
+  
   /**
    * Rate limiting configuration
    */
   rateLimits?: RateLimitConfig;
-
+  
   /**
-   * Message handler
+   * Logger instance
    */
-  onMessage?: (message: NostrWSMessage, socket: NostrWSServerSocket) => Promise<void>;
-
+  logger?: Logger;
+  
   /**
-   * Error handler
+   * Message handler callback
+   */
+  onMessage?: (message: NostrWSMessage, socket: NostrWSServerSocket) => void;
+  
+  /**
+   * Error handler callback
    */
   onError?: (error: Error, socket: NostrWSServerSocket) => void;
-
+  
   /**
    * Close handler
    */
   onClose?: (socket: NostrWSServerSocket) => void;
-
+  
   /**
    * Connection handler
    */
@@ -165,20 +246,11 @@ export interface NostrWSServerOptions {
  * Server message structure
  * @interface NostrWSServerMessage
  */
-export interface NostrWSServerMessage {
+export type NostrWSServerMessage = NostrWSMessage & {
   /**
-   * Message type
+   * Unique client identifier
    */
-  type: MessageType;
-  /**
-   * Message data
-   */
-  data?: unknown;
-
-  /**
-   * Error message if applicable
-   */
-  error?: string;
+  clientId?: string;
 }
 
 /**
@@ -186,9 +258,24 @@ export interface NostrWSServerMessage {
  * @interface NostrWSServerSocket
  */
 export interface NostrWSServerSocket extends WebSocket {
+  /**
+   * Unique client identifier
+   */
   clientId: string;
+  
+  /**
+   * Set of subscription channels
+   */
   subscriptions: Set<string>;
+  
+  /**
+   * Timestamp of the last ping message
+   */
   lastPing?: number;
+  
+  /**
+   * Whether the WebSocket connection is alive
+   */
   isAlive: boolean;
 }
 
@@ -196,7 +283,14 @@ export interface NostrWSServerSocket extends WebSocket {
  * Nostr WebSocket server message with client info
  * @interface NostrWSServerClientMessage
  */
-export interface NostrWSServerClientMessage extends NostrWSMessage {
+export type NostrWSServerClientMessage = [MessageType, ...unknown[]] & {
+  /**
+   * Unique client identifier
+   */
   clientId?: string;
+  
+  /**
+   * Timestamp of the message
+   */
   timestamp?: number;
 }

@@ -4,7 +4,7 @@
  */
 
 import { getLogger } from '../utils/logger';
-import type { NostrWSMessage } from '../types/messages';
+import type { NostrWSMessage, NostrEvent } from '../types/messages';
 import { MESSAGE_TYPES } from '../types/messages';
 
 const logger = getLogger('NIP-01');
@@ -18,35 +18,35 @@ interface NostrEventValidationResult {
  * Validates a message according to NIP-01 specifications
  */
 export function validateMessage(message: NostrWSMessage): boolean {
-  if (!message || typeof message !== 'object') {
+  if (!message || !Array.isArray(message)) {
     logger.debug('Invalid message format');
     return false;
   }
 
-  if (!message.type || !Object.values(MESSAGE_TYPES).includes(message.type as any)) {
-    logger.debug(`Invalid message type: ${message.type}`);
+  if (!message[0] || !(message[0] in MESSAGE_TYPES)) {
+    logger.debug(`Invalid message type: ${message[0]}`);
     return false;
   }
 
-  if (!message.data || typeof message.data !== 'object') {
+  if (!message[1] || typeof message[1] !== 'object') {
     logger.debug('Invalid message data');
     return false;
   }
 
   // Message type specific validation
-  if (message.type === MESSAGE_TYPES.EVENT) {
-    if (!validateEvent(message.data).valid) {
+  if (message[0] === MESSAGE_TYPES.EVENT) {
+    if (!validateEvent(message[1] as NostrEvent).valid) {
       return false;
     }
   }
 
-  if (message.type === MESSAGE_TYPES.REQ) {
+  if (message[0] === MESSAGE_TYPES.REQ) {
     if (!validateReqMessage(message)) {
       return false;
     }
   }
 
-  if (message.type === MESSAGE_TYPES.CLOSE) {
+  if (message[0] === MESSAGE_TYPES.CLOSE) {
     if (!validateCloseMessage(message)) {
       return false;
     }
@@ -58,59 +58,47 @@ export function validateMessage(message: NostrWSMessage): boolean {
 /**
  * Creates an EVENT message
  */
-export function createEventMessage(event: Record<string, unknown>): NostrWSMessage {
-  return {
-    type: MESSAGE_TYPES.EVENT,
-    data: event
-  };
+export function createEventMessage(event: NostrEvent): NostrWSMessage {
+  return [MESSAGE_TYPES.EVENT, event];
 }
 
 /**
  * Creates a REQ message
  */
 export function createReqMessage(subscriptionId: string, filters: Array<Record<string, unknown>>): NostrWSMessage {
-  return {
-    type: MESSAGE_TYPES.REQ,
-    data: {
-      subscription_id: subscriptionId,
-      filters
-    }
-  };
+  return [MESSAGE_TYPES.REQ, {
+    subscription_id: subscriptionId,
+    filters
+  }];
 }
 
 /**
  * Creates a CLOSE message
  */
 export function createCloseMessage(subscriptionId: string): NostrWSMessage {
-  return {
-    type: MESSAGE_TYPES.CLOSE,
-    data: {
-      subscription_id: subscriptionId
-    }
-  };
+  return [MESSAGE_TYPES.CLOSE, {
+    subscription_id: subscriptionId
+  }];
 }
 
 /**
  * Creates a NOTICE message
  */
 export function createNoticeMessage(message: string): NostrWSMessage {
-  return {
-    type: MESSAGE_TYPES.NOTICE,
-    data: {
-      message
-    }
-  };
+  return [MESSAGE_TYPES.NOTICE, {
+    message
+  }];
 }
 
 /**
  * Validates a Nostr event according to NIP-01
  */
-export function validateEvent(event: unknown): NostrEventValidationResult {
+export function validateEvent(event: NostrEvent): NostrEventValidationResult {
   if (typeof event !== 'object' || !event) {
     return { valid: false, error: 'Event must be an object' };
   }
 
-  const typedEvent = event as Record<string, unknown>;
+  const typedEvent = event;
 
   if (!typedEvent.id || typeof typedEvent.id !== 'string') {
     return { valid: false, error: 'Event must have a string id' };
@@ -157,7 +145,7 @@ export function validateEvent(event: unknown): NostrEventValidationResult {
 // Private helper functions
 
 function validateReqMessage(message: NostrWSMessage): boolean {
-  const { subscription_id, filters } = message.data as any;
+  const { subscription_id, filters } = message[1] as any;
   
   if (!subscription_id || typeof subscription_id !== 'string') {
     logger.debug('Invalid subscription_id');
@@ -173,7 +161,7 @@ function validateReqMessage(message: NostrWSMessage): boolean {
 }
 
 function validateCloseMessage(message: NostrWSMessage): boolean {
-  const { subscription_id } = message.data as any;
+  const { subscription_id } = message[1] as any;
   
   if (!subscription_id || typeof subscription_id !== 'string') {
     logger.debug('Invalid subscription_id');

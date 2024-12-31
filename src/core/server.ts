@@ -3,14 +3,15 @@
  * @module core/server
  */
 
-import { WebSocketServer, WebSocket } from 'ws';
+import { WebSocket, WebSocketServer } from 'ws';
+import { createLogger } from '../utils/logger';
+import { createRateLimiter } from '../utils/rate-limiter';
+import { NostrWSServerOptions, NostrWSServerSocket } from '../types/websocket';
+import { NostrWSMessage } from '../types/messages';
+import { RateLimiter } from '../utils/rate-limiter';
 import { v4 as uuidv4 } from 'uuid';
-import { getLogger } from '../utils/logger';
-import { NostrWSServerSocket, NostrWSServerOptions, NostrWSServerMessage } from '../types/websocket';
-import { RateLimiter, createRateLimiter } from '../utils/rate-limiter';
-import { MessageType } from '../types/messages';
 
-const logger = getLogger('NostrWSServer');
+const logger = createLogger('NostrWSServer');
 
 /**
  * NostrWSServer class for handling WebSocket connections
@@ -66,17 +67,8 @@ export class NostrWSServer {
 
       socket.on('message', async (data: Buffer) => {
         try {
-          const message = JSON.parse(data.toString()) as NostrWSServerMessage;
-          
-          if (this.rateLimiter && await this.rateLimiter.shouldLimit(socket.clientId, message)) {
-            socket.send(JSON.stringify({
-              type: 'NOTICE' as MessageType,
-              data: { message: 'Rate limit exceeded' }
-            } as NostrWSServerMessage));
-            return;
-          }
-
-          await this.options.onMessage?.(message, socket);
+          const rawMessage = data.toString();
+          await this.handleMessage(socket, rawMessage);
         } catch (error) {
           logger.error('Error processing message:', error);
           this.options.onError?.(error as Error, socket);
@@ -99,6 +91,29 @@ export class NostrWSServer {
 
       await this.options.onConnection?.(socket);
     });
+  }
+
+  private async handleMessage(socket: NostrWSServerSocket, rawMessage: string) {
+    try {
+      // Parse the message as a NostrWSMessage tuple
+      const message = JSON.parse(rawMessage) as NostrWSMessage;
+
+      // Rate limiting check
+      if (this.rateLimiter && await this.rateLimiter.shouldLimit(socket.clientId, message)) {
+        logger.debug(`Rate limit exceeded for client ${socket.clientId}`);
+        socket.send(JSON.stringify(['NOTICE', 'Rate limit exceeded']));
+        return;
+      }
+
+      // Process message
+      try {
+        await this.options.onMessage?.(message, socket);
+      } catch (error) {
+        this.options.onError?.(error as Error, socket);
+      }
+    } catch (error) {
+      this.options.onError?.(error as Error, socket);
+    }
   }
 
   /**

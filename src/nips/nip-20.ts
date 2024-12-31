@@ -13,7 +13,7 @@ const logger = getLogger('NIP-20');
  */
 export enum CommandStatus {
   SUCCESS = 'success',
-  ERROR = 'error',
+  error = 'error',
   PENDING = 'pending',
   RATE_LIMITED = 'rate_limited',
   AUTH_REQUIRED = 'auth_required',
@@ -53,41 +53,47 @@ interface CommandMessageData {
  * Validates a command message according to NIP-20
  */
 export function validateCommandMessage(message: NostrWSMessage): boolean {
-  if (!message.data || typeof message.data !== 'object') {
+  if (!Array.isArray(message) || message.length < 2) {
+    logger.debug('Invalid command message format');
+    return false;
+  }
+
+  const [type, data] = message;
+  if (typeof data !== 'object' || !data) {
     logger.debug('Invalid command message data');
     return false;
   }
 
-  const data = message.data as CommandMessageData;
+  const commandData = data as CommandMessageData;
 
   // For OK/NOTICE messages
-  if (message.type === 'OK') {
-    if (!data.event_id || typeof data.event_id !== 'string') {
+  if (type === 'OK') {
+    if (!commandData.event_id || typeof commandData.event_id !== 'string') {
       logger.debug('Invalid event_id in OK message');
       return false;
     }
 
-    if (typeof data.status !== 'boolean') {
+    if (typeof commandData.status !== 'boolean') {
       logger.debug('Invalid status in OK message');
       return false;
     }
   }
 
   // For NOTICE messages
-  if (message.type === 'NOTICE' && data.code) {
-    if (!Object.values(CommandStatus).includes(data.code as CommandStatus)) {
+  if (type === 'NOTICE' && commandData.code) {
+    if (!Object.values(CommandStatus).includes(commandData.code as CommandStatus)) {
       logger.debug('Invalid command status code');
       return false;
     }
   }
 
   // Optional fields validation
-  if (data.message && typeof data.message !== 'string') {
+  if (commandData.message && typeof commandData.message !== 'string') {
     logger.debug('Invalid message field');
     return false;
   }
 
-  if (data.details && typeof data.details !== 'object') {
+  if (commandData.details && typeof commandData.details !== 'object') {
     logger.debug('Invalid details field');
     return false;
   }
@@ -114,26 +120,20 @@ export function createCommandResult(data: CommandMessageData): CommandResult {
  * Creates an OK message
  */
 export function createOkMessage(eventId: string, success = true, details?: Record<string, unknown>): NostrWSMessage {
-  return {
-    type: 'OK',
-    data: {
-      event_id: eventId,
-      status: success,
-      ...details && { details }
-    }
-  };
+  return ['OK', {
+    event_id: eventId,
+    status: success,
+    ...details && { details }
+  }];
 }
 
 /**
  * Creates a NOTICE message
  */
 export function createCommandNoticeMessage(code: CommandStatusType, message: string, details?: Record<string, unknown>): NostrWSMessage {
-  return {
-    type: 'NOTICE',
-    data: {
-      code,
-      message,
-      ...details && { details }
-    }
-  };
+  return ['NOTICE', {
+    code,
+    message,
+    ...details && { details }
+  }];
 }

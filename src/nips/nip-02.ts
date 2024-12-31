@@ -39,45 +39,39 @@ export function createContactListEvent(
     return tag;
   });
 
-  return {
-    type: 'EVENT',
-    data: {
-      kind: CONTACT_LIST_KIND,
-      tags,
-      content: JSON.stringify(metadata)
-    }
-  };
+  return ['EVENT', {
+    kind: CONTACT_LIST_KIND,
+    tags,
+    content: JSON.stringify(metadata)
+  }];
 }
 
 /**
  * Extracts contacts from a contact list event
  * @param message - Contact list message
- * @param _logger - Logger instance
  * @returns {Contact[]} Array of contacts
  */
 export function extractContacts(
-  message: NostrWSMessage,
-  _logger: Logger
+  message: NostrWSMessage
 ): Contact[] {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       return [];
     }
 
-    const event = message.data as Record<string, unknown>;
-    if (event.kind !== CONTACT_LIST_KIND || !Array.isArray(event.tags)) {
+    const event = message[1] as Record<string, unknown>;
+    if (event.kind !== CONTACT_LIST_KIND) {
       return [];
     }
 
-    let metadata: Record<string, unknown> = {};
-    try {
-      metadata = JSON.parse(event.content as string);
-    } catch (error) {
-      _logger.debug('Failed to parse contact list metadata');
+    if (!Array.isArray(event.tags)) {
+      return [];
     }
+
+    const metadata = event.content ? JSON.parse(event.content as string) : {};
 
     return event.tags
-      .filter(tag => Array.isArray(tag) && tag[0] === 'p' && tag[1])
+      .filter(tag => Array.isArray(tag) && tag[0] === 'p')
       .map(tag => ({
         pubkey: tag[1],
         relay: tag[2],
@@ -85,7 +79,6 @@ export function extractContacts(
         metadata
       }));
   } catch (error) {
-    _logger.error('Error extracting contacts:', error);
     return [];
   }
 }
@@ -96,16 +89,12 @@ export function extractContacts(
  * @returns {NostrWSMessage} Subscription message
  */
 export function createContactListSubscription(pubkey: string): NostrWSMessage {
-  return {
-    type: 'REQ',
-    data: {
-      filter: {
-        authors: [pubkey],
-        kinds: [CONTACT_LIST_KIND],
-        limit: 1
-      }
+  return ['REQ', {
+    filter: {
+      authors: [pubkey],
+      kinds: [CONTACT_LIST_KIND]
     }
-  };
+  }];
 }
 
 /**

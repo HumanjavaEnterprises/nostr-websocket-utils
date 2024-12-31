@@ -6,6 +6,7 @@
 
 import type { NostrWSMessage } from '../types/messages';
 import type { Logger } from '../types/logger';
+import type { NostrEvent } from '../types/events';
 
 /**
  * Default time limits in seconds
@@ -109,12 +110,12 @@ export function validateEventTime(
   logger: Logger
 ): TimeValidationResult {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       return { valid: true }; // Not an event message
     }
 
-    const event = message.data as Record<string, unknown>;
-    const timestamp = event.created_at as number;
+    const event = message[1] as NostrEvent;
+    const { created_at: timestamp } = event;
 
     if (typeof timestamp !== 'number') {
       return {

@@ -1,7 +1,27 @@
 /**
- * @file Scoring interfaces for connection metrics
+ * @file Scoring and metrics type definitions
  * @module types/scoring
  */
+
+/**
+ * Metric value types
+ */
+export type MetricValue = number | string | boolean | Date;
+
+/**
+ * Transport data types
+ */
+export type TransportData = string | Buffer | ArrayBuffer | SharedArrayBuffer;
+
+/**
+ * Metrics update event
+ */
+export interface MetricUpdateEvent {
+  endpoint: string;
+  metricType: string;
+  value: MetricValue;
+  timestamp: number;
+}
 
 export interface BaseMetrics {
   // Core metrics any transport would need
@@ -55,11 +75,3 @@ export class DefaultScoringStrategy implements ScoringStrategy {
     );
   }
 }
-
-// Event types for metrics updates
-export type MetricUpdateEvent = {
-  endpoint: string;
-  metricType: string;
-  value: any;
-  timestamp: number;
-};

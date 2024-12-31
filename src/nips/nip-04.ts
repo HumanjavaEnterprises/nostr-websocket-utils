@@ -5,7 +5,7 @@
  */
 
 import { encryptMessage, decryptMessage } from 'nostr-crypto-utils';
-import type { NostrWSMessage } from '../types/messages';
+import type { NostrWSMessage, NostrEvent } from '../types/messages';
 import type { Logger } from '../types/logger';
 
 /**
@@ -29,17 +29,14 @@ export async function createEncryptedDM(
 ): Promise<NostrWSMessage> {
   try {
     const encryptedContent = await encryptMessage(content, recipientPubkey, senderPrivkey);
-    return {
-      type: 'EVENT',
-      data: {
-        kind: ENCRYPTED_DM_KIND,
-        content: encryptedContent,
-        tags: [
-          ['p', recipientPubkey],
-          ...tags
-        ]
-      }
-    };
+    return ['EVENT', {
+      kind: ENCRYPTED_DM_KIND,
+      content: encryptedContent,
+      tags: [
+        ['p', recipientPubkey],
+        ...tags
+      ]
+    }];
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     throw new Error(`Failed to create encrypted DM: ${errorMessage}`);
@@ -61,25 +58,20 @@ export async function decryptDM(
   logger: Logger
 ): Promise<string> {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       throw new Error('Invalid message format');
     }
 
-    const event = message.data as Record<string, unknown>;
+    const event = message[1] as NostrEvent;
     if (event.kind !== ENCRYPTED_DM_KIND) {
       throw new Error('Not an encrypted DM event');
     }
 
-    const content = event.content as string;
-    if (!content) {
-      throw new Error('No encrypted content found');
-    }
-
-    return await decryptMessage(content, senderPubkey, recipientPrivkey);
+    return await decryptMessage(event.content, senderPubkey, recipientPrivkey);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Failed to decrypt DM: ${errorMessage}`);
-    throw new Error(errorMessage);
+    logger.error('Failed to decrypt DM:', errorMessage);
+    throw new Error(`Failed to decrypt DM: ${errorMessage}`);
   }
 }
 
@@ -94,19 +86,19 @@ export function validateEncryptedDM(
   logger: Logger
 ): boolean {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
-      logger.debug('Not an event message');
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
+      logger.debug('Invalid message format');
       return false;
     }
 
-    const event = message.data as Record<string, unknown>;
+    const event = message[1] as NostrEvent;
     if (event.kind !== ENCRYPTED_DM_KIND) {
       logger.debug('Not an encrypted DM event');
       return false;
     }
 
     if (!event.content || typeof event.content !== 'string') {
-      logger.debug('Invalid or missing content');
+      logger.debug('Missing or invalid content');
       return false;
     }
 
@@ -115,18 +107,18 @@ export function validateEncryptedDM(
       return false;
     }
 
-    const pTag = event.tags.find(tag => 
+    const recipientTag = event.tags.find((tag: string[]) =>
       Array.isArray(tag) && tag[0] === 'p' && tag[1]
     );
-    if (!pTag) {
-      logger.debug('Missing recipient pubkey tag');
+
+    if (!recipientTag) {
+      logger.debug('Missing recipient tag');
       return false;
     }
 
     return true;
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Error validating encrypted DM: ${errorMessage}`);
+  } catch (error) {
+    logger.error('Error validating encrypted DM:', error);
     return false;
   }
 }

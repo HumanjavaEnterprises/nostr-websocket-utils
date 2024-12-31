@@ -103,6 +103,13 @@ export class WebSocketTransport extends BaseTransport {
     });
   }
 
+  protected trackMetric(endpoint: string, metric: string, value: unknown) {
+    if (this.metricsProvider && this.metricsEnabled) {
+      const metricValue = value instanceof Error ? value.message : String(value);
+      this.metricsProvider.trackMetric(endpoint, metric, metricValue);
+    }
+  }
+
   private async checkEndpointHealth(endpoint: string): Promise<boolean> {
     try {
       if (!this.metricsEnabled || !this.metricsProvider) {

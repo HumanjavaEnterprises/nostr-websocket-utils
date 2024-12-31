@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { NostrWSEvent, NostrWSFilter, NostrWSMessage } from '../types/messages';
+import { NostrEvent, NostrWSFilter, NostrWSMessage } from '../types/messages';
 import { MESSAGE_TYPES } from '../types/messages';
 
 describe('Nostr WebSocket Types', () => {
-  describe('NostrWSEvent', () => {
+  describe('NostrEvent', () => {
     it('should validate a valid event', () => {
-      const event: NostrWSEvent = {
+      const event: NostrEvent = {
         id: 'test-id',
         pubkey: 'test-pubkey',
         created_at: Date.now(),
@@ -30,8 +30,10 @@ describe('Nostr WebSocket Types', () => {
         ids: ['test-id-1', 'test-id-2'],
         authors: ['test-pubkey-1', 'test-pubkey-2'],
         kinds: [1, 2, 3],
-        '#e': ['test-event-1', 'test-event-2'],
-        '#p': ['test-pubkey-1', 'test-pubkey-2'],
+        tags: {
+          'e': ['test-event-1', 'test-event-2'],
+          'p': ['test-pubkey-1', 'test-pubkey-2']
+        },
         since: now - 3600, // 1 hour ago
         until: now,
         limit: 100,
@@ -40,8 +42,8 @@ describe('Nostr WebSocket Types', () => {
       expect(filter.ids).toBeInstanceOf(Array);
       expect(filter.authors).toBeInstanceOf(Array);
       expect(filter.kinds).toBeInstanceOf(Array);
-      expect(filter['#e']).toBeInstanceOf(Array);
-      expect(filter['#p']).toBeInstanceOf(Array);
+      expect(filter.tags?.e).toBeInstanceOf(Array);
+      expect(filter.tags?.p).toBeInstanceOf(Array);
       expect(typeof filter.since).toBe('number');
       expect(typeof filter.until).toBe('number');
       expect(typeof filter.limit).toBe('number');
@@ -50,18 +52,17 @@ describe('Nostr WebSocket Types', () => {
 
   describe('NostrWSMessage', () => {
     it('should validate a valid message', () => {
-      const message: NostrWSMessage = {
-        type: MESSAGE_TYPES.EVENT,
-        content: {
-          id: 'test-id',
-          pubkey: 'test-pubkey',
-          created_at: Date.now(),
-          kind: 1,
-          tags: [],
-          content: 'test content'
-        }
+      const event: NostrEvent = {
+        id: 'test-id',
+        pubkey: 'test-pubkey',
+        created_at: Date.now(),
+        kind: 1,
+        tags: [],
+        content: 'test content'
       };
-      expect(message).toBeDefined();
+      const message: NostrWSMessage = [MESSAGE_TYPES.EVENT, event];
+      expect(message[0]).toBe(MESSAGE_TYPES.EVENT);
+      expect(message[1]).toEqual(event);
     });
   });
 

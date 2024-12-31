@@ -1,5 +1,5 @@
 /**
- * @file Event type definitions
+ * @file Nostr event type definitions
  * @module types/events
  */
 
@@ -71,4 +71,15 @@ export interface NostrSubscriptionEvent {
   subscriptionId: string;
   /** Array of filters */
   filters: NostrEventFilter[];
+}
+
+/**
+ * Event handler interface for WebSocket client
+ */
+export interface NostrWSEventHandlers {
+  onMessage?: (message: string) => void;
+  onError?: (error: Error) => void;
+  onConnect?: () => void;
+  onDisconnect?: () => void;
+  onReconnect?: () => void;
 }

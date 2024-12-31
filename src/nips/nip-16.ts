@@ -75,11 +75,11 @@ export function validateEventTreatment(
   logger: Logger
 ): boolean {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       return true; // Not an event message
     }
 
-    const event = message.data as Record<string, unknown>;
+    const event = message[1] as Record<string, unknown>;
     const kind = event.kind as number;
     const treatment = getEventTreatment(kind);
 

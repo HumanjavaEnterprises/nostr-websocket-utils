@@ -77,7 +77,7 @@ describe('NostrWSClient', () => {
       const messageHandler = vi.fn();
       client.on('message', messageHandler);
 
-      const testMessage: NostrWSMessage = { type: 'EVENT', content: { id: 'test' } };
+      const testMessage: NostrWSMessage = ['EVENT', { id: 'test' }];
       client.send(testMessage);
 
       await vi.waitFor(() => expect(messageHandler).toHaveBeenCalledWith(testMessage));

@@ -80,11 +80,11 @@ export function validateEventPoW(
   logger: Logger
 ): boolean {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       return true; // Not an event message
     }
 
-    const event = message.data as Record<string, unknown>;
+    const event = message[1] as Record<string, unknown>;
     if (!event.id || typeof event.id !== 'string') {
       logger.debug('Missing event ID');
       return false;

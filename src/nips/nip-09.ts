@@ -4,10 +4,7 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/09.md
  */
 
-import { getLogger } from '../utils/logger';
 import type { NostrEvent, NostrSubscriptionEvent } from '../types/events';
-
-const logger = getLogger('NIP-09');
 
 /**
  * Represents the result of a deletion operation
@@ -46,11 +43,13 @@ export function createDeletionEvent(
 /**
  * Validates a deletion event
  */
-export function validateDeletionEvent(event: NostrEvent): boolean {
+export async function validateDeletionEvent(
+  event: NostrEvent,
+  _logger: any
+): Promise<boolean> {
   try {
     // Must be kind 5
     if (event.kind !== EVENT_DELETION_KIND) {
-      logger.debug('Invalid event kind for deletion');
       return false;
     }
 
@@ -61,7 +60,6 @@ export function validateDeletionEvent(event: NostrEvent): boolean {
       .map(tag => tag[1]);
 
     if (eventIds.length === 0) {
-      logger.debug('No event IDs to delete');
       return false;
     }
 
@@ -70,14 +68,11 @@ export function validateDeletionEvent(event: NostrEvent): boolean {
     const invalidIds = eventIds.filter(id => !validHexString.test(id));
     
     if (invalidIds.length > 0) {
-      logger.debug(`Invalid event IDs: ${invalidIds.join(', ')}`);
       return false;
     }
 
     return true;
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Error validating deletion event: ${errorMessage}`);
     return false;
   }
 }
@@ -91,7 +86,7 @@ export async function processDeletionEvent(
   deleteEvent: (id: string) => Promise<boolean>
 ): Promise<DeletionResult> {
   try {
-    if (!validateDeletionEvent(event)) {
+    if (!validateDeletionEvent(event, _logger)) {
       return {
         success: false,
         error: 'Invalid deletion event'
@@ -114,8 +109,6 @@ export async function processDeletionEvent(
           failedIds.push(eventId);
         }
       } catch (error: unknown) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        logger.error(`Failed to delete event ${eventId}: ${errorMessage}`);
         failedIds.push(eventId);
       }
     }
@@ -134,11 +127,9 @@ export async function processDeletionEvent(
     };
 
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error(`Error processing deletion event: ${errorMessage}`);
     return {
       success: false,
-      error: errorMessage
+      error: 'Unknown error'
     };
   }
 }
@@ -192,17 +183,15 @@ export function createEventDeletionManager(
   return {
     async processDeletion(message: NostrEvent): Promise<string[]> {
       try {
-        if (!validateDeletionEvent(message)) {
+        if (!validateDeletionEvent(message, _logger)) {
           throw new Error('Invalid deletion event');
         }
 
-        const event = message;
-        const eventIds = event.tags
+        const eventIds = message.tags
           .filter(tag => tag[0] === 'e')
-          .map(tag => tag[1] as string);
+          .map(tag => tag[1]);
 
-        const reason = event.content as string;
-        const deletionId = event.id as string;
+        const { content: reason, id: deletionId } = message;
 
         // Process each event ID
         eventIds.forEach(eventId => {
@@ -214,15 +203,8 @@ export function createEventDeletionManager(
           }
         });
 
-        logger.debug('Processed deletion event', {
-          deletionId,
-          eventIds,
-          reason
-        });
-
         return eventIds;
       } catch (error) {
-        logger.error('Error processing deletion event:', error);
         return [];
       }
     },

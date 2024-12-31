@@ -34,17 +34,14 @@ export function createParameterizedEvent(
   identifier: string,
   additionalTags: string[][] = []
 ): NostrWSMessage {
-  return {
-    type: 'EVENT',
-    data: {
-      kind,
-      content,
-      tags: [
-        ['d', identifier],
-        ...additionalTags
-      ]
-    }
-  };
+  return ['EVENT', {
+    kind,
+    content,
+    tags: [
+      ['d', identifier],
+      ...additionalTags
+    ]
+  }];
 }
 
 /**
@@ -58,11 +55,11 @@ export function validateParameterizedEvent(
   _logger: Logger
 ): boolean {
   try {
-    if (message.type !== 'EVENT' || !message.data) {
+    if (!Array.isArray(message) || message[0] !== 'EVENT') {
       return false;
     }
 
-    const event = message.data as Record<string, unknown>;
+    const event = message[1] as Record<string, unknown>;
     const kind = event.kind as number;
 
     // Check if kind is in valid range
@@ -164,15 +161,12 @@ export function createParameterizedEventManager(
     },
 
     subscribe(kinds: number[], identifiers: string[]): NostrWSMessage {
-      return {
-        type: 'REQ',
-        data: {
-          filter: {
-            kinds,
-            '#d': identifiers
-          }
+      return ['REQ', {
+        filter: {
+          kinds,
+          '#d': identifiers
         }
-      };
+      }];
     }
   };
 }

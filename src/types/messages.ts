@@ -1,109 +1,105 @@
 /**
- * @file Message type definitions for WebSocket communication
+ * @file Message type definitions
  * @module types/messages
  */
 
-/**
- * Connection states for WebSocket client
- */
-export enum ConnectionState {
-  CONNECTING = 'CONNECTING',
-  CONNECTED = 'CONNECTED',
-  DISCONNECTED = 'DISCONNECTED',
-  RECONNECTING = 'RECONNECTING',
-  FAILED = 'FAILED'
-}
+import { MessagePriority } from './priority';
 
 /**
- * Type of message that can be sent through the WebSocket connection
+ * Message types that can be sent through the WebSocket connection
  * Following NIP-01 and other NIPs message types
  */
-export type MessageType = 
-  | 'EVENT'    // NIP-01: Basic protocol flow events
-  | 'REQ'      // NIP-01: Request events
-  | 'CLOSE'    // NIP-01: Close subscription
-  | 'NOTICE'   // NIP-01: Human-readable messages
-  | 'EOSE'     // NIP-15: End of stored events notice
-  | 'OK'       // NIP-20: Command result
-  | 'AUTH'     // NIP-42: Authentication
-  | 'COUNT'    // NIP-45: Event counts
-  | 'PING'     // Internal heartbeat ping
-  | 'PONG'     // Internal heartbeat pong
-  | 'error';   // Internal error type (lowercase to differentiate)
+export const MESSAGE_TYPES = {
+  EVENT: 'EVENT',    // NIP-01: Basic protocol flow events
+  REQ: 'REQ',       // NIP-01: Request events
+  CLOSE: 'CLOSE',   // NIP-01: Close subscription
+  NOTICE: 'NOTICE', // NIP-01: Human-readable messages
+  EOSE: 'EOSE',     // NIP-15: End of stored events notice
+  OK: 'OK',         // NIP-20: Command result
+  AUTH: 'AUTH',     // NIP-42: Authentication
+  COUNT: 'COUNT',   // NIP-45: Event counts
+  PING: 'PING',     // Internal heartbeat ping
+  PONG: 'PONG',     // Internal heartbeat pong
+  ERROR: 'error'    // Internal error type (lowercase to differentiate)
+} as const;
+
+export type MessageType = keyof typeof MESSAGE_TYPES;
 
 /**
- * Message priority levels for queue management
+ * Base Nostr WebSocket message interface
  */
-export enum MessagePriority {
-  HIGH = 0,    // Critical messages (AUTH, etc.)
-  MEDIUM = 1,  // Normal messages (EVENT, REQ)
-  LOW = 2      // Non-critical messages (PING)
+export interface NostrWSMessageBase {
+  type: MessageType;
+  data?: unknown;
+  priority?: MessagePriority;
+  queuedAt?: number;
+  retryCount?: number;
 }
 
 /**
- * Structure of a Nostr WebSocket event
+ * Nostr WebSocket message type
+ * Array format: [<message_type>, ...data]
  */
-export interface NostrWSEvent {
+export type NostrWSMessage = [MessageType, ...unknown[]];
+
+/**
+ * Queue item interface for message queue
+ */
+export interface QueueItem extends NostrWSMessageBase {
+  priority: MessagePriority;
+  queuedAt: number;
+  retryCount: number;
+}
+
+/**
+ * Nostr event message
+ */
+export interface NostrEvent {
   id: string;
-  pubkey: string;
-  created_at: number;
   kind: number;
-  tags: string[][];
   content: string;
+  tags: string[][];
+  created_at?: number;
+  pubkey?: string;
   sig?: string;
+}
+
+/**
+ * Server-side Nostr WebSocket message
+ * Extends the base NostrWSMessage tuple type with additional server-specific metadata
+ */
+export type NostrWSServerMessage = NostrWSMessage & {
+  clientId?: string;
+  timestamp?: number;
+};
+
+/**
+ * Helper function to create server messages
+ */
+export function createServerMessage(type: MessageType, data: unknown[], clientId?: string): NostrWSServerMessage {
+  const message = [type, ...data] as NostrWSServerMessage;
+  message.clientId = clientId;
+  message.timestamp = Date.now();
+  return message;
 }
 
 /**
  * Structure of a Nostr WebSocket filter
  */
 export interface NostrWSFilter {
+  /** Array of event IDs */
   ids?: string[];
+  /** Array of pubkeys */
   authors?: string[];
+  /** Array of event kinds */
   kinds?: number[];
+  /** Event tags */
+  tags?: Record<string, string[]>;
+  /** Unix timestamp range */
   since?: number;
   until?: number;
+  /** Maximum number of events to return */
   limit?: number;
-  [key: string]: unknown;
-}
-
-/**
- * Structure of messages sent through the WebSocket connection
- */
-export interface NostrWSMessage {
-  /**
-   * Type of the message following NIP specifications
-   */
-  type: MessageType;
-  
-  /**
-   * Message content - structure depends on type
-   */
-  content?: NostrWSEvent | NostrWSFilter | string | unknown;
-  
-  /**
-   * Optional subscription ID for subscription-based messages
-   */
-  subscription_id?: string;
-
-  /**
-   * Message priority for queue management
-   */
-  priority?: MessagePriority;
-
-  /**
-   * Timestamp when the message was queued
-   */
-  queuedAt?: number;
-
-  /**
-   * Number of retry attempts for this message
-   */
-  retryCount?: number;
-
-  /**
-   * Additional data for the message
-   */
-  data?: unknown;
 }
 
 /**
@@ -147,21 +143,12 @@ export interface NostrWSValidationResult {
 }
 
 /**
- * Message types as defined in NIP-01 and other NIPs
+ * Connection states for WebSocket client
  */
-export const MESSAGE_TYPES = {
-  EVENT: 'EVENT',
-  REQ: 'REQ',
-  CLOSE: 'CLOSE',
-  NOTICE: 'NOTICE',
-  EOSE: 'EOSE',
-  OK: 'OK',
-  AUTH: 'AUTH',
-  COUNT: 'COUNT',
-  PING: 'PING',
-  PONG: 'PONG',
-  ERROR: 'error'
-} as const;
-
-// Re-export MessageType as NostrWSMessageType for backward compatibility
-export type NostrWSMessageType = MessageType;
+export enum ConnectionState {
+  CONNECTING = 'CONNECTING',
+  CONNECTED = 'CONNECTED',
+  DISCONNECTED = 'DISCONNECTED',
+  RECONNECTING = 'RECONNECTING',
+  FAILED = 'FAILED'
+}
