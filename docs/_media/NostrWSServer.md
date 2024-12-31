@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -6,80 +6,67 @@
 
 # Class: NostrWSServer
 
-WebSocket server implementation for Nostr protocol
-Extends EventEmitter to provide event-based message handling
-
-## Extends
-
-- `EventEmitter`
+NostrWSServer class for handling WebSocket connections
 
 ## Constructors
 
 ### new NostrWSServer()
 
-> **new NostrWSServer**(`wss`, `options`): [`NostrWSServer`](NostrWSServer.md)
+> **new NostrWSServer**(`options`): [`NostrWSServer`](NostrWSServer.md)
 
 #### Parameters
 
-##### wss
-
-`WebSocketServer`
-
 ##### options
 
-`Partial`\<[`NostrWSOptions`](../interfaces/NostrWSOptions.md)\> = `{}`
+`NostrWSServerOptions`
 
 #### Returns
 
 [`NostrWSServer`](NostrWSServer.md)
 
-#### Overrides
-
-`EventEmitter.constructor`
-
 #### Defined in
 
-[server.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L20)
+[core/server.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L24)
 
 ## Properties
 
 ### wss
 
-> `private` **wss**: `null` \| `WebSocketServer` = `null`
+> `private` **wss**: `WebSocketServer`
 
 #### Defined in
 
-[server.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L15)
+[core/server.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L19)
 
 ***
 
 ### options
 
-> `private` **options**: [`NostrWSOptions`](../interfaces/NostrWSOptions.md)
+> `private` **options**: `NostrWSServerOptions`
 
 #### Defined in
 
-[server.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L16)
+[core/server.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L20)
 
 ***
 
-### clients
+### rateLimiter?
 
-> `private` **clients**: `Map`\<`string`, [`ExtendedWebSocket`](../interfaces/ExtendedWebSocket.md)\>
+> `private` `optional` **rateLimiter**: `RateLimiter`
 
 #### Defined in
 
-[server.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L17)
+[core/server.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L21)
 
 ***
 
-### heartbeatInterval
+### pingInterval?
 
-> `private` **heartbeatInterval**: `null` \| `Timeout` = `null`
+> `private` `optional` **pingInterval**: `Timeout`
 
 #### Defined in
 
-[server.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L18)
+[core/server.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L22)
 
 ## Methods
 
@@ -87,25 +74,23 @@ Extends EventEmitter to provide event-based message handling
 
 > `private` **setupServer**(): `void`
 
+Set up WebSocket server event handlers
+
 #### Returns
 
 `void`
 
 #### Defined in
 
-[server.ts:41](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L41)
+[core/server.ts:52](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L52)
 
 ***
 
-### handleConnection()
+### startPingInterval()
 
-> `private` **handleConnection**(`ws`): `void`
+> `private` **startPingInterval**(): `void`
 
-#### Parameters
-
-##### ws
-
-[`ExtendedWebSocket`](../interfaces/ExtendedWebSocket.md)
+Start ping interval to check client connections
 
 #### Returns
 
@@ -113,33 +98,15 @@ Extends EventEmitter to provide event-based message handling
 
 #### Defined in
 
-[server.ts:54](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L54)
+[core/server.ts:107](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L107)
 
 ***
 
-### startHeartbeat()
+### stop()
 
-> `private` **startHeartbeat**(): `void`
+> **stop**(): `void`
 
-#### Returns
-
-`void`
-
-#### Defined in
-
-[server.ts:93](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L93)
-
-***
-
-### broadcast()
-
-> **broadcast**(`message`): `void`
-
-#### Parameters
-
-##### message
-
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+Stop the server and clean up resources
 
 #### Returns
 
@@ -147,42 +114,4 @@ Extends EventEmitter to provide event-based message handling
 
 #### Defined in
 
-[server.ts:114](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L114)
-
-***
-
-### broadcastToChannel()
-
-> **broadcastToChannel**(`channel`, `message`): `void`
-
-#### Parameters
-
-##### channel
-
-`string`
-
-##### message
-
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[server.ts:124](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L124)
-
-***
-
-### close()
-
-> **close**(): `void`
-
-#### Returns
-
-`void`
-
-#### Defined in
-
-[server.ts:135](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/server.ts#L135)
+[core/server.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L126)

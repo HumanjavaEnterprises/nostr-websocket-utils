@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ES2020",
+    "target": "es2020",
+    "module": "es2020",
     "moduleResolution": "node",
     "declaration": true,
     "outDir": "./dist",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["jest", "node"]
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["vitest/globals", "node"]
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/__mocks__/**"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
 }

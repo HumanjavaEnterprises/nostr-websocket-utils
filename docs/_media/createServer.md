@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -14,7 +14,7 @@ Creates a new Nostr WebSocket server instance
 
 ### options
 
-[`NostrWSServerOptions`](../interfaces/NostrWSServerOptions.md)
+`NostrWSServerOptions`
 
 Server configuration options
 
@@ -26,4 +26,4 @@ The created server instance
 
 ## Defined in
 
-[nostr-server.ts:123](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nostr-server.ts#L123)
+[core/nostr-server.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L108)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -6,28 +6,31 @@
 
 # Interface: ExtendedWebSocket
 
-Extended WebSocket interface with additional properties
- ExtendedWebSocket
+Extended WebSocket interface with client ID
 
 ## Extends
 
 - `WebSocket`
 
-## Extended by
-
-- [`NostrSocket`](NostrSocket.md)
-
 ## Properties
+
+### clientId?
+
+> `optional` **clientId**: `string`
+
+#### Defined in
+
+[types/index.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L21)
+
+***
 
 ### isAlive?
 
 > `optional` **isAlive**: `boolean`
 
-Whether the WebSocket connection is alive
-
 #### Defined in
 
-[types/index.ts:180](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L180)
+[types/index.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L22)
 
 ***
 
@@ -35,35 +38,9 @@ Whether the WebSocket connection is alive
 
 > `optional` **subscriptions**: `Set`\<`string`\>
 
-Set of subscription channels
-
 #### Defined in
 
-[types/index.ts:185](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L185)
-
-***
-
-### clientId?
-
-> `optional` **clientId**: `string`
-
-Unique client identifier
-
-#### Defined in
-
-[types/index.ts:190](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L190)
-
-***
-
-### messageQueue?
-
-> `optional` **messageQueue**: [`NostrWSMessage`](NostrWSMessage.md)[]
-
-Queue of messages to be sent
-
-#### Defined in
-
-[types/index.ts:195](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L195)
+[types/index.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L23)
 
 ***
 
@@ -71,11 +48,9 @@ Queue of messages to be sent
 
 > `optional` **lastPing**: `number`
 
-Timestamp of the last ping message
-
 #### Defined in
 
-[types/index.ts:200](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L200)
+[types/index.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L24)
 
 ***
 
@@ -83,8 +58,16 @@ Timestamp of the last ping message
 
 > `optional` **reconnectAttempts**: `number`
 
-Number of reconnect attempts
+#### Defined in
+
+[types/index.ts:25](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L25)
+
+***
+
+### messageQueue?
+
+> `optional` **messageQueue**: [`NostrWSMessage`](NostrWSMessage.md)[]
 
 #### Defined in
 
-[types/index.ts:205](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L205)
+[types/index.ts:26](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L26)

@@ -51,6 +51,7 @@ export class NostrWSServer {
       socket.on('message', async (data: Buffer) => {
         try {
           const message = JSON.parse(data.toString()) as NostrWSServerMessage;
+          logger.info('Received message:', message);
           /**
            * Calls the onMessage handler if provided
            */

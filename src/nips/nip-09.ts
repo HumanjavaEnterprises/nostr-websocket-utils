@@ -10,7 +10,11 @@ import type { NostrEvent, NostrSubscriptionEvent } from '../types/events';
 const logger = getLogger('NIP-09');
 
 /**
- * Event deletion result
+ * Represents the result of a deletion operation
+ * @interface DeletionResult
+ * @property {boolean} success - Whether the deletion operation was successful
+ * @property {string} [error] - Error message if the operation failed
+ * @property {string[]} [deletedIds] - Array of successfully deleted event IDs
  */
 interface DeletionResult {
   success: boolean;

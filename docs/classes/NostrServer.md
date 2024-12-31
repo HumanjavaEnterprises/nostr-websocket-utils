@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -20,7 +20,7 @@ Creates a new Nostr WebSocket server instance
 
 ##### options
 
-[`NostrWSServerOptions`](../interfaces/NostrWSServerOptions.md)
+`NostrWSServerOptions`
 
 Server configuration options
 
@@ -30,37 +30,25 @@ Server configuration options
 
 #### Defined in
 
-[nostr-server.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nostr-server.ts#L24)
+[core/nostr-server.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L22)
 
 ## Properties
 
 ### server
 
-> `private` **server**: `Server`\<*typeof* `WebSocket`, *typeof* `IncomingMessage`\>
+> `private` **server**: `WebSocketServer`
 
 The underlying WebSocket server instance
 
 #### Defined in
 
-[nostr-server.ts:12](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nostr-server.ts#L12)
-
-***
-
-### logger
-
-> `private` **logger**: `Logger`
-
-Logger instance for this server
-
-#### Defined in
-
-[nostr-server.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nostr-server.ts#L17)
+[core/nostr-server.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L15)
 
 ## Methods
 
-### close()
+### stop()
 
-> **close**(): `void`
+> **stop**(): `void`
 
 Closes the WebSocket server
 
@@ -70,4 +58,4 @@ Closes the WebSocket server
 
 #### Defined in
 
-[nostr-server.ts:112](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nostr-server.ts#L112)
+[core/nostr-server.ts:97](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L97)

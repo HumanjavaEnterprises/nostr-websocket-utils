@@ -9,6 +9,14 @@ import type { NostrEvent } from '../types/events';
 
 const logger = getLogger('NIP-26');
 
+/**
+ * Represents the conditions for a Nostr event delegation
+ * @interface DelegationConditions
+ * @property {number} [kind] - The kind of events this delegation is valid for
+ * @property {number} [since] - Unix timestamp from which this delegation is valid
+ * @property {number} [until] - Unix timestamp until which this delegation is valid
+ * @property {unknown} [key: string] - Any additional conditions
+ */
 interface DelegationConditions {
   kind?: number;
   since?: number;
@@ -16,6 +24,13 @@ interface DelegationConditions {
   [key: string]: unknown;
 }
 
+/**
+ * Represents a Nostr event delegation
+ * @interface Delegation
+ * @property {string} pubkey - The public key of the delegator
+ * @property {DelegationConditions} conditions - The conditions under which this delegation is valid
+ * @property {string} token - The delegation token signed by the delegator
+ */
 interface Delegation {
   pubkey: string;
   conditions: DelegationConditions;

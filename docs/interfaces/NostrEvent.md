@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -6,15 +6,27 @@
 
 # Interface: NostrEvent
 
+Base Nostr event interface following NIP-01 specification
+
+## See
+
+https://github.com/nostr-protocol/nips/blob/master/01.md
+
+## Extended by
+
+- [`SignedNostrEvent`](SignedNostrEvent.md)
+
 ## Properties
 
 ### id
 
 > **id**: `string`
 
+Event ID in hex format
+
 #### Defined in
 
-[types/nostr.ts:4](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L4)
+[types/events.ts:12](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L12)
 
 ***
 
@@ -22,9 +34,11 @@
 
 > **pubkey**: `string`
 
+Public key of the event creator in hex format
+
 #### Defined in
 
-[types/nostr.ts:5](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L5)
+[types/events.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L15)
 
 ***
 
@@ -32,9 +46,11 @@
 
 > **created\_at**: `number`
 
+Unix timestamp in seconds
+
 #### Defined in
 
-[types/nostr.ts:6](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L6)
+[types/events.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L18)
 
 ***
 
@@ -42,9 +58,11 @@
 
 > **kind**: `number`
 
+Event kind number
+
 #### Defined in
 
-[types/nostr.ts:7](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L7)
+[types/events.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L21)
 
 ***
 
@@ -52,9 +70,11 @@
 
 > **tags**: `string`[][]
 
+Array of tags
+
 #### Defined in
 
-[types/nostr.ts:8](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L8)
+[types/events.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L24)
 
 ***
 
@@ -62,9 +82,11 @@
 
 > **content**: `string`
 
+Event content
+
 #### Defined in
 
-[types/nostr.ts:9](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L9)
+[types/events.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L27)
 
 ***
 
@@ -72,6 +94,8 @@
 
 > **sig**: `string`
 
+Signature of the event data in hex format
+
 #### Defined in
 
-[types/nostr.ts:10](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/nostr.ts#L10)
+[types/events.ts:30](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/events.ts#L30)

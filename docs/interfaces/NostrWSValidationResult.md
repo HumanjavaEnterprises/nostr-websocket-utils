@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -7,7 +7,6 @@
 # Interface: NostrWSValidationResult
 
 Result of validating a NostrWSMessage
- NostrWSValidationResult
 
 ## Properties
 
@@ -19,7 +18,7 @@ Whether the message is valid
 
 #### Defined in
 
-[types/index.ts:216](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L216)
+[types/messages.ts:141](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L141)
 
 ***
 
@@ -27,8 +26,8 @@ Whether the message is valid
 
 > `optional` **error**: `string`
 
-Error message if the message is invalid
+Error message if validation failed
 
 #### Defined in
 
-[types/index.ts:221](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L221)
+[types/messages.ts:146](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L146)

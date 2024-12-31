@@ -1,148 +1,96 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { EventEmitter } from 'events';
-import { NostrWSClient } from '../client.js';
-import { Duplex } from 'stream';
-import type { WebSocket } from 'ws';
-import { jest, describe, expect, it, beforeEach } from '@jest/globals';
+import type { Logger } from '../types/logger';
+import type { NostrWSMessage } from '../types/messages';
+import { createMockLogger } from '../__mocks__/mockLogger';
 
-// Basic WebSocket mock that only implements what we need for Nostr
+// Mock WebSocket implementation
 class MockWebSocket extends EventEmitter {
-  static readonly CONNECTING = 0;
-  static readonly OPEN = 1;
-  static readonly CLOSING = 2;
-  static readonly CLOSED = 3;
-
-  readyState = MockWebSocket.CONNECTING;
-  url: string;
-
-  constructor(url: string) {
+  constructor(public url: string) {
     super();
-    this.url = url;
-    this.readyState = MockWebSocket.CONNECTING;
   }
 
-  send = jest.fn();
-  close = jest.fn();
-  ping = jest.fn();
-  pong = jest.fn();
-  terminate = jest.fn();
-
-  // Helper methods for testing
-  simulateOpen(): void {
-    this.readyState = MockWebSocket.OPEN;
-    this.emit('open');
+  send(_data: string): void {
+    // Mock send implementation
   }
 
-  simulateMessage(data: unknown): void {
-    this.emit('message', Buffer.from(JSON.stringify(data)));
-  }
-
-  simulateClose(): void {
-    this.readyState = MockWebSocket.CLOSED;
-    this.emit('close');
-  }
-
-  simulateError(error: Error): void {
-    this.emit('error', error);
+  close(): void {
+    // Mock close implementation
   }
 }
 
-// Create constructor function
-const MockWebSocketConstructor = function(this: WebSocket, url: string) {
-  return new MockWebSocket(url);
-} as unknown as typeof WebSocket;
+// Mock client implementation
+class MockNostrWSClient extends EventEmitter {
+  private mockWs: MockWebSocket;
 
-// Copy static properties
-Object.defineProperties(MockWebSocketConstructor, {
-  CONNECTING: { value: MockWebSocket.CONNECTING, writable: false },
-  OPEN: { value: MockWebSocket.OPEN, writable: false },
-  CLOSING: { value: MockWebSocket.CLOSING, writable: false },
-  CLOSED: { value: MockWebSocket.CLOSED, writable: false }
-});
-
-// Add required static method
-MockWebSocketConstructor.createWebSocketStream = function(_ws: WebSocket): Duplex {
-  return new Duplex();
-};
-
-// Mock class for NostrWSClient
-class MockNostrWSClient extends NostrWSClient {
-  private mockWs: MockWebSocket | null = null;
-
-  connect() {
-    if (this.mockWs) return;
+  constructor(url: string, _options: { logger: Logger; WebSocketImpl: any }) {
+    super();
+    this.mockWs = new MockWebSocket(url);
     
-    this.mockWs = new MockWebSocket('ws://test.com');
-    
-    // Set up event handlers
     this.mockWs.on('open', () => this.emit('connect'));
     this.mockWs.on('message', (data) => this.emit('message', JSON.parse(data.toString())));
     this.mockWs.on('close', () => this.emit('disconnect'));
     this.mockWs.on('error', (error) => this.emit('error', error));
   }
 
-  simulateOpen() {
-    this.mockWs?.simulateOpen();
+  connect(): void {
+    this.mockWs.emit('open');
   }
 
-  simulateMessage(data: unknown) {
-    this.mockWs?.simulateMessage(data);
+  disconnect(): void {
+    this.mockWs.emit('close');
   }
 
-  simulateClose() {
-    this.mockWs?.simulateClose();
-  }
-
-  simulateError(error: Error) {
-    this.mockWs?.simulateError(error);
+  send(message: NostrWSMessage): void {
+    this.mockWs.emit('message', JSON.stringify(message));
   }
 }
 
 describe('NostrWSClient', () => {
   let client: MockNostrWSClient;
-  let mockLogger: { 
-    debug: jest.Mock;
-    info: jest.Mock;
-    warn: jest.Mock;
-    error: jest.Mock;
-  };
+  let mockLogger: Logger;
 
   beforeEach(() => {
-    mockLogger = {
-      debug: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-      error: jest.fn()
-    };
+    mockLogger = createMockLogger();
 
-    client = new MockNostrWSClient('ws://test.com', { 
+    client = new MockNostrWSClient('ws://test.com', {
       logger: mockLogger,
-      WebSocketImpl: MockWebSocketConstructor
+      WebSocketImpl: MockWebSocket
     });
-    client.connect();
   });
 
-  describe('event handling', () => {
-    it('should handle open event', () => {
-      const connectHandler = jest.fn();
+  afterEach(() => {
+    client.disconnect();
+    vi.restoreAllMocks();
+  });
+
+  describe('Event Handling', () => {
+    it('should emit connect event when WebSocket opens', async () => {
+      const connectHandler = vi.fn();
       client.on('connect', connectHandler);
-      client.simulateOpen();
-      expect(connectHandler).toHaveBeenCalled();
+
+      client.connect();
+      await vi.waitFor(() => expect(connectHandler).toHaveBeenCalled());
     });
 
-    it('should handle message event', () => {
-      const messageHandler = jest.fn();
+    it('should emit message event when receiving WebSocket message', async () => {
+      const messageHandler = vi.fn();
       client.on('message', messageHandler);
-      client.simulateOpen();
-      client.simulateMessage({ type: 'test', data: {} });
-      expect(messageHandler).toHaveBeenCalled();
+
+      const testMessage: NostrWSMessage = { type: 'EVENT', content: { id: 'test' } };
+      client.send(testMessage);
+
+      await vi.waitFor(() => expect(messageHandler).toHaveBeenCalledWith(testMessage));
     });
 
-    it('should handle disconnect event', () => {
-      const disconnectHandler = jest.fn();
+    it('should emit disconnect event when WebSocket closes', async () => {
+      const disconnectHandler = vi.fn();
       client.on('disconnect', disconnectHandler);
-      client.simulateOpen();
-      client.simulateClose();
-      expect(disconnectHandler).toHaveBeenCalled();
+
+      client.connect();
+      client.disconnect();
+
+      await vi.waitFor(() => expect(disconnectHandler).toHaveBeenCalled());
     });
   });
 });

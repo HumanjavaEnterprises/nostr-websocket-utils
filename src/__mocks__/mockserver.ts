@@ -1,8 +1,11 @@
+import { vi } from 'vitest';
 import { EventEmitter } from 'events';
-import WebSocket from 'ws';
-import { IncomingMessage } from 'http';
-import { Socket } from 'net';
-import { jest } from '@jest/globals';
+import type { NostrWSMessage } from '../types/messages';
+import type { NostrWSSocket } from '../types/socket';
+import type { IncomingMessage } from 'http';
+import type { Socket } from 'net';
+import type { WebSocket } from 'ws';
+import { ExtendedWsMock } from './extendedWsMock';
 
 interface MockServerOptions {
   port?: number;
@@ -10,34 +13,49 @@ interface MockServerOptions {
   [key: string]: unknown;
 }
 
-class MockServer extends EventEmitter {
+export class MockServer extends EventEmitter {
+  clients: Set<NostrWSSocket> = new Set();
   options: MockServerOptions;
   path: string;
-  clients: Set<WebSocket>;
   address: string;
 
   constructor(options?: MockServerOptions) {
     super();
     this.options = options || {};
     this.path = '/';
-    this.clients = new Set();
     this.address = 'localhost';
   }
 
-  close(cb?: (err?: Error) => void): void {
-    this.clients.clear();
+  listen(port: number, cb?: () => void): void {
     if (cb) cb();
   }
 
-  handleUpgrade = jest.fn((request: IncomingMessage, socket: Socket, head: Buffer, callback: (ws: WebSocket) => void) => {
-    const ws = new WebSocket('ws://mock');
-    this.clients.add(ws);
+  handleConnection = vi.fn((socket: NostrWSSocket) => {
+    this.clients.add(socket);
+    this.emit('connection', socket);
+  });
+
+  handleMessage = vi.fn((socket: NostrWSSocket, message: NostrWSMessage) => {
+    this.emit('message', socket, message);
+  });
+
+  handleClose = vi.fn((socket: NostrWSSocket) => {
+    this.clients.delete(socket);
+    this.emit('close', socket);
+  });
+
+  broadcast = vi.fn((message: NostrWSMessage) => {
+    this.clients.forEach(client => {
+      client.send(JSON.stringify(message));
+    });
+  });
+
+  handleUpgrade = vi.fn((request: IncomingMessage, socket: Socket, head: Buffer, callback: (ws: WebSocket) => void) => {
+    const ws: WebSocket = new ExtendedWsMock() as unknown as WebSocket;
     callback(ws);
   });
 
-  shouldHandle = jest.fn((_request: IncomingMessage): boolean => {
+  shouldHandle = vi.fn((_request: IncomingMessage): boolean => {
     return true;
   });
 }
-
-export default MockServer;

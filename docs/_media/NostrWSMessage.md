@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -7,40 +7,87 @@
 # Interface: NostrWSMessage
 
 Structure of messages sent through the WebSocket connection
- NostrWSMessage
 
 ## Properties
 
 ### type
 
-> **type**: `MessageType`
+> **type**: [`MessageType`](../type-aliases/MessageType.md)
 
-Type of the message (e.g., 'EVENT', 'subscribe', 'unsubscribe')
+Type of the message following NIP specifications
 
 #### Defined in
 
-[types/index.ts:85](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L85)
+[types/messages.ts:76](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L76)
 
 ***
 
-### id?
+### content?
 
-> `optional` **id**: `string`
+> `optional` **content**: `unknown`
 
-Unique identifier for the message
+Message content - structure depends on type
 
 #### Defined in
 
-[types/index.ts:90](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L90)
+[types/messages.ts:81](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L81)
 
 ***
 
-### data
+### subscription\_id?
 
-> **data**: `Record`\<`string`, `unknown`\>
+> `optional` **subscription\_id**: `string`
 
-Data payload of the message
+Optional subscription ID for subscription-based messages
 
 #### Defined in
 
-[types/index.ts:95](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L95)
+[types/messages.ts:86](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L86)
+
+***
+
+### priority?
+
+> `optional` **priority**: [`MessagePriority`](../enumerations/MessagePriority.md)
+
+Message priority for queue management
+
+#### Defined in
+
+[types/messages.ts:91](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L91)
+
+***
+
+### queuedAt?
+
+> `optional` **queuedAt**: `number`
+
+Timestamp when the message was queued
+
+#### Defined in
+
+[types/messages.ts:96](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L96)
+
+***
+
+### retryCount?
+
+> `optional` **retryCount**: `number`
+
+Number of retry attempts for this message
+
+#### Defined in
+
+[types/messages.ts:101](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L101)
+
+***
+
+### data?
+
+> `optional` **data**: `unknown`
+
+Additional data for the message
+
+#### Defined in
+
+[types/messages.ts:106](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L106)

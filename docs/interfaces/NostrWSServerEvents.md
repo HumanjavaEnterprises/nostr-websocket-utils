@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -7,7 +7,6 @@
 # Interface: NostrWSServerEvents
 
 Events emitted by the NostrWSServer
- NostrWSServerEvents
 
 ## Properties
 
@@ -15,7 +14,7 @@ Events emitted by the NostrWSServer
 
 > **connection**: (`client`) => `void`
 
-Emitted when a client connects to the server
+Emitted when a client connects
 
 #### Parameters
 
@@ -31,7 +30,7 @@ The connected client
 
 #### Defined in
 
-[types/index.ts:156](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L156)
+[types/index.ts:142](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L142)
 
 ***
 
@@ -61,7 +60,7 @@ The client that sent the message
 
 #### Defined in
 
-[types/index.ts:163](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L163)
+[types/index.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L149)
 
 ***
 
@@ -77,7 +76,7 @@ Emitted when an error occurs
 
 `Error`
 
-The error object
+The error that occurred
 
 #### Returns
 
@@ -85,4 +84,4 @@ The error object
 
 #### Defined in
 
-[types/index.ts:169](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L169)
+[types/index.ts:155](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L155)

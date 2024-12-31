@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -7,7 +7,6 @@
 # Interface: NostrWSClientEvents
 
 Events emitted by the NostrWSClient
- NostrWSClientEvents
 
 ## Properties
 
@@ -23,7 +22,7 @@ Emitted when the client connects to the relay
 
 #### Defined in
 
-[types/index.ts:122](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L122)
+[types/index.ts:106](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L106)
 
 ***
 
@@ -39,7 +38,7 @@ Emitted when the client disconnects from the relay
 
 #### Defined in
 
-[types/index.ts:127](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L127)
+[types/index.ts:111](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L111)
 
 ***
 
@@ -55,13 +54,13 @@ Emitted when the client reconnects to the relay
 
 #### Defined in
 
-[types/index.ts:132](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L132)
+[types/index.ts:116](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L116)
 
 ***
 
 ### message()
 
-> **message**: (`message`) => `void`
+> **message**: (`message`) => `Promise`\<`void`\>
 
 Emitted when a message is received from the relay
 
@@ -75,11 +74,11 @@ The received message
 
 #### Returns
 
-`void`
+`Promise`\<`void`\>
 
 #### Defined in
 
-[types/index.ts:138](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L138)
+[types/index.ts:122](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L122)
 
 ***
 
@@ -95,7 +94,7 @@ Emitted when an error occurs
 
 `Error`
 
-The error object
+The error that occurred
 
 #### Returns
 
@@ -103,4 +102,52 @@ The error object
 
 #### Defined in
 
-[types/index.ts:144](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L144)
+[types/index.ts:128](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L128)
+
+***
+
+### close()
+
+> **close**: () => `void`
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[types/index.ts:129](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L129)
+
+***
+
+### stateChange()?
+
+> `optional` **stateChange**: (`state`) => `void`
+
+#### Parameters
+
+##### state
+
+[`ConnectionState`](../enumerations/ConnectionState.md)
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[types/index.ts:130](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L130)
+
+***
+
+### heartbeat()?
+
+> `optional` **heartbeat**: () => `void`
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[types/index.ts:131](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L131)

@@ -41,6 +41,32 @@ export enum MessagePriority {
 }
 
 /**
+ * Structure of a Nostr WebSocket event
+ */
+export interface NostrWSEvent {
+  id: string;
+  pubkey: string;
+  created_at: number;
+  kind: number;
+  tags: string[][];
+  content: string;
+  sig?: string;
+}
+
+/**
+ * Structure of a Nostr WebSocket filter
+ */
+export interface NostrWSFilter {
+  ids?: string[];
+  authors?: string[];
+  kinds?: number[];
+  since?: number;
+  until?: number;
+  limit?: number;
+  [key: string]: unknown;
+}
+
+/**
  * Structure of messages sent through the WebSocket connection
  */
 export interface NostrWSMessage {
@@ -50,9 +76,14 @@ export interface NostrWSMessage {
   type: MessageType;
   
   /**
-   * Message data payload
+   * Message content - structure depends on type
    */
-  data?: unknown;
+  content?: NostrWSEvent | NostrWSFilter | string | unknown;
+  
+  /**
+   * Optional subscription ID for subscription-based messages
+   */
+  subscription_id?: string;
 
   /**
    * Message priority for queue management
@@ -68,6 +99,11 @@ export interface NostrWSMessage {
    * Number of retry attempts for this message
    */
   retryCount?: number;
+
+  /**
+   * Additional data for the message
+   */
+  data?: unknown;
 }
 
 /**
@@ -126,3 +162,6 @@ export const MESSAGE_TYPES = {
   PONG: 'PONG',
   ERROR: 'error'
 } as const;
+
+// Re-export MessageType as NostrWSMessageType for backward compatibility
+export type NostrWSMessageType = MessageType;

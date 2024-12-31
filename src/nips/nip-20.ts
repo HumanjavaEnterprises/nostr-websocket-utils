@@ -33,7 +33,13 @@ export interface CommandResult {
 }
 
 /**
- * Command message data interface
+ * Represents the data structure for command messages
+ * @interface CommandMessageData
+ * @property {string} [event_id] - ID of the event this command relates to
+ * @property {boolean} [status] - Status of the command execution
+ * @property {string} [message] - Human-readable message about the command result
+ * @property {CommandStatusType} [code] - Status code of the command result
+ * @property {Record<string, unknown>} [details] - Additional details about the command result
  */
 interface CommandMessageData {
   event_id?: string;

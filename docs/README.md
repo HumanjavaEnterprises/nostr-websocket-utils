@@ -1,4 +1,4 @@
-**nostr-websocket-utils v0.2.5**
+**nostr-websocket-utils v0.3.0**
 
 ***
 
@@ -23,10 +23,64 @@ A TypeScript library for building Nostr protocol WebSocket clients and servers.
 - 🎯 Type-safe message handling
 - 📦 Easy to use API
 
+## NIPs Support Status
+
+🟢 Fully implemented 🟡 Partially implemented 🔴 Not implemented
+
+| NIP | Status | Description |
+|-----|--------|-------------|
+| 01 | 🟢 | Basic protocol flow & WebSocket connections |
+| 02 | 🟢 | Contact List and Petnames |
+| 11 | 🟢 | Relay Information Document |
+| 15 | 🟢 | End of Stored Events Notice |
+| 16 | 🟢 | Event Treatment |
+| 20 | 🟢 | Command Results |
+| 42 | 🟢 | Authentication of clients to relays |
+
+### WebSocket Protocol Implementation Details
+
+This package implements the Nostr WebSocket protocol with full support for the core NIPs that define WebSocket behavior. Here's how it works:
+
+#### Key Features & Compliance
+
+1. **Protocol Implementation**:
+   - Full implementation of Nostr WebSocket protocol
+   - Support for all standard message types (EVENT, REQ, CLOSE, etc.)
+   - Robust error handling and status reporting
+
+2. **Connection Management**:
+   - Automatic reconnection with configurable backoff
+   - Heartbeat mechanism for connection health
+   - Connection pooling and load balancing
+
+3. **Message Handling**:
+   - Type-safe message processing
+   - Support for subscription management
+   - Efficient event filtering
+
+4. **Security & Best Practices**:
+   - Secure WebSocket connections (WSS)
+   - Implementation of authentication protocols
+   - Rate limiting and protection mechanisms
+
+#### Interoperability
+
+This implementation ensures compatibility with:
+- All major Nostr relays
+- Other Nostr clients and libraries
+- Standard WebSocket tooling and infrastructure
+
+#### Validation & Testing
+
+The package includes:
+- Comprehensive test suites for protocol compliance
+- Connection reliability testing
+- Performance benchmarks for message handling
+
 ## Installation
 
 ```bash
-npm install @humanjavaenterprises/nostr-websocket-utils
+npm install nostr-websocket-utils
 ```
 
 ## Quick Start
@@ -34,7 +88,7 @@ npm install @humanjavaenterprises/nostr-websocket-utils
 ### Creating a Nostr WebSocket Client
 
 ```typescript
-import { NostrWSClient } from '@humanjavaenterprises/nostr-websocket-utils';
+import { NostrWSClient } from 'nostr-websocket-utils';
 
 const client = new NostrWSClient('wss://relay.example.com', {
   logger: console,
@@ -66,6 +120,14 @@ const server = await createNostrServer(8080, {
 });
 ```
 
+## Dependencies
+
+This package relies on:
+- [nostr-crypto-utils](https://github.com/HumanjavaEnterprises/nostr-crypto-utils) - For all cryptographic operations
+- [ws](https://github.com/websockets/ws) - For WebSocket functionality
+- [pino](https://github.com/pinojs/pino) - For logging
+- [uuid](https://github.com/uuidjs/uuid) - For unique identifiers
+
 ## Documentation
 
 Comprehensive API documentation is available in our [documentation site](https://humanjavaenterprises.github.io/nostr-websocket-utils/). Here's what you'll find:
@@ -86,7 +148,7 @@ Comprehensive API documentation is available in our [documentation site](https:/
 - [getLogger](_media/getLogger.md) - Logging utility
 
 ### Type Definitions
-- [MessageType](_media/NostrWSMessageType.md) - Message type enumeration
+- [MessageType](docs/enumerations/NostrWSMessageType.md) - Message type enumeration
 - [Global Types](_media/globals.md) - Global type definitions
 
 ## Examples
@@ -114,16 +176,9 @@ server.broadcast({
 });
 ```
 
-## Getting Help
-
-1. Check the [documentation](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
-2. Open an [issue](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues)
-
 ## Contributing
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Submit a Pull Request
+Contributions are welcome! Please read our [Contributing Guide](_media/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
 
@@ -132,4 +187,10 @@ This project is licensed under the MIT License - see the [LICENSE](_media/LICENS
 ## Related Projects
 
 - [nostr-protocol](https://github.com/nostr-protocol/nostr)
-- [nostr-tools](https://github.com/nbd-wtf/nostr-tools)
+
+## Support
+
+If you have any questions or need help, please:
+
+1. Check the [documentation](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
+2. Open an [issue](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues)

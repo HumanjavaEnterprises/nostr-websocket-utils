@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -6,18 +6,24 @@
 
 # Function: getLogger()
 
-> **getLogger**(`context`): `winston.Logger`
+> **getLogger**(`component`): [`Logger`](../type-aliases/Logger.md)
+
+Creates a logger instance for a specific component
 
 ## Parameters
 
-### context
+### component
 
 `string`
 
+Component name for the logger
+
 ## Returns
 
-`winston.Logger`
+[`Logger`](../type-aliases/Logger.md)
+
+Logger instance
 
 ## Defined in
 
-[utils/logger.ts:37](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/utils/logger.ts#L37)
+[utils/logger.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/utils/logger.ts#L23)

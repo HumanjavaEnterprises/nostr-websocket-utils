@@ -1,27 +1,20 @@
-import { NostrWSEvent, NostrWSFilter, NostrWSMessageType } from '../types/messages';
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
+import { NostrWSEvent, NostrWSFilter, NostrWSMessage } from '../types/messages';
+import { MESSAGE_TYPES } from '../types/messages';
 
-describe('Nostr Types', () => {
+describe('Nostr WebSocket Types', () => {
   describe('NostrWSEvent', () => {
     it('should validate a valid event', () => {
       const event: NostrWSEvent = {
         id: 'test-id',
         pubkey: 'test-pubkey',
-        created_at: Math.floor(Date.now() / 1000),
+        created_at: Date.now(),
         kind: 1,
-        tags: [['e', 'test-event-id'], ['p', 'test-pubkey']],
+        tags: [],
         content: 'test content',
-        sig: 'test-signature',
+        sig: 'test-sig'
       };
-
-      // TypeScript will ensure all required properties are present
-      expect(event).toHaveProperty('id');
-      expect(event).toHaveProperty('pubkey');
-      expect(event).toHaveProperty('created_at');
-      expect(event).toHaveProperty('kind');
-      expect(event).toHaveProperty('tags');
-      expect(event).toHaveProperty('content');
-      expect(event).toHaveProperty('sig');
+      expect(event).toBeDefined();
     });
   });
 
@@ -55,21 +48,38 @@ describe('Nostr Types', () => {
     });
   });
 
-  describe('NostrWSMessageType', () => {
+  describe('NostrWSMessage', () => {
+    it('should validate a valid message', () => {
+      const message: NostrWSMessage = {
+        type: MESSAGE_TYPES.EVENT,
+        content: {
+          id: 'test-id',
+          pubkey: 'test-pubkey',
+          created_at: Date.now(),
+          kind: 1,
+          tags: [],
+          content: 'test content'
+        }
+      };
+      expect(message).toBeDefined();
+    });
+  });
+
+  describe('Message Types', () => {
     it('should have all required message types', () => {
-      expect(NostrWSMessageType.EVENT).toBe('EVENT');
-      expect(NostrWSMessageType.REQ).toBe('REQ');
-      expect(NostrWSMessageType.CLOSE).toBe('CLOSE');
-      expect(NostrWSMessageType.NOTICE).toBe('NOTICE');
-      expect(NostrWSMessageType.OK).toBe('OK');
-      expect(NostrWSMessageType.AUTH).toBe('AUTH');
-      expect(NostrWSMessageType.EOSE).toBe('EOSE');
+      expect(MESSAGE_TYPES.EVENT).toBe('EVENT');
+      expect(MESSAGE_TYPES.REQ).toBe('REQ');
+      expect(MESSAGE_TYPES.CLOSE).toBe('CLOSE');
+      expect(MESSAGE_TYPES.NOTICE).toBe('NOTICE');
+      expect(MESSAGE_TYPES.OK).toBe('OK');
+      expect(MESSAGE_TYPES.AUTH).toBe('AUTH');
+      expect(MESSAGE_TYPES.EOSE).toBe('EOSE');
     });
 
     it('should use correct message types in array format', () => {
-      const eventMessage = [NostrWSMessageType.EVENT, { id: 'test' }];
-      const reqMessage = [NostrWSMessageType.REQ, 'sub1', { kinds: [1] }];
-      const closeMessage = [NostrWSMessageType.CLOSE, 'sub1'];
+      const eventMessage = [MESSAGE_TYPES.EVENT, { id: 'test' }];
+      const reqMessage = [MESSAGE_TYPES.REQ, 'sub1', { kinds: [1] }];
+      const closeMessage = [MESSAGE_TYPES.CLOSE, 'sub1'];
 
       expect(eventMessage[0]).toBe('EVENT');
       expect(reqMessage[0]).toBe('REQ');

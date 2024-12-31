@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.2.5**](../README.md)
+[**nostr-websocket-utils v0.3.0**](../README.md)
 
 ***
 
@@ -8,23 +8,6 @@
 
 WebSocket client implementation for Nostr protocol communication
 Extends EventEmitter to provide event-based message handling
-
-## Example
-
-```typescript
-const client = new NostrWSClient('wss://relay.example.com', {
-  logger: console,
-  heartbeatInterval: 30000,
-  handlers: {
-    message: async (msg) => console.log('Received:', msg),
-    error: (err) => console.error('Error:', err),
-    close: () => console.log('Connection closed')
-  }
-});
-
-await client.connect();
-client.send({ type: 'EVENT', data: { ... } });
-```
 
 ## Extends
 
@@ -36,29 +19,19 @@ client.send({ type: 'EVENT', data: { ... } });
 
 > **new NostrWSClient**(`url`, `options`): [`NostrWSClient`](NostrWSClient.md)
 
-Creates a new NostrWSClient instance
-
 #### Parameters
 
 ##### url
 
 `string`
 
-The WebSocket server URL to connect to
-
 ##### options
 
 `Partial`\<[`NostrWSOptions`](../interfaces/NostrWSOptions.md)\> = `{}`
 
-Configuration options
-
 #### Returns
 
 [`NostrWSClient`](NostrWSClient.md)
-
-#### Throws
-
-If logger is not provided
 
 #### Overrides
 
@@ -66,27 +39,37 @@ If logger is not provided
 
 #### Defined in
 
-[client.ts:53](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L53)
+[core/client.ts:62](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L62)
 
 ## Properties
 
 ### ws
 
-> `private` **ws**: `null` \| `WebSocket` = `null`
+> `private` **ws**: `null` \| [`ExtendedWebSocket`](../interfaces/ExtendedWebSocket.md) = `null`
 
 #### Defined in
 
-[client.ts:31](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L31)
+[core/client.ts:50](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L50)
 
 ***
 
-### options
+### state
 
-> `private` **options**: [`NostrWSOptions`](../interfaces/NostrWSOptions.md)
+> `private` **state**: [`ConnectionState`](../enumerations/ConnectionState.md) = `ConnectionState.DISCONNECTED`
 
 #### Defined in
 
-[client.ts:32](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L32)
+[core/client.ts:51](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L51)
+
+***
+
+### messageQueue
+
+> `private` **messageQueue**: `MessageQueue`
+
+#### Defined in
+
+[core/client.ts:52](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L52)
 
 ***
 
@@ -96,7 +79,7 @@ If logger is not provided
 
 #### Defined in
 
-[client.ts:33](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L33)
+[core/client.ts:53](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L53)
 
 ***
 
@@ -106,7 +89,27 @@ If logger is not provided
 
 #### Defined in
 
-[client.ts:34](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L34)
+[core/client.ts:54](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L54)
+
+***
+
+### heartbeatTimeout
+
+> `private` **heartbeatTimeout**: `null` \| `Timeout` = `null`
+
+#### Defined in
+
+[core/client.ts:55](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L55)
+
+***
+
+### missedHeartbeats
+
+> `private` **missedHeartbeats**: `number` = `0`
+
+#### Defined in
+
+[core/client.ts:56](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L56)
 
 ***
 
@@ -116,61 +119,103 @@ If logger is not provided
 
 #### Defined in
 
-[client.ts:35](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L35)
+[core/client.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L57)
 
 ***
 
-### messageQueue
+### subscriptions
 
-> `private` **messageQueue**: [`NostrWSMessage`](../interfaces/NostrWSMessage.md)[] = `[]`
+> `private` **subscriptions**: `Map`\<`string`, [`NostrWSMessage`](../interfaces/NostrWSMessage.md)\>
 
 #### Defined in
 
-[client.ts:36](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L36)
+[core/client.ts:58](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L58)
 
 ***
 
 ### clientId
 
-> `private` **clientId**: `string`
+> `private` `readonly` **clientId**: `string`
 
 #### Defined in
 
-[client.ts:37](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L37)
+[core/client.ts:59](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L59)
+
+***
+
+### options
+
+> `private` `readonly` **options**: [`NostrWSOptions`](../interfaces/NostrWSOptions.md)
+
+#### Defined in
+
+[core/client.ts:60](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L60)
 
 ***
 
 ### url
 
-> `private` **url**: `string`
-
-The WebSocket server URL to connect to
+> `private` `readonly` **url**: `string`
 
 #### Defined in
 
-[client.ts:53](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L53)
+[core/client.ts:62](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L62)
+
+## Accessors
+
+### connectionState
+
+#### Get Signature
+
+> **get** **connectionState**(): [`ConnectionState`](../enumerations/ConnectionState.md)
+
+Gets the current connection state
+
+##### Returns
+
+[`ConnectionState`](../enumerations/ConnectionState.md)
+
+#### Defined in
+
+[core/client.ts:95](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L95)
 
 ## Methods
 
-### connect()
+### setState()
 
-> **connect**(): `void`
+> `private` **setState**(`newState`): `void`
 
-Establishes a connection to the WebSocket server
+Updates the connection state and notifies handlers
+
+#### Parameters
+
+##### newState
+
+[`ConnectionState`](../enumerations/ConnectionState.md)
 
 #### Returns
 
 `void`
 
-#### Example
+#### Defined in
 
-```typescript
-client.connect();
-```
+[core/client.ts:102](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L102)
+
+***
+
+### connect()
+
+> **connect**(): `Promise`\<`void`\>
+
+Establishes a connection to the WebSocket server
+
+#### Returns
+
+`Promise`\<`void`\>
 
 #### Defined in
 
-[client.ts:79](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L79)
+[core/client.ts:111](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L111)
 
 ***
 
@@ -186,7 +231,7 @@ Sets up event handlers for the WebSocket connection
 
 #### Defined in
 
-[client.ts:101](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L101)
+[core/client.ts:156](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L156)
 
 ***
 
@@ -194,7 +239,7 @@ Sets up event handlers for the WebSocket connection
 
 > `private` **startHeartbeat**(): `void`
 
-Starts sending heartbeat messages at the specified interval
+Starts the heartbeat mechanism
 
 #### Returns
 
@@ -202,7 +247,23 @@ Starts sending heartbeat messages at the specified interval
 
 #### Defined in
 
-[client.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L149)
+[core/client.ts:190](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L190)
+
+***
+
+### handleHeartbeatResponse()
+
+> `private` **handleHeartbeatResponse**(): `void`
+
+Handles heartbeat responses
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[core/client.ts:217](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L217)
 
 ***
 
@@ -210,7 +271,7 @@ Starts sending heartbeat messages at the specified interval
 
 > `private` **stopHeartbeat**(): `void`
 
-Stops sending heartbeat messages
+Stops the heartbeat mechanism
 
 #### Returns
 
@@ -218,15 +279,21 @@ Stops sending heartbeat messages
 
 #### Defined in
 
-[client.ts:164](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L164)
+[core/client.ts:229](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L229)
 
 ***
 
-### handleReconnect()
+### handleConnectionError()
 
-> `private` **handleReconnect**(): `void`
+> `private` **handleConnectionError**(`error`): `void`
 
-Handles reconnecting to the WebSocket server after a disconnection
+Handles connection errors
+
+#### Parameters
+
+##### error
+
+`Error`
 
 #### Returns
 
@@ -234,7 +301,39 @@ Handles reconnecting to the WebSocket server after a disconnection
 
 #### Defined in
 
-[client.ts:176](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L176)
+[core/client.ts:243](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L243)
+
+***
+
+### handleDisconnection()
+
+> `private` **handleDisconnection**(): `void`
+
+Handles disconnection and cleanup
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[core/client.ts:252](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L252)
+
+***
+
+### reconnect()
+
+> `private` **reconnect**(): `void`
+
+Initiates reconnection with exponential backoff
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[core/client.ts:267](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L267)
 
 ***
 
@@ -250,27 +349,33 @@ Subscribes to a channel with optional filter
 
 `string`
 
-Channel name
-
 ##### filter?
 
 `unknown`
-
-Filter data
 
 #### Returns
 
 `void`
 
-#### Example
+#### Defined in
 
-```typescript
-client.subscribe('channel-name', { ...filterData });
-```
+[core/client.ts:306](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L306)
+
+***
+
+### resubscribeAll()
+
+> `private` **resubscribeAll**(): `void`
+
+Resubscribes to all active subscriptions
+
+#### Returns
+
+`void`
 
 #### Defined in
 
-[client.ts:197](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L197)
+[core/client.ts:320](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L320)
 
 ***
 
@@ -286,37 +391,51 @@ Unsubscribes from a channel
 
 `string`
 
-Channel name
-
 #### Returns
 
 `void`
 
-#### Example
-
-```typescript
-client.unsubscribe('channel-name');
-```
-
 #### Defined in
 
-[client.ts:213](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L213)
+[core/client.ts:329](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L329)
 
 ***
 
 ### flushMessageQueue()
 
-> `private` **flushMessageQueue**(): `void`
+> `private` **flushMessageQueue**(): `Promise`\<`void`\>
 
 Flushes the message queue by sending pending messages
 
 #### Returns
 
-`void`
+`Promise`\<`void`\>
 
 #### Defined in
 
-[client.ts:225](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L225)
+[core/client.ts:344](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L344)
+
+***
+
+### sendImmediate()
+
+> `private` **sendImmediate**(`message`): `Promise`\<`void`\>
+
+Sends a message immediately without queueing
+
+#### Parameters
+
+##### message
+
+[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+
+#### Returns
+
+`Promise`\<`void`\>
+
+#### Defined in
+
+[core/client.ts:362](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L362)
 
 ***
 
@@ -332,21 +451,13 @@ Sends a message to the WebSocket server
 
 [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
 
-Message to send
-
 #### Returns
 
 `Promise`\<`void`\>
 
-#### Example
-
-```typescript
-client.send({ type: 'EVENT', data: { ... } });
-```
-
 #### Defined in
 
-[client.ts:244](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L244)
+[core/client.ts:382](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L382)
 
 ***
 
@@ -360,12 +471,6 @@ Closes the WebSocket connection
 
 `void`
 
-#### Example
-
-```typescript
-client.close();
-```
-
 #### Defined in
 
-[client.ts:267](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/client.ts#L267)
+[core/client.ts:404](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/client.ts#L404)
