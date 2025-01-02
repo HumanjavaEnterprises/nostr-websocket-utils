@@ -4,11 +4,11 @@
  */
 
 import { WebSocket, WebSocketServer } from 'ws';
-import { createLogger } from '../utils/logger';
-import { createRateLimiter } from '../utils/rate-limiter';
-import { NostrWSServerOptions, NostrWSServerSocket } from '../types/websocket';
-import { NostrWSMessage } from '../types/messages';
-import { RateLimiter } from '../utils/rate-limiter';
+import { createLogger } from '../utils/logger.js';
+import { createRateLimiter } from '../utils/rate-limiter.js';
+import { NostrWSServerOptions, NostrWSServerSocket } from '../types/websocket.js';
+import { NostrWSMessage } from '../types/messages.js';
+import { RateLimiter } from '../utils/rate-limiter.js';
 import { v4 as uuidv4 } from 'uuid';
 
 const logger = createLogger('NostrWSServer');
