@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.9] - 2025-01-02
+
+### Fixed
+- Enhanced Node.js compatibility with proper CJS/ESM module support
+- Improved module resolution for both CommonJS and ES Module environments
+- Fixed package exports to ensure consistent behavior across different Node.js versions
+
 ## [0.3.1] - 2024-12-30
 
 ### Changed

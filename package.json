@@ -1,20 +1,20 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.3.7",
+  "version": "0.3.9",
   "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, channel-based messaging, and type-safe handlers. Features heartbeat monitoring, message queueing, and comprehensive error handling.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/cjs/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     },
     "./crypto": {
+      "types": "./dist/crypto/index.d.ts",
       "import": "./dist/crypto/index.js",
-      "require": "./dist/cjs/crypto/index.js",
-      "types": "./dist/crypto/index.d.ts"
+      "default": "./dist/crypto/index.js"
     }
   },
   "scripts": {
