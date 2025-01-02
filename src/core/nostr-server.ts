@@ -1,7 +1,7 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { v4 as uuidv4 } from 'uuid';
-import { getLogger } from '../utils/logger';
-import { NostrWSServerSocket, NostrWSServerOptions, NostrWSServerMessage } from '../types/websocket';
+import { getLogger } from '../utils/logger.js';
+import { NostrWSServerSocket, NostrWSServerOptions, NostrWSServerMessage } from '../types/websocket.js';
 
 const logger = getLogger('NostrWSServer');
 
