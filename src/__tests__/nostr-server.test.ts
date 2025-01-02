@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createWSServer } from '../core/nostr-server';
-import { MESSAGE_TYPES } from '../types/messages';
-import type { NostrWSSocket } from '../types/socket';
-import type { NostrWSEvent } from '../types/messages';
-import type { NostrWSMessage } from '../types/messages';
+import { createWSServer } from '../core/nostr-server.js';
+import { MESSAGE_TYPES } from '../types/messages.js';
+import type { NostrWSSocket } from '../types/socket.js';
+import type { NostrWSEvent } from '../types/messages.js';
+import type { NostrWSMessage } from '../types/messages.js';
 
 describe('NostrWSServer', () => {
   let mockSocket: NostrWSSocket;
