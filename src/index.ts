@@ -13,10 +13,10 @@ export { createWSServer as createServer } from './core/nostr-server.js';
 export { getLogger } from './utils/logger.js';
 
 // Crypto operations
-export * from './crypto';
+export * from './crypto/index.js';
 
 // NIP implementations
-export * from './nips';
+export * from './nips/index.js';
 
 // Type definitions
-export * from './types';
+export * from './types/index.js';
