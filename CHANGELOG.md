@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.10] - 2025-01-02
+
+### Changed
+- Updated nostr-crypto-utils dependency to ^0.4.10 for better ESM compatibility
+
 ## [0.3.9] - 2025-01-02
 
 ### Fixed

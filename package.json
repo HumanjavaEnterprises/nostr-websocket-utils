@@ -1,6 +1,6 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, channel-based messaging, and type-safe handlers. Features heartbeat monitoring, message queueing, and comprehensive error handling.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -54,7 +54,7 @@
   "homepage": "https://humanjavaenterprises.github.io/nostr-websocket-utils",
   "dependencies": {
     "@types/uuid": "^10.0.0",
-    "nostr-crypto-utils": "^0.4.2",
+    "nostr-crypto-utils": "^0.4.10",
     "pino": "^8.17.2",
     "uuid": "^11.0.3",
     "ws": "^8.16.0"
