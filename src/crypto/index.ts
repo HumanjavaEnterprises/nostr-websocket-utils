@@ -3,4 +3,5 @@
  * @module crypto
  */
 
-export * from './handlers';
+export * from './handlers.js';
+export * from './bech32.js';
