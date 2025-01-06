@@ -1,20 +1,21 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.3.10",
-  "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, channel-based messaging, and type-safe handlers. Features heartbeat monitoring, message queueing, and comprehensive error handling.",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "version": "0.3.11",
+  "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, supporting both ESM and CommonJS. Features channel-based messaging, heartbeat monitoring, message queueing, and comprehensive error handling with type-safe handlers.",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "type": "module",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "default": "./dist/index.js"
+      "require": "./dist/cjs/index.js"
     },
     "./crypto": {
       "types": "./dist/crypto/index.d.ts",
       "import": "./dist/crypto/index.js",
-      "default": "./dist/crypto/index.js"
+      "require": "./dist/cjs/crypto/index.js"
     }
   },
   "scripts": {
@@ -32,15 +33,15 @@
     "nostr",
     "websocket",
     "typescript",
-    "ws",
-    "realtime",
-    "pubsub",
-    "channel-based",
+    "esm",
+    "commonjs",
+    "dual-module",
+    "nostr-protocol",
+    "websocket-client",
     "reconnection",
     "heartbeat",
     "message-queue",
-    "type-safe",
-    "maiqr"
+    "type-safe"
   ],
   "author": "vveerrgg",
   "license": "MIT",
@@ -51,10 +52,10 @@
   "bugs": {
     "url": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils/issues"
   },
-  "homepage": "https://humanjavaenterprises.github.io/nostr-websocket-utils",
+  "homepage": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils#readme",
   "dependencies": {
     "@types/uuid": "^10.0.0",
-    "nostr-crypto-utils": "^0.4.10",
+    "nostr-crypto-utils": "file:../nostr-crypto-utils",
     "pino": "^8.17.2",
     "uuid": "^11.0.3",
     "ws": "^8.16.0"

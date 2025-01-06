@@ -1,8 +1,9 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build artifacts
+*.tsbuildinfo
+*.tgz
 
 # Coverage directory
 coverage/
@@ -26,5 +27,6 @@ yarn-error.log*
 .DS_Store
 
 # Test coverage
-coverage/
 .nyc_output/
+
+# Project specific
