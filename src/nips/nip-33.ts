@@ -4,8 +4,8 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/33.md
  */
 
-import type { NostrWSMessage } from '../types/messages';
-import type { Logger } from '../types/logger';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
 
 /**
  * Parameterized replaceable event kinds (30000-39999)

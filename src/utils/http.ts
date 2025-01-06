@@ -1,9 +1,9 @@
 /**
- * @file HTTP utility functions
+ * @file HTTP utilities
  * @module utils/http
  */
 
-import { getLogger } from './logger';
+import { getLogger } from './logger.js';
 
 const logger = getLogger('http');
 

@@ -4,8 +4,8 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/02.md
  */
 
-import type { NostrWSMessage } from '../types/messages';
-import type { Logger } from '../types/logger';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
 
 /**
  * Contact list event kind

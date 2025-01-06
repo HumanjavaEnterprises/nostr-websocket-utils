@@ -1,11 +1,11 @@
 import { vi } from 'vitest';
 import { EventEmitter } from 'events';
-import type { NostrWSMessage } from '../types/messages';
-import type { NostrWSSocket } from '../types/socket';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { NostrWSSocket } from '../types/socket.js';
 import type { IncomingMessage } from 'http';
 import type { Socket } from 'net';
 import type { WebSocket } from 'ws';
-import { ExtendedWsMock } from './extendedWsMock';
+import { ExtendedWsMock } from './extendedWsMock.js';
 
 interface MockServerOptions {
   port?: number;

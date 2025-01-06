@@ -4,7 +4,7 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/05.md
  */
 
-import { fetchJson } from '../utils/http';
+import { fetchJson } from '../utils/http.js';
 import { Logger } from 'pino';
 
 /**

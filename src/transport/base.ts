@@ -4,15 +4,15 @@
  */
 
 import { EventEmitter } from 'events';
-import { getLogger } from '../utils/logger';
-import { DefaultScoringStrategy } from '../types/scoring';
+import { getLogger } from '../utils/logger.js';
+import { DefaultScoringStrategy } from '../types/scoring.js';
 import type { 
   MetricsProvider, 
   ScoringStrategy, 
   MetricUpdateEvent,
   MetricValue,
   TransportData 
-} from '../types/scoring';
+} from '../types/scoring.js';
 
 const logger = getLogger('BaseTransport');
 

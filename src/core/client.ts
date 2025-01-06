@@ -2,10 +2,10 @@ import WebSocket from 'ws';
 import { 
   NostrWSMessage, 
   ConnectionState
-} from '../types';
-import { NostrWSClientOptions } from '../types/websocket';
-import { MessageQueue } from './queue';
-import { createLogger } from '../utils/logger';
+} from '../types/index.js';
+import { NostrWSClientOptions } from '../types/websocket.js';
+import { MessageQueue } from './queue.js';
+import { createLogger } from '../utils/logger.js';
 import { Logger } from 'pino';
 
 /**

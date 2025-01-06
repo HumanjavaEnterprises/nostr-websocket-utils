@@ -3,7 +3,7 @@
  * @module types/messages
  */
 
-import { MessagePriority } from './priority';
+import { MessagePriority } from './priority.js';
 
 /**
  * Message types that can be sent through the WebSocket connection

@@ -5,8 +5,8 @@
  */
 
 import { createHash } from 'crypto';
-import type { NostrWSMessage } from '../types/messages';
-import type { Logger } from '../types/logger';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
 
 /**
  * Calculates the number of leading zero bits in a hex string

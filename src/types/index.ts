@@ -4,16 +4,16 @@
  */
 
 import type { WebSocket } from 'ws';
-import type { Logger } from './logger';
-import type { NostrWSMessage, NostrEvent as MessageNostrEvent } from './messages';
+import type { Logger } from './logger.js';
+import type { NostrWSMessage, NostrEvent as MessageNostrEvent } from './messages.js';
 
 // Re-export specific types to avoid ambiguity
-export { NostrWSMessage } from './messages';
-export { QueueItem } from './messages';
-export * from './filters';
-export * from './relays';
-export * from './logger';
-export * from './priority';
+export type { NostrWSMessage } from './messages.js';
+export type { QueueItem } from './messages.js';
+export * from './filters.js';
+export * from './relays.js';
+export * from './logger.js';
+export * from './priority.js';
 
 // Export the NostrEvent from messages.ts as our canonical version
 export type NostrEvent = MessageNostrEvent;

@@ -3,11 +3,11 @@
  * @module crypto/handlers
  */
 
-import { getLogger } from '../utils/logger';
-import type { NostrWSMessage } from '../types/messages';
-import { MESSAGE_TYPES } from '../types/messages';
-import type { NostrEvent, SignedNostrEvent } from '../types/events';
-import { validateEvent, verifySignature } from 'nostr-crypto-utils';
+import { getLogger } from '../utils/logger.js';
+import type { NostrWSMessage } from '../types/messages.js';
+import { MESSAGE_TYPES } from '../types/messages.js';
+import type { NostrEvent, SignedNostrEvent } from '../types/events.js';
+import { validateRelayMessage as validateEvent, verifySignature } from 'nostr-crypto-utils';
 
 const logger = getLogger('crypto');
 

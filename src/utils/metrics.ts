@@ -4,7 +4,7 @@
  */
 
 import { EventEmitter } from 'events';
-import { getLogger } from './logger';
+import { getLogger } from './logger.js';
 
 const logger = getLogger('RelayMetrics');
 

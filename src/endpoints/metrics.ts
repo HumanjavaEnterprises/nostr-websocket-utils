@@ -4,8 +4,8 @@
  */
 
 import { createServer, IncomingMessage, ServerResponse } from 'http';
-import { metricsTracker } from '../utils/metrics';
-import { getLogger } from '../utils/logger';
+import { metricsTracker } from '../utils/metrics.js';
+import { getLogger } from '../utils/logger.js';
 
 const logger = getLogger('MetricsEndpoint');
 

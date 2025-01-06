@@ -3,8 +3,8 @@
  * @module utils/rate-limiter
  */
 
-import type { NostrWSMessage } from '../types/messages';
-import type { Logger } from '../types/logger';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
 
 /**
  * Rate limit configuration for different message types

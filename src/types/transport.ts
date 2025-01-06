@@ -3,8 +3,8 @@
  * @module types/transport
  */
 
-import { NostrEvent } from './events';
-import { NostrWSMessage } from './messages';
+import { NostrEvent } from './events.js';
+import { NostrWSMessage } from './messages.js';
 
 /**
  * Base transport interface

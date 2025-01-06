@@ -4,8 +4,8 @@
  */
 
 import type { WebSocket } from 'ws';
-import type { NostrWSMessage } from './messages';
-import type { ExtendedWebSocket } from './websocket';
+import type { NostrWSMessage } from './messages.js';
+import type { ExtendedWebSocket } from './websocket.js';
 
 /**
  * Events emitted by the NostrWSClient

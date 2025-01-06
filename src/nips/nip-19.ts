@@ -3,8 +3,8 @@
  * @module nips/nip-19
  */
 
-import { getLogger } from '../utils/logger';
-import { encodeToBech32, decodeFromBech32 } from '../crypto/bech32';
+import { getLogger } from '../utils/logger.js';
+import { encodeToBech32, decodeFromBech32 } from '../crypto/bech32.js';
 
 const logger = getLogger('NIP-19');
 

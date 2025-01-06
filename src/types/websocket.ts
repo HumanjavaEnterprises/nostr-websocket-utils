@@ -4,9 +4,9 @@
  */
 
 import { WebSocket } from 'ws';
-import { MessageType, NostrWSMessage } from './messages';
-import { MessagePriority } from './priority';
-import { RateLimitConfig } from '../utils/rate-limiter';
+import { MessageType, NostrWSMessage } from './messages.js';
+import { MessagePriority } from './priority.js';
+import { RateLimitConfig } from '../utils/rate-limiter.js';
 import { Logger } from 'pino';
 
 /**

@@ -3,9 +3,9 @@
  * @module nips/nip-26
  */
 
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 import { signEvent, verifySignature } from 'nostr-crypto-utils';
-import type { NostrEvent } from '../types/events';
+import type { NostrEvent } from '../types/events.js';
 
 const logger = getLogger('NIP-26');
 

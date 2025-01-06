@@ -3,8 +3,8 @@
  * @module core/queue
  */
 
-import { NostrWSMessage, MessagePriority, QueueItem } from '../types';
-import { createLogger } from '../utils/logger';
+import { NostrWSMessage, MessagePriority, QueueItem } from '../types/index.js';
+import { createLogger } from '../utils/logger.js';
 import { Logger } from 'pino';
 
 /**

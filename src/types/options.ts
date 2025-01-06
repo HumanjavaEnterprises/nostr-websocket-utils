@@ -4,7 +4,7 @@
  */
 
 import WebSocket from 'ws';
-import { NostrWSMessage } from './messages';
+import { NostrWSMessage } from './messages.js';
 
 /**
  * Handler functions for WebSocket events

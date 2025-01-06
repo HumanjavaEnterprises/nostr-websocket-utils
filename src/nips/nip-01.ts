@@ -3,9 +3,9 @@
  * @module nips/nip-01
  */
 
-import { getLogger } from '../utils/logger';
-import type { NostrWSMessage, NostrEvent } from '../types/messages';
-import { MESSAGE_TYPES } from '../types/messages';
+import { getLogger } from '../utils/logger.js';
+import type { NostrWSMessage, NostrEvent } from '../types/messages.js';
+import { MESSAGE_TYPES } from '../types/messages.js';
 
 const logger = getLogger('NIP-01');
 

@@ -4,7 +4,7 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/09.md
  */
 
-import type { NostrEvent, NostrSubscriptionEvent } from '../types/events';
+import type { NostrEvent, NostrSubscriptionEvent } from '../types/events.js';
 
 /**
  * Represents the result of a deletion operation

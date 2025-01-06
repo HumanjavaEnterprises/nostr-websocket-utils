@@ -4,7 +4,7 @@
  */
 
 import type { WebSocket } from 'ws';
-import type { NostrWSMessage } from './messages';
+import type { NostrWSMessage } from './messages.js';
 
 /**
  * Extended WebSocket interface with Nostr-specific properties

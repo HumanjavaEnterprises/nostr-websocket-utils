@@ -3,8 +3,8 @@
  * @module types/validation
  */
 
-import { NostrEvent } from './events';
-import { NostrWSMessage } from './messages';
+import { NostrEvent } from './events.js';
+import { NostrWSMessage } from './messages.js';
 
 /**
  * Validation result interface

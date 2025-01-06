@@ -4,9 +4,9 @@
  */
 
 import type { WebSocket as WSClient } from 'ws';
-import { Logger } from './logger';
-import type { NostrWSMessage } from './messages';
-import type { NostrEvent } from './events';
+import { Logger } from './logger.js';
+import type { NostrWSMessage } from './messages.js';
+import type { NostrEvent } from './events.js';
 
 /**
  * Signed Nostr event with id and signature

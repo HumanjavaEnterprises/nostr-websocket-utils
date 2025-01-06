@@ -3,7 +3,7 @@
  * @module types/filters
  */
 
-import { NostrEventFilter } from './events';
+import { NostrEventFilter } from './events.js';
 
 /**
  * Subscription request filter

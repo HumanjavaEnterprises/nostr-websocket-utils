@@ -4,9 +4,9 @@
  */
 
 import WebSocket from 'ws';
-import { BaseTransport } from './base';
-import { getLogger } from '../utils/logger';
-import type { TransportOptions } from './base';
+import { BaseTransport } from './base.js';
+import { getLogger } from '../utils/logger.js';
+import type { TransportOptions } from './base.js';
 
 const logger = getLogger('WebSocketTransport');
 

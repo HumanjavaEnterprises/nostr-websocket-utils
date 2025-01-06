@@ -5,8 +5,8 @@
  */
 
 import { encryptMessage, decryptMessage } from 'nostr-crypto-utils';
-import type { NostrWSMessage, NostrEvent } from '../types/messages';
-import type { Logger } from '../types/logger';
+import type { NostrWSMessage, NostrEvent } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
 
 /**
  * Kind value for encrypted direct messages

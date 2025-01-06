@@ -37,4 +37,4 @@ export function getChildLogger(parent: Logger, bindings: object): Logger {
   return parent.child(bindings);
 }
 
-export { Logger };
+export type { Logger };

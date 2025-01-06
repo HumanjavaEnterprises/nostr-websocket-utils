@@ -4,9 +4,9 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/22.md
  */
 
-import type { NostrWSMessage } from '../types/messages';
-import type { Logger } from '../types/logger';
-import type { NostrEvent } from '../types/events';
+import type { NostrWSMessage } from '../types/messages.js';
+import type { Logger } from '../types/logger.js';
+import type { NostrEvent } from '../types/events.js';
 
 /**
  * Default time limits in seconds

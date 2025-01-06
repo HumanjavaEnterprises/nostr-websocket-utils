@@ -3,8 +3,8 @@
  * @module nips/nip-20
  */
 
-import { NostrWSMessage } from '../types';
-import { getLogger } from '../utils/logger';
+import { NostrWSMessage } from '../types/index.js';
+import { getLogger } from '../utils/logger.js';
 
 const logger = getLogger('NIP-20');
 
