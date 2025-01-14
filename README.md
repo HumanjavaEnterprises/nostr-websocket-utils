@@ -117,6 +117,62 @@ const server = await createNostrServer(8080, {
 });
 ```
 
+## Browser Usage
+
+This library now supports direct browser usage! You can use it in your client-side applications in two ways:
+
+### Via NPM (Recommended)
+
+```javascript
+import { NostrWSClient } from 'nostr-websocket-utils';
+
+const client = new NostrWSClient({
+  url: 'wss://relay.damus.io',
+  options: {
+    autoReconnect: true,
+    maxRetries: 3
+  }
+});
+
+client.onMessage((message) => {
+  console.log('Received:', message);
+});
+
+client.connect();
+```
+
+### Via CDN
+
+```html
+<script src="https://unpkg.com/nostr-websocket-utils/dist/browser/nostr-websocket-utils.min.js"></script>
+<script>
+  const client = new NostrWebSocketUtils.NostrWSClient({
+    url: 'wss://relay.damus.io',
+    options: {
+      autoReconnect: true,
+      maxRetries: 3
+    }
+  });
+
+  client.onMessage((message) => {
+    console.log('Received:', message);
+  });
+
+  client.connect();
+</script>
+```
+
+### Features in Browser Environment
+
+- Direct WebSocket connections to Nostr relays
+- Automatic reconnection handling
+- Message queueing
+- Type-safe handlers
+- Full compatibility with browser environments
+- Source maps for better debugging
+
+See the `examples/browser.html` file for a complete example of browser usage.
+
 ## Dependencies
 
 This package uses:

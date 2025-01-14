@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [0.3.14] - 2025-01-13
+
+### Added
+- Browser support via webpack bundle
+- New browser entry point for direct browser usage
+- Example HTML file demonstrating browser usage
+- Source maps for better debugging
+- UMD bundle for CDN usage
+
+### Changed
+- Updated package.json to include browser field
+- Enhanced build process to support browser environments
+
 ## [0.3.10] - 2025-01-02
 
 ### Changed
