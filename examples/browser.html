@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nostr WebSocket Utils Browser Demo</title>
+</head>
+<body>
+    <h1>Nostr WebSocket Utils Browser Demo</h1>
+    <div id="status"></div>
+    <div id="messages"></div>
+
+    <script src="../dist/browser/nostr-websocket-utils.min.js"></script>
+    <script>
+        // Example usage
+        const client = new NostrWebSocketUtils.NostrWSClient({
+            url: 'wss://relay.damus.io',
+            options: {
+                autoReconnect: true,
+                maxRetries: 3
+            }
+        });
+
+        client.onMessage((message) => {
+            const messagesDiv = document.getElementById('messages');
+            messagesDiv.innerHTML += `<p>Received: ${JSON.stringify(message)}</p>`;
+        });
+
+        client.onStatusChange((status) => {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = `Status: ${status}`;
+        });
+
+        // Connect to the relay
+        client.connect();
+    </script>
+</body>
+</html>
