@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.3.14] - 2025-01-13
+## [0.3.14] - 2025-02-19
+
+### Changed
+- Updated dependencies and fixed broken validateResponse import
+- Fixed import from nostr-crypto-utils
+
+## [0.3.13] - 2025-01-13
 
 ### Added
 - Browser support via webpack bundle
@@ -20,10 +26,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated package.json to include browser field
 - Enhanced build process to support browser environments
 
+## [0.3.11] - 2025-01-05
+
+### Added
+- CommonJS support and included dist/ in package
+
 ## [0.3.10] - 2025-01-02
 
 ### Changed
 - Updated nostr-crypto-utils dependency to ^0.4.10 for better ESM compatibility
+- Updated to use npm-published nostr-crypto-utils package
 
 ## [0.3.9] - 2025-01-02
 
