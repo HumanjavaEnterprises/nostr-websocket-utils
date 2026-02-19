@@ -1,6 +1,6 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.3.13",
+  "version": "0.3.14",
   "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, supporting both ESM and CommonJS. Features channel-based messaging, heartbeat monitoring, message queueing, and comprehensive error handling with type-safe handlers.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
@@ -59,27 +59,27 @@
   "homepage": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils#readme",
   "dependencies": {
     "@types/uuid": "^10.0.0",
-    "nostr-crypto-utils": "^0.4.12",
-    "pino": "^8.17.2",
-    "uuid": "^11.0.3",
-    "ws": "^8.16.0"
+    "nostr-crypto-utils": "^0.4.15",
+    "pino": "^8.21.0",
+    "uuid": "^11.1.0",
+    "ws": "^8.19.0"
   },
   "devDependencies": {
-    "@types/node": "^20.10.6",
-    "@types/ws": "^8.5.10",
+    "@types/node": "^20.19.33",
+    "@types/ws": "^8.18.1",
     "@typescript-eslint/eslint-plugin": "^6.16.0",
     "@typescript-eslint/parser": "^6.16.0",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^1.6.1",
     "eslint": "^8.56.0",
-    "ts-loader": "^9.5.1",
+    "terser-webpack-plugin": "^5.3.16",
+    "ts-loader": "^9.5.4",
     "typedoc": "^0.27.5",
     "typedoc-plugin-markdown": "^4.3.2",
-    "typescript": "^5.3.3",
-    "vitest": "^1.6.0",
-    "webpack": "^5.89.0",
+    "typescript": "^5.9.3",
+    "vitest": "^1.6.1",
+    "webpack": "^5.105.2",
     "webpack-bundle-analyzer": "^4.10.1",
-    "webpack-cli": "^5.1.4",
-    "terser-webpack-plugin": "^5.3.9"
+    "webpack-cli": "^5.1.4"
   },
   "files": [
     "dist",

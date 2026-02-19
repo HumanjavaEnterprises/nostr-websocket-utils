@@ -4,7 +4,7 @@
  */
 import { getLogger } from '../utils/logger.js';
 import { MESSAGE_TYPES } from '../types/messages.js';
-import { validateRelayMessage as validateEvent, verifySignature } from 'nostr-crypto-utils';
+import { validateEvent, verifySignature } from 'nostr-crypto-utils';
 const logger = getLogger('crypto');
 /**
  * Validates a signed message

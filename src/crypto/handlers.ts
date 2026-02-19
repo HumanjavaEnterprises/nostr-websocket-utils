@@ -7,7 +7,7 @@ import { getLogger } from '../utils/logger.js';
 import type { NostrWSMessage } from '../types/messages.js';
 import { MESSAGE_TYPES } from '../types/messages.js';
 import type { NostrEvent, SignedNostrEvent } from '../types/events.js';
-import { validateResponse as validateEvent, verifySignature } from 'nostr-crypto-utils';
+import { validateEvent, verifySignature } from 'nostr-crypto-utils';
 
 const logger = getLogger('crypto');
 

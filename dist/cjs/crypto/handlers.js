@@ -22,7 +22,7 @@ async function validateSignedMessage(message) {
             return false;
         }
         const event = message[1];
-        if (!(0, nostr_crypto_utils_1.validateRelayMessage)(event)) {
+        if (!(0, nostr_crypto_utils_1.validateEvent)(event)) {
             logger.debug('Invalid event format');
             return false;
         }
