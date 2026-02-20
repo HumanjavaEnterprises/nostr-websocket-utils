@@ -1,6 +1,6 @@
 {
   "name": "nostr-websocket-utils",
-  "version": "0.3.15",
+  "version": "0.3.16",
   "description": "Robust WebSocket utilities for Nostr applications with automatic reconnection, supporting both ESM and CommonJS. Features channel-based messaging, heartbeat monitoring, message queueing, and comprehensive error handling with type-safe handlers.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/index.js",
@@ -21,7 +21,7 @@
   },
   "scripts": {
     "build": "npm run build:ts && npm run build:browser",
-    "build:ts": "tsc && tsc -p tsconfig.cjs.json",
+    "build:ts": "tsc && tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
     "build:browser": "webpack",
     "test": "vitest run",
     "test:watch": "vitest",

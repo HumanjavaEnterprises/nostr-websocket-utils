@@ -38,11 +38,11 @@ export declare class ExtendedWsMock extends EventEmitter {
     private createWsEvent;
     addEventListener(type: string, listener: (event: WebSocketEventBase) => void): void;
     removeEventListener(type: string, listener: (event: WebSocketEventBase) => void): void;
-    send: import("vitest").Mock<[data: string | Buffer<ArrayBufferLike>], this>;
-    ping: import("vitest").Mock<[data?: Uint8Array<ArrayBufferLike> | Buffer<ArrayBufferLike> | undefined], this>;
-    pong: import("vitest").Mock<[data?: Uint8Array<ArrayBufferLike> | Buffer<ArrayBufferLike> | undefined], this>;
-    close: import("vitest").Mock<[code?: number | undefined, reason?: string | undefined], this>;
-    terminate: import("vitest").Mock<[], this>;
+    send: import("vitest").Mock<(data: string | Buffer) => this>;
+    ping: import("vitest").Mock<(data?: Buffer | Uint8Array) => this>;
+    pong: import("vitest").Mock<(data?: Buffer | Uint8Array) => this>;
+    close: import("vitest").Mock<(code?: number, reason?: string) => this>;
+    terminate: import("vitest").Mock<() => this>;
     pause(): this;
     resume(): this;
     setMaxListeners(n: number): this;

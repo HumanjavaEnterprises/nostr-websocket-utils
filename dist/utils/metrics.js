@@ -111,7 +111,12 @@ export class RelayMetricsTracker extends EventEmitter {
     trackProtocolEvent(relayUrl, type, sent) {
         const metrics = this.getRelayMetrics(relayUrl);
         if (type === 'event') {
-            sent ? metrics.eventsSent++ : metrics.eventsReceived++;
+            if (sent) {
+                metrics.eventsSent++;
+            }
+            else {
+                metrics.eventsReceived++;
+            }
         }
         else if (type === 'subscription') {
             metrics.subscriptions += sent ? 1 : -1;

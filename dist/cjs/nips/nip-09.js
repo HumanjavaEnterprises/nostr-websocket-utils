@@ -51,7 +51,7 @@ async function validateDeletionEvent(event, _logger) {
         }
         return true;
     }
-    catch (error) {
+    catch (_error) {
         return false;
     }
 }
@@ -81,7 +81,7 @@ async function processDeletionEvent(event, _logger, deleteEvent) {
                     failedIds.push(eventId);
                 }
             }
-            catch (error) {
+            catch (_error) {
                 failedIds.push(eventId);
             }
         }
@@ -97,7 +97,7 @@ async function processDeletionEvent(event, _logger, deleteEvent) {
             deletedIds
         };
     }
-    catch (error) {
+    catch (_error) {
         return {
             success: false,
             error: 'Unknown error'
@@ -135,7 +135,7 @@ function createEventDeletionManager(_logger) {
                 });
                 return eventIds;
             }
-            catch (error) {
+            catch (_error) {
                 return [];
             }
         },

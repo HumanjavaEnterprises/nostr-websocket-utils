@@ -7,13 +7,13 @@ export declare class MockPinoLogger implements Partial<Logger> {
     useLevelLabels: boolean;
     useOnlyCustomLevels: boolean;
     customLevels: {};
-    debug: import("vitest").Mock<any, any>;
-    info: import("vitest").Mock<any, any>;
-    warn: import("vitest").Mock<any, any>;
-    error: import("vitest").Mock<any, any>;
-    fatal: import("vitest").Mock<any, any>;
-    trace: import("vitest").Mock<any, any>;
-    silent: import("vitest").Mock<any, any>;
+    debug: import("vitest").Mock<(...args: any[]) => any>;
+    info: import("vitest").Mock<(...args: any[]) => any>;
+    warn: import("vitest").Mock<(...args: any[]) => any>;
+    error: import("vitest").Mock<(...args: any[]) => any>;
+    fatal: import("vitest").Mock<(...args: any[]) => any>;
+    trace: import("vitest").Mock<(...args: any[]) => any>;
+    silent: import("vitest").Mock<(...args: any[]) => any>;
     levels: {
         values: {
             fatal: number;

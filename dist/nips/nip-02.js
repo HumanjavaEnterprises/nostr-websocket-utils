@@ -55,7 +55,7 @@ export function extractContacts(message) {
             metadata
         }));
     }
-    catch (error) {
+    catch (_error) {
         return [];
     }
 }
