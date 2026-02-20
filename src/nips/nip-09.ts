@@ -72,7 +72,7 @@ export async function validateDeletionEvent(
     }
 
     return true;
-  } catch (error: unknown) {
+  } catch (_error: unknown) {
     return false;
   }
 }
@@ -108,7 +108,7 @@ export async function processDeletionEvent(
         } else {
           failedIds.push(eventId);
         }
-      } catch (error: unknown) {
+      } catch (_error: unknown) {
         failedIds.push(eventId);
       }
     }
@@ -126,7 +126,7 @@ export async function processDeletionEvent(
       deletedIds
     };
 
-  } catch (error: unknown) {
+  } catch (_error: unknown) {
     return {
       success: false,
       error: 'Unknown error'
@@ -204,7 +204,7 @@ export function createEventDeletionManager(
         });
 
         return eventIds;
-      } catch (error) {
+      } catch (_error) {
         return [];
       }
     },

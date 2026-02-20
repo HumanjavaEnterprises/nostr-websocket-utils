@@ -78,7 +78,7 @@ export function extractContacts(
         petname: tag[3],
         metadata
       }));
-  } catch (error) {
+  } catch (_error) {
     return [];
   }
 }

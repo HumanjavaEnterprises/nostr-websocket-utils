@@ -154,7 +154,7 @@ export class RelayMetricsTracker extends EventEmitter {
   public trackProtocolEvent(relayUrl: string, type: 'event' | 'subscription', sent: boolean) {
     const metrics = this.getRelayMetrics(relayUrl);
     if (type === 'event') {
-      sent ? metrics.eventsSent++ : metrics.eventsReceived++;
+      if (sent) { metrics.eventsSent++; } else { metrics.eventsReceived++; }
     } else if (type === 'subscription') {
       metrics.subscriptions += sent ? 1 : -1;
       metrics.subscriptions = Math.max(0, metrics.subscriptions);
