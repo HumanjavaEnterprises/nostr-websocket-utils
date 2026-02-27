@@ -20,9 +20,10 @@ export class NostrWSServer {
    * @param {NostrWSServerOptions} options - Server configuration options
    */
   constructor(options: NostrWSServerOptions) {
-    this.server = new WebSocketServer({ 
+    this.server = new WebSocketServer({
       port: options.port,
-      host: options.host
+      host: options.host,
+      maxPayload: options.maxPayload || 65536, // 64KB default
     });
 
     /**

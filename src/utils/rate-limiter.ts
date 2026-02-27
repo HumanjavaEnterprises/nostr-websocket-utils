@@ -203,6 +203,7 @@ export function createConnectionRateLimiter(
 export class RateLimiterImpl implements RateLimiter {
   private clients: Map<string, ClientState> = new Map();
   private config: Required<RateLimitConfig>;
+  private checkCount = 0;
 
   constructor(config: RateLimitConfig) {
     this.config = {
@@ -222,6 +223,12 @@ export class RateLimiterImpl implements RateLimiter {
   }
 
   public async shouldLimit(clientId: string, message: NostrWSMessage): Promise<boolean> {
+    // Periodically clean up stale client entries to prevent memory leaks
+    this.checkCount++;
+    if (this.checkCount % 100 === 0) {
+      this.cleanup();
+    }
+
     const now = Date.now();
     const state = this.getClientState(clientId);
 
@@ -267,5 +274,30 @@ export class RateLimiterImpl implements RateLimiter {
   public isBlocked(clientId: string): boolean {
     const state = this.getClientState(clientId);
     return !!state.blockedUntil && state.blockedUntil > Date.now();
+  }
+
+  /**
+   * Remove stale client entries to prevent memory leaks
+   */
+  private cleanup(): void {
+    const now = Date.now();
+    for (const [key, state] of this.clients) {
+      // Remove if blocked period has expired and no recent requests
+      const cutoff = now - this.config.windowMs - this.config.blockDurationMs;
+
+      // Check if all request arrays are empty or stale
+      let hasRecentActivity = false;
+      for (const [, timestamps] of state.requests) {
+        if (timestamps.length > 0 && timestamps[timestamps.length - 1] > cutoff) {
+          hasRecentActivity = true;
+          break;
+        }
+      }
+
+      // Also keep if still actively blocked
+      if (!hasRecentActivity && (!state.blockedUntil || state.blockedUntil < now)) {
+        this.clients.delete(key);
+      }
+    }
   }
 }
