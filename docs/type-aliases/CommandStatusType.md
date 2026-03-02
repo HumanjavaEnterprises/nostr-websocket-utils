@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,8 +6,6 @@
 
 # Type Alias: CommandStatusType
 
-> **CommandStatusType**: [`CommandStatus`](../enumerations/CommandStatus.md)
+> **CommandStatusType** = [`CommandStatus`](../enumerations/CommandStatus.md)
 
-## Defined in
-
-[nips/nip-20.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L23)
+Defined in: [nips/nip-20.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L23)

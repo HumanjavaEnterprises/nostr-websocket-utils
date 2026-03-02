@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: encodeBech32Tags()
 
 > **encodeBech32Tags**(`tags`): `string`[][]
+
+Defined in: [nips/nip-19.ts:92](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-19.ts#L92)
 
 Encode tags containing hex pubkeys to bech32
 
@@ -19,7 +21,3 @@ Encode tags containing hex pubkeys to bech32
 ## Returns
 
 `string`[][]
-
-## Defined in
-
-[nips/nip-19.ts:92](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-19.ts#L92)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createNIP05BatchVerifier()
 
-> **createNIP05BatchVerifier**(`logger`, `cache`?): [`NIP05BatchVerifier`](../interfaces/NIP05BatchVerifier.md)
+> **createNIP05BatchVerifier**(`logger`, `cache?`): [`NIP05BatchVerifier`](../interfaces/NIP05BatchVerifier.md)
+
+Defined in: [nips/nip-05.ts:231](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L231)
 
 Creates a NIP-05 batch verifier
 
@@ -14,7 +16,7 @@ Creates a NIP-05 batch verifier
 
 ### logger
 
-`any`
+`Logger`
 
 Logger instance
 
@@ -29,7 +31,3 @@ Optional verification cache
 [`NIP05BatchVerifier`](../interfaces/NIP05BatchVerifier.md)
 
 Batch verifier
-
-## Defined in
-
-[nips/nip-05.ts:230](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L230)

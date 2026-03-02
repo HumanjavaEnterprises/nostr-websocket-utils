@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createChannelMessage()
 
-> **createChannelMessage**(`channelId`, `content`, `replyTo`?): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createChannelMessage**(`channelId`, `content`, `replyTo?`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-28.ts:56](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L56)
 
 Creates a channel message
 
@@ -32,10 +34,6 @@ Optional ID of message being replied to
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Channel message event
-
-## Defined in
-
-[nips/nip-28.ts:59](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L59)

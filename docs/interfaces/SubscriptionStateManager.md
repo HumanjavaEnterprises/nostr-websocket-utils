@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / SubscriptionStateManager
 
 # Interface: SubscriptionStateManager
+
+Defined in: [nips/nip-15.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L22)
 
 Subscription state manager interface
 
@@ -13,6 +15,8 @@ Subscription state manager interface
 ### registerSubscription()
 
 > **registerSubscription**(`subscriptionId`, `filter`): `void`
+
+Defined in: [nips/nip-15.ts:28](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L28)
 
 Registers a new subscription
 
@@ -34,15 +38,13 @@ Subscription filter
 
 `void`
 
-#### Defined in
-
-[nips/nip-15.ts:33](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L33)
-
 ***
 
 ### markComplete()
 
 > **markComplete**(`subscriptionId`): `void`
+
+Defined in: [nips/nip-15.ts:37](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L37)
 
 Marks a subscription as complete (EOSE sent)
 
@@ -58,15 +60,13 @@ Subscription ID
 
 `void`
 
-#### Defined in
-
-[nips/nip-15.ts:42](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L42)
-
 ***
 
 ### isComplete()
 
 > **isComplete**(`subscriptionId`): `boolean`
+
+Defined in: [nips/nip-15.ts:44](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L44)
 
 Checks if a subscription is complete
 
@@ -84,15 +84,13 @@ Subscription ID
 
 True if EOSE has been sent
 
-#### Defined in
-
-[nips/nip-15.ts:49](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L49)
-
 ***
 
 ### getFilter()
 
-> **getFilter**(`subscriptionId`): `undefined` \| `Record`\<`string`, `unknown`\>
+> **getFilter**(`subscriptionId`): `Record`\<`string`, `unknown`\> \| `undefined`
+
+Defined in: [nips/nip-15.ts:51](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L51)
 
 Gets subscription filter
 
@@ -106,19 +104,17 @@ Subscription ID
 
 #### Returns
 
-`undefined` \| `Record`\<`string`, `unknown`\>
+`Record`\<`string`, `unknown`\> \| `undefined`
 
 Subscription filter
-
-#### Defined in
-
-[nips/nip-15.ts:56](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L56)
 
 ***
 
 ### removeSubscription()
 
 > **removeSubscription**(`subscriptionId`): `void`
+
+Defined in: [nips/nip-15.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L57)
 
 Removes a subscription
 
@@ -133,7 +129,3 @@ Subscription ID
 #### Returns
 
 `void`
-
-#### Defined in
-
-[nips/nip-15.ts:62](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L62)

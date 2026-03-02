@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,8 +8,6 @@
 
 > `const` **CONTACT\_LIST\_KIND**: `3` = `3`
 
+Defined in: [nips/nip-02.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L13)
+
 Contact list event kind
-
-## Defined in
-
-[nips/nip-02.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L13)

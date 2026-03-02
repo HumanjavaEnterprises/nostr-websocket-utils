@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **decryptDM**(`message`, `recipientPrivkey`, `senderPubkey`, `logger`): `Promise`\<`string`\>
 
+Defined in: [nips/nip-04.ts:54](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-04.ts#L54)
+
 Decrypts a received direct message event
 
 ## Parameters
 
 ### message
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Received message
 
@@ -41,7 +43,3 @@ Logger instance
 `Promise`\<`string`\>
 
 Decrypted message content
-
-## Defined in
-
-[nips/nip-04.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-04.ts#L57)

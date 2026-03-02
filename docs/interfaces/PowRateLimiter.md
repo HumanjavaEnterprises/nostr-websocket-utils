@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / PowRateLimiter
 
 # Interface: PowRateLimiter
+
+Defined in: [nips/nip-13.ts:147](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L147)
 
 Rate limiter interface for proof of work
 
@@ -13,6 +15,8 @@ Rate limiter interface for proof of work
 ### shouldRateLimit()
 
 > **shouldRateLimit**(`pubkey`, `currentTime`): `boolean`
+
+Defined in: [nips/nip-13.ts:154](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L154)
 
 Checks if an event should be rate limited
 
@@ -36,15 +40,13 @@ Current timestamp
 
 True if should be rate limited
 
-#### Defined in
-
-[nips/nip-13.ts:154](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L154)
-
 ***
 
 ### recordEvent()
 
 > **recordEvent**(`pubkey`, `difficulty`, `currentTime`): `void`
+
+Defined in: [nips/nip-13.ts:162](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L162)
 
 Records an event for rate limiting
 
@@ -71,7 +73,3 @@ Current timestamp
 #### Returns
 
 `void`
-
-#### Defined in
-
-[nips/nip-13.ts:162](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L162)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createParameterizedEvent()
 
-> **createParameterizedEvent**(`kind`, `content`, `identifier`, `additionalTags`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createParameterizedEvent**(`kind`, `content`, `identifier`, `additionalTags?`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-33.ts:31](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L31)
 
 Creates a parameterized replaceable event
 
@@ -30,7 +32,7 @@ Event content
 
 Unique identifier for the parameter
 
-### additionalTags
+### additionalTags?
 
 `string`[][] = `[]`
 
@@ -38,10 +40,6 @@ Additional tags
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Parameterized replaceable event
-
-## Defined in
-
-[nips/nip-33.ts:31](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L31)

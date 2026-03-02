@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Interface: ChannelSubscriptionManager
 
+Defined in: [nips/nip-28.ts:186](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L186)
+
 Channel subscription manager interface
 
 ## Methods
 
 ### subscribe()
 
-> **subscribe**(`channelId`): [`NostrWSMessage`](NostrWSMessage.md)
+> **subscribe**(`channelId`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-28.ts:192](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L192)
 
 Subscribes to a channel
 
@@ -26,19 +30,17 @@ Channel ID
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Subscription message
-
-#### Defined in
-
-[nips/nip-28.ts:201](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L201)
 
 ***
 
 ### unsubscribe()
 
-> **unsubscribe**(`channelId`): [`NostrWSMessage`](NostrWSMessage.md)
+> **unsubscribe**(`channelId`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-28.ts:199](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L199)
 
 Unsubscribes from a channel
 
@@ -52,19 +54,17 @@ Channel ID
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Unsubscribe message
-
-#### Defined in
-
-[nips/nip-28.ts:208](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L208)
 
 ***
 
 ### getMetadata()
 
-> **getMetadata**(`channelId`): `Promise`\<`undefined` \| [`ChannelMetadata`](ChannelMetadata.md)\>
+> **getMetadata**(`channelId`): `Promise`\<[`ChannelMetadata`](ChannelMetadata.md) \| `undefined`\>
+
+Defined in: [nips/nip-28.ts:206](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L206)
 
 Gets channel metadata
 
@@ -78,10 +78,6 @@ Channel ID
 
 #### Returns
 
-`Promise`\<`undefined` \| [`ChannelMetadata`](ChannelMetadata.md)\>
+`Promise`\<[`ChannelMetadata`](ChannelMetadata.md) \| `undefined`\>
 
 Channel metadata
-
-#### Defined in
-
-[nips/nip-28.ts:215](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L215)

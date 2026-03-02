@@ -1,11 +1,11 @@
-**nostr-websocket-utils v0.3.0**
+**nostr-websocket-utils v0.3.16**
 
 ***
 
 # nostr-websocket-utils
 
-[![npm version](https://img.shields.io/npm/v/@humanjavaenterprises/nostr-websocket-utils.svg)](https://www.npmjs.com/package/@humanjavaenterprises/nostr-websocket-utils)
-[![License](https://img.shields.io/npm/l/@humanjavaenterprises/nostr-websocket-utils.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/LICENSE)
+[![npm version](https://img.shields.io/npm/v/nostr-websocket-utils.svg)](https://www.npmjs.com/package/nostr-websocket-utils)
+[![License](https://img.shields.io/npm/l/nostr-websocket-utils.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/LICENSE)
 [![Build Status](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/workflows/CI/badge.svg)](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/actions)
 [![Documentation](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/workflows/Documentation/badge.svg)](https://humanjavaenterprises.github.io/nostr-websocket-utils/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org)
@@ -15,13 +15,14 @@ A TypeScript library for building Nostr protocol WebSocket clients and servers.
 
 ## Features
 
-- 🚀 Full Nostr protocol support
+- 🚀 Full Nostr protocol support with nostr-crypto-utils integration
 - 🔒 Secure WebSocket connections
 - ♥️ Heartbeat mechanism for connection health
 - 🔄 Automatic reconnection handling
-- 📝 Comprehensive logging
+- 📝 Comprehensive logging with Pino v8
 - 🎯 Type-safe message handling
 - 📦 Easy to use API
+- 🧪 Vitest-powered test suite
 
 ## NIPs Support Status
 
@@ -106,7 +107,7 @@ await client.connect();
 ### Creating a Nostr WebSocket Server
 
 ```typescript
-import { createNostrServer } from '@humanjavaenterprises/nostr-websocket-utils';
+import { createNostrServer } from 'nostr-websocket-utils';
 
 const server = await createNostrServer(8080, {
   logger: console,
@@ -120,13 +121,69 @@ const server = await createNostrServer(8080, {
 });
 ```
 
+## Browser Usage
+
+This library now supports direct browser usage! You can use it in your client-side applications in two ways:
+
+### Via NPM (Recommended)
+
+```javascript
+import { NostrWSClient } from 'nostr-websocket-utils';
+
+const client = new NostrWSClient({
+  url: 'wss://relay.damus.io',
+  options: {
+    autoReconnect: true,
+    maxRetries: 3
+  }
+});
+
+client.onMessage((message) => {
+  console.log('Received:', message);
+});
+
+client.connect();
+```
+
+### Via CDN
+
+```html
+<script src="https://unpkg.com/nostr-websocket-utils/dist/browser/nostr-websocket-utils.min.js"></script>
+<script>
+  const client = new NostrWebSocketUtils.NostrWSClient({
+    url: 'wss://relay.damus.io',
+    options: {
+      autoReconnect: true,
+      maxRetries: 3
+    }
+  });
+
+  client.onMessage((message) => {
+    console.log('Received:', message);
+  });
+
+  client.connect();
+</script>
+```
+
+### Features in Browser Environment
+
+- Direct WebSocket connections to Nostr relays
+- Automatic reconnection handling
+- Message queueing
+- Type-safe handlers
+- Full compatibility with browser environments
+- Source maps for better debugging
+
+See the `examples/browser.html` file for a complete example of browser usage.
+
 ## Dependencies
 
-This package relies on:
-- [nostr-crypto-utils](https://github.com/HumanjavaEnterprises/nostr-crypto-utils) - For all cryptographic operations
-- [ws](https://github.com/websockets/ws) - For WebSocket functionality
-- [pino](https://github.com/pinojs/pino) - For logging
-- [uuid](https://github.com/uuidjs/uuid) - For unique identifiers
+This package uses:
+- nostr-crypto-utils (^0.4.2) for cryptographic operations
+- pino (^8.17.2) for logging
+- ws (^8.16.0) for WebSocket functionality
+- uuid (^9.0.0) for unique identifiers
 
 ## Documentation
 
@@ -148,7 +205,7 @@ Comprehensive API documentation is available in our [documentation site](https:/
 - [getLogger](_media/getLogger.md) - Logging utility
 
 ### Type Definitions
-- [MessageType](docs/enumerations/NostrWSMessageType.md) - Message type enumeration
+- [ConnectionState](_media/ConnectionState.md) - Connection state enumeration
 - [Global Types](_media/globals.md) - Global type definitions
 
 ## Examples
@@ -175,6 +232,14 @@ server.broadcast({
   }
 });
 ```
+
+## Security
+
+### Dependency Vulnerability Status
+
+We actively monitor and address security vulnerabilities in this codebase. **`npm audit --omit=dev` reports zero vulnerabilities** for this package — there are no known security issues in production dependencies.
+
+Any remaining `npm audit` findings are in development-only tooling (eslint, typescript-eslint, vitest, typedoc, etc.) and stem from transitive dependencies with no upstream fix available. These are devDependencies that are never included in the published package and pose no risk to consumers of this library. We monitor upstream fixes and update promptly when they become available.
 
 ## Contributing
 

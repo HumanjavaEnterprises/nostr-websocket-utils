@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / NostrWSServerEvents
 
 # Interface: NostrWSServerEvents
+
+Defined in: [types/index.ts:145](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L145)
 
 Events emitted by the NostrWSServer
 
@@ -13,6 +15,8 @@ Events emitted by the NostrWSServer
 ### connection()
 
 > **connection**: (`client`) => `void`
+
+Defined in: [types/index.ts:150](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L150)
 
 Emitted when a client connects
 
@@ -28,15 +32,13 @@ The connected client
 
 `void`
 
-#### Defined in
-
-[types/index.ts:142](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L142)
-
 ***
 
 ### message()
 
 > **message**: (`message`, `client`) => `void`
+
+Defined in: [types/index.ts:157](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L157)
 
 Emitted when a message is received from a client
 
@@ -44,7 +46,7 @@ Emitted when a message is received from a client
 
 ##### message
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 The received message
 
@@ -58,15 +60,13 @@ The client that sent the message
 
 `void`
 
-#### Defined in
-
-[types/index.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L149)
-
 ***
 
 ### error()
 
 > **error**: (`error`) => `void`
+
+Defined in: [types/index.ts:163](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L163)
 
 Emitted when an error occurs
 
@@ -81,7 +81,3 @@ The error that occurred
 #### Returns
 
 `void`
-
-#### Defined in
-
-[types/index.ts:155](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L155)

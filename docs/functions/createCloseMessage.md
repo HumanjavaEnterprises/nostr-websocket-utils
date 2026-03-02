@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createCloseMessage()
 
-> **createCloseMessage**(`subscriptionId`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createCloseMessage**(`subscriptionId`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-01.ts:78](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L78)
 
 Creates a CLOSE message
 
@@ -18,8 +20,4 @@ Creates a CLOSE message
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
-
-## Defined in
-
-[nips/nip-01.ts:84](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L84)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)

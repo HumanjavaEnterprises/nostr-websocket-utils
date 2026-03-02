@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: createServer()
 
 > **createServer**(`options`): [`NostrServer`](../classes/NostrServer.md)
+
+Defined in: [core/nostr-server.ts:109](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L109)
 
 Creates a new Nostr WebSocket server instance
 
@@ -23,7 +25,3 @@ Server configuration options
 [`NostrServer`](../classes/NostrServer.md)
 
 The created server instance
-
-## Defined in
-
-[core/nostr-server.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/nostr-server.ts#L108)

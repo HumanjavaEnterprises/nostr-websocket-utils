@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / HeartbeatConfig
 
 # Interface: HeartbeatConfig
+
+Defined in: [types/index.ts:67](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L67)
 
 Heartbeat configuration options
 
@@ -14,9 +16,7 @@ Heartbeat configuration options
 
 > **interval**: `number`
 
-#### Defined in
-
-[types/index.ts:64](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L64)
+Defined in: [types/index.ts:68](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L68)
 
 ***
 
@@ -24,9 +24,7 @@ Heartbeat configuration options
 
 > **timeout**: `number`
 
-#### Defined in
-
-[types/index.ts:65](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L65)
+Defined in: [types/index.ts:69](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L69)
 
 ***
 
@@ -34,6 +32,4 @@ Heartbeat configuration options
 
 > **maxMissed**: `number`
 
-#### Defined in
-
-[types/index.ts:66](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L66)
+Defined in: [types/index.ts:70](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L70)

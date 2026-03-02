@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,8 +6,6 @@
 
 # Type Alias: EventTreatmentType
 
-> **EventTreatmentType**: *typeof* [`EventTreatment`](../variables/EventTreatment.md)\[keyof *typeof* [`EventTreatment`](../variables/EventTreatment.md)\]
+> **EventTreatmentType** = *typeof* [`EventTreatment`](../variables/EventTreatment.md)\[keyof *typeof* [`EventTreatment`](../variables/EventTreatment.md)\]
 
-## Defined in
-
-[nips/nip-16.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L19)
+Defined in: [nips/nip-16.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L19)

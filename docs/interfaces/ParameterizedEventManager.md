@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Interface: ParameterizedEventManager
 
+Defined in: [nips/nip-33.ts:96](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L96)
+
 Parameterized event manager interface
 
 ## Methods
 
 ### createEvent()
 
-> **createEvent**(`kind`, `content`, `identifier`, `tags`?): [`NostrWSMessage`](NostrWSMessage.md)
+> **createEvent**(`kind`, `content`, `identifier`, `tags?`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-33.ts:105](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L105)
 
 Creates a new parameterized event
 
@@ -44,19 +48,17 @@ Additional tags
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Created event
-
-#### Defined in
-
-[nips/nip-33.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L108)
 
 ***
 
 ### updateEvent()
 
-> **updateEvent**(`kind`, `identifier`, `content`): [`NostrWSMessage`](NostrWSMessage.md)
+> **updateEvent**(`kind`, `identifier`, `content`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-33.ts:119](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L119)
 
 Updates an existing parameterized event
 
@@ -82,19 +84,17 @@ New content
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Update event
-
-#### Defined in
-
-[nips/nip-33.ts:122](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L122)
 
 ***
 
 ### subscribe()
 
-> **subscribe**(`kinds`, `identifiers`): [`NostrWSMessage`](NostrWSMessage.md)
+> **subscribe**(`kinds`, `identifiers`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-33.ts:131](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L131)
 
 Subscribes to parameterized events
 
@@ -114,10 +114,6 @@ Parameter identifiers
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Subscription message
-
-#### Defined in
-
-[nips/nip-33.ts:134](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L134)

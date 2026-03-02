@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,34 +6,30 @@
 
 # Enumeration: MessagePriority
 
+Defined in: [types/priority.ts:9](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/priority.ts#L9)
+
 Message priority levels for queue management
 
 ## Enumeration Members
 
 ### HIGH
 
-> **HIGH**: `0`
+> **HIGH**: `"HIGH"`
 
-#### Defined in
-
-[types/messages.ts:38](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L38)
+Defined in: [types/priority.ts:10](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/priority.ts#L10)
 
 ***
 
-### MEDIUM
+### NORMAL
 
-> **MEDIUM**: `1`
+> **NORMAL**: `"NORMAL"`
 
-#### Defined in
-
-[types/messages.ts:39](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L39)
+Defined in: [types/priority.ts:11](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/priority.ts#L11)
 
 ***
 
 ### LOW
 
-> **LOW**: `2`
+> **LOW**: `"LOW"`
 
-#### Defined in
-
-[types/messages.ts:40](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/messages.ts#L40)
+Defined in: [types/priority.ts:12](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/priority.ts#L12)

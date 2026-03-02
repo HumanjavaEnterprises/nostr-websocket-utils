@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,27 +6,77 @@
 
 # Interface: NostrWSOptions
 
+Defined in: [types/index.ts:76](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L76)
+
 WebSocket client options
 
 ## Properties
 
-### WebSocketImpl
+### WebSocketImpl?
 
-> **WebSocketImpl**: *typeof* `WebSocket`
+> `optional` **WebSocketImpl**: *typeof* `WebSocket`
 
-#### Defined in
-
-[types/index.ts:73](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L73)
+Defined in: [types/index.ts:77](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L77)
 
 ***
 
-### handlers
+### connectionTimeout?
 
-> **handlers**: [`NostrWSClientEvents`](NostrWSClientEvents.md)
+> `optional` **connectionTimeout**: `number`
 
-#### Defined in
+Defined in: [types/index.ts:78](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L78)
 
-[types/index.ts:74](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L74)
+***
+
+### retryAttempts?
+
+> `optional` **retryAttempts**: `number`
+
+Defined in: [types/index.ts:79](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L79)
+
+***
+
+### retryDelay?
+
+> `optional` **retryDelay**: `number`
+
+Defined in: [types/index.ts:80](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L80)
+
+***
+
+### onMessage()?
+
+> `optional` **onMessage**: (`message`) => `void`
+
+Defined in: [types/index.ts:81](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L81)
+
+#### Parameters
+
+##### message
+
+`string`
+
+#### Returns
+
+`void`
+
+***
+
+### onError()?
+
+> `optional` **onError**: (`error`) => `void`
+
+Defined in: [types/index.ts:82](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L82)
+
+#### Parameters
+
+##### error
+
+`Error`
+
+#### Returns
+
+`void`
 
 ***
 
@@ -34,9 +84,7 @@ WebSocket client options
 
 > `optional` **retry**: `Partial`\<[`RetryConfig`](RetryConfig.md)\>
 
-#### Defined in
-
-[types/index.ts:75](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L75)
+Defined in: [types/index.ts:83](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L83)
 
 ***
 
@@ -44,9 +92,7 @@ WebSocket client options
 
 > `optional` **queue**: `Partial`\<[`QueueConfig`](QueueConfig.md)\>
 
-#### Defined in
-
-[types/index.ts:76](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L76)
+Defined in: [types/index.ts:84](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L84)
 
 ***
 
@@ -54,9 +100,7 @@ WebSocket client options
 
 > `optional` **heartbeat**: `Partial`\<[`HeartbeatConfig`](HeartbeatConfig.md)\>
 
-#### Defined in
-
-[types/index.ts:77](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L77)
+Defined in: [types/index.ts:85](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L85)
 
 ***
 
@@ -64,9 +108,7 @@ WebSocket client options
 
 > `optional` **autoReconnect**: `boolean`
 
-#### Defined in
-
-[types/index.ts:78](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L78)
+Defined in: [types/index.ts:86](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L86)
 
 ***
 
@@ -74,9 +116,7 @@ WebSocket client options
 
 > `optional` **bufferMessages**: `boolean`
 
-#### Defined in
-
-[types/index.ts:79](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L79)
+Defined in: [types/index.ts:87](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L87)
 
 ***
 
@@ -84,16 +124,12 @@ WebSocket client options
 
 > `optional` **cleanStaleMessages**: `boolean`
 
-#### Defined in
-
-[types/index.ts:80](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L80)
+Defined in: [types/index.ts:88](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L88)
 
 ***
 
-### logger
+### logger?
 
-> **logger**: [`Logger`](../type-aliases/Logger.md)
+> `optional` **logger**: [`Logger`](../type-aliases/Logger.md)
 
-#### Defined in
-
-[types/index.ts:81](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L81)
+Defined in: [types/index.ts:89](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L89)

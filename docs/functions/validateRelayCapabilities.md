@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: validateRelayCapabilities()
 
-> **validateRelayCapabilities**(`info`, `requiredNips`, `requiredFeatures`): `boolean`
+> **validateRelayCapabilities**(`info`, `requiredNips?`, `requiredFeatures?`): `boolean`
+
+Defined in: [nips/nip-11.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L126)
 
 Validates relay capabilities against required features
 
@@ -18,15 +20,15 @@ Validates relay capabilities against required features
 
 Relay information
 
-### requiredNips
+### requiredNips?
 
 `number`[] = `[]`
 
 Required NIPs
 
-### requiredFeatures
+### requiredFeatures?
 
-`Partial`\<`undefined` \| \{ `max_message_length`: `number`; `max_subscriptions`: `number`; `max_filters`: `number`; `max_limit`: `number`; `max_subid_length`: `number`; `min_prefix`: `number`; `max_event_tags`: `number`; `max_content_length`: `number`; `min_pow_difficulty`: `number`; `auth_required`: `boolean`; `payment_required`: `boolean`; \}\> = `{}`
+`Partial`\<\{ `max_message_length?`: `number`; `max_subscriptions?`: `number`; `max_filters?`: `number`; `max_limit?`: `number`; `max_subid_length?`: `number`; `min_prefix?`: `number`; `max_event_tags?`: `number`; `max_content_length?`: `number`; `min_pow_difficulty?`: `number`; `auth_required?`: `boolean`; `payment_required?`: `boolean`; \} \| `undefined`\> = `{}`
 
 Required relay features
 
@@ -35,7 +37,3 @@ Required relay features
 `boolean`
 
 True if relay supports all required features
-
-## Defined in
-
-[nips/nip-11.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L126)

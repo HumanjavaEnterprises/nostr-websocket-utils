@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,11 +6,13 @@
 
 # Interface: WebSocketLogContext
 
+Defined in: [types/logger.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L13)
+
 WebSocket context for logging
 
 ## Indexable
 
- \[`key`: `string`\]: `unknown`
+\[`key`: `string`\]: `unknown`
 
 ## Properties
 
@@ -18,9 +20,7 @@ WebSocket context for logging
 
 > `optional` **clientId**: `string`
 
-#### Defined in
-
-[types/logger.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L14)
+Defined in: [types/logger.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L14)
 
 ***
 
@@ -28,9 +28,7 @@ WebSocket context for logging
 
 > `optional` **url**: `string`
 
-#### Defined in
-
-[types/logger.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L15)
+Defined in: [types/logger.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L15)
 
 ***
 
@@ -38,6 +36,4 @@ WebSocket context for logging
 
 > `optional` **messageId**: `string`
 
-#### Defined in
-
-[types/logger.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L16)
+Defined in: [types/logger.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L16)

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / EventStorageManager
 
 # Interface: EventStorageManager
+
+Defined in: [nips/nip-16.ts:120](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L120)
 
 Storage management interface for different event types
 
@@ -13,6 +15,8 @@ Storage management interface for different event types
 ### shouldStore()
 
 > **shouldStore**(`event`): `boolean`
+
+Defined in: [nips/nip-16.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L126)
 
 Determines if an event should be stored
 
@@ -30,15 +34,13 @@ Event to check
 
 True if event should be stored
 
-#### Defined in
-
-[nips/nip-16.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L126)
-
 ***
 
 ### getStorageDuration()
 
 > **getStorageDuration**(`event`): `number`
+
+Defined in: [nips/nip-16.ts:133](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L133)
 
 Gets storage duration for an event
 
@@ -56,15 +58,13 @@ Event to check
 
 Storage duration in seconds (0 for permanent)
 
-#### Defined in
-
-[nips/nip-16.ts:133](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L133)
-
 ***
 
 ### shouldReplace()
 
 > **shouldReplace**(`newEvent`, `existingEvent`): `boolean`
+
+Defined in: [nips/nip-16.ts:141](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L141)
 
 Checks if an event should replace another
 
@@ -87,7 +87,3 @@ Existing event
 `boolean`
 
 True if new event should replace existing
-
-#### Defined in
-
-[nips/nip-16.ts:141](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L141)

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / EventReplacementHandler
 
 # Interface: EventReplacementHandler
+
+Defined in: [nips/nip-33.ts:177](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L177)
 
 Event replacement handler interface
 
@@ -13,6 +15,8 @@ Event replacement handler interface
 ### shouldReplace()
 
 > **shouldReplace**(`newEvent`, `existingEvent`): `boolean`
+
+Defined in: [nips/nip-33.ts:184](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L184)
 
 Checks if an event should replace another
 
@@ -36,15 +40,13 @@ Existing event
 
 True if should replace
 
-#### Defined in
-
-[nips/nip-33.ts:190](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L190)
-
 ***
 
 ### getReplacementKey()
 
 > **getReplacementKey**(`event`): `string`
+
+Defined in: [nips/nip-33.ts:194](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L194)
 
 Gets replacement key for an event
 
@@ -61,7 +63,3 @@ Event to get key for
 `string`
 
 Replacement key
-
-#### Defined in
-
-[nips/nip-33.ts:200](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L200)

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / RelayInformation
 
 # Interface: RelayInformation
+
+Defined in: [nips/nip-11.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L15)
 
 Relay information document structure
 
@@ -14,9 +16,7 @@ Relay information document structure
 
 > `optional` **name**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L16)
+Defined in: [nips/nip-11.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L16)
 
 ***
 
@@ -24,9 +24,7 @@ Relay information document structure
 
 > `optional` **description**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L17)
+Defined in: [nips/nip-11.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L17)
 
 ***
 
@@ -34,9 +32,7 @@ Relay information document structure
 
 > `optional` **pubkey**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L18)
+Defined in: [nips/nip-11.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L18)
 
 ***
 
@@ -44,9 +40,7 @@ Relay information document structure
 
 > `optional` **contact**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L19)
+Defined in: [nips/nip-11.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L19)
 
 ***
 
@@ -54,9 +48,7 @@ Relay information document structure
 
 > `optional` **supported\_nips**: `number`[]
 
-#### Defined in
-
-[nips/nip-11.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L20)
+Defined in: [nips/nip-11.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L20)
 
 ***
 
@@ -64,9 +56,7 @@ Relay information document structure
 
 > `optional` **software**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L21)
+Defined in: [nips/nip-11.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L21)
 
 ***
 
@@ -74,15 +64,15 @@ Relay information document structure
 
 > `optional` **version**: `string`
 
-#### Defined in
-
-[nips/nip-11.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L22)
+Defined in: [nips/nip-11.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L22)
 
 ***
 
 ### limitation?
 
 > `optional` **limitation**: `object`
+
+Defined in: [nips/nip-11.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L23)
 
 #### max\_message\_length?
 
@@ -127,7 +117,3 @@ Relay information document structure
 #### payment\_required?
 
 > `optional` **payment\_required**: `boolean`
-
-#### Defined in
-
-[nips/nip-11.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L23)

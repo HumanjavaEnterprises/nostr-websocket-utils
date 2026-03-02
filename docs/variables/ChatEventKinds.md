@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **ChatEventKinds**: `object`
 
+Defined in: [nips/nip-28.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L13)
+
 Chat event kinds
 
-## Type declaration
+## Type Declaration
 
 ### CHANNEL\_CREATION
 
@@ -35,7 +37,3 @@ Chat event kinds
 ### USER\_MUTE
 
 > `readonly` **USER\_MUTE**: `45` = `45`
-
-## Defined in
-
-[nips/nip-28.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L13)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **EPHEMERAL\_EVENT\_KINDS**: `object`
 
+Defined in: [nips/nip-16.ts:44](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L44)
+
 Ephemeral event kinds (20000-29999)
 
-## Type declaration
+## Type Declaration
 
 ### TYPING\_INDICATOR
 
@@ -31,7 +33,3 @@ Ephemeral event kinds (20000-29999)
 ### CUSTOM\_END
 
 > **CUSTOM\_END**: `number` = `29999`
-
-## Defined in
-
-[nips/nip-16.ts:44](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L44)

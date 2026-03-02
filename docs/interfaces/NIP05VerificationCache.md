@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Interface: NIP05VerificationCache
 
+Defined in: [nips/nip-05.ts:115](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L115)
+
 NIP-05 verification cache interface
 
 ## Methods
 
 ### get()
 
-> **get**(`identifier`, `pubkey`): `undefined` \| [`NIP05VerificationResult`](NIP05VerificationResult.md)
+> **get**(`identifier`, `pubkey`): [`NIP05VerificationResult`](NIP05VerificationResult.md) \| `undefined`
+
+Defined in: [nips/nip-05.ts:122](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L122)
 
 Gets cached verification result
 
@@ -32,19 +36,17 @@ Public key
 
 #### Returns
 
-`undefined` \| [`NIP05VerificationResult`](NIP05VerificationResult.md)
+[`NIP05VerificationResult`](NIP05VerificationResult.md) \| `undefined`
 
 Cached result
-
-#### Defined in
-
-[nips/nip-05.ts:121](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L121)
 
 ***
 
 ### set()
 
 > **set**(`identifier`, `pubkey`, `result`, `ttl`): `void`
+
+Defined in: [nips/nip-05.ts:131](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L131)
 
 Sets verification result in cache
 
@@ -78,22 +80,16 @@ Time to live in seconds
 
 `void`
 
-#### Defined in
-
-[nips/nip-05.ts:130](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L130)
-
 ***
 
 ### cleanup()
 
 > **cleanup**(): `void`
 
+Defined in: [nips/nip-05.ts:141](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L141)
+
 Clears expired entries
 
 #### Returns
 
 `void`
-
-#### Defined in
-
-[nips/nip-05.ts:140](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L140)

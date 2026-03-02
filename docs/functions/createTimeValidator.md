@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createTimeValidator()
 
-> **createTimeValidator**(`logger`, `futureLimitSeconds`, `pastLimitSeconds`): [`TimeValidator`](../interfaces/TimeValidator.md)
+> **createTimeValidator**(`logger`, `futureLimitSeconds?`, `pastLimitSeconds?`): [`TimeValidator`](../interfaces/TimeValidator.md)
+
+Defined in: [nips/nip-22.ts:58](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L58)
 
 Creates a time validator
 
@@ -18,13 +20,13 @@ Creates a time validator
 
 Logger instance
 
-### futureLimitSeconds
+### futureLimitSeconds?
 
 `number` = `DEFAULT_TIME_LIMITS.FUTURE_LIMIT`
 
 Future time limit in seconds
 
-### pastLimitSeconds
+### pastLimitSeconds?
 
 `number` = `DEFAULT_TIME_LIMITS.PAST_LIMIT`
 
@@ -35,7 +37,3 @@ Past time limit in seconds
 [`TimeValidator`](../interfaces/TimeValidator.md)
 
 Time validator
-
-## Defined in
-
-[nips/nip-22.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L57)

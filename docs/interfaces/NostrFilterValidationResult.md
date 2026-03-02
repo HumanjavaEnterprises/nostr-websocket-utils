@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / NostrFilterValidationResult
 
 # Interface: NostrFilterValidationResult
+
+Defined in: [types/filters.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/filters.ts#L19)
 
 Filter validation result
 
@@ -14,9 +16,7 @@ Filter validation result
 
 > **valid**: `boolean`
 
-#### Defined in
-
-[types/filters.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/filters.ts#L20)
+Defined in: [types/filters.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/filters.ts#L20)
 
 ***
 
@@ -24,6 +24,4 @@ Filter validation result
 
 > `optional` **error**: `string`
 
-#### Defined in
-
-[types/filters.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/filters.ts#L21)
+Defined in: [types/filters.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/filters.ts#L21)

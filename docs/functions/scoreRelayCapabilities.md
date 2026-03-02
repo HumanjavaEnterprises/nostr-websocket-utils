@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: scoreRelayCapabilities()
 
-> **scoreRelayCapabilities**(`info`, `preferences`): `number`
+> **scoreRelayCapabilities**(`info`, `preferences?`): `number`
+
+Defined in: [nips/nip-11.ts:171](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L171)
 
 Creates a relay selection score based on capabilities
 
@@ -18,27 +20,27 @@ Creates a relay selection score based on capabilities
 
 Relay information
 
-### preferences
+### preferences?
 
 Scoring preferences
 
-#### preferredNips
+#### preferredNips?
 
 `number`[]
 
-#### minMessageLength
+#### minMessageLength?
 
 `number`
 
-#### minSubscriptions
+#### minSubscriptions?
 
 `number`
 
-#### requireAuth
+#### requireAuth?
 
 `boolean`
 
-#### requirePayment
+#### requirePayment?
 
 `boolean`
 
@@ -47,7 +49,3 @@ Scoring preferences
 `number`
 
 Relay score (higher is better)
-
-## Defined in
-
-[nips/nip-11.ts:171](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L171)

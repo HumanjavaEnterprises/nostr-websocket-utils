@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / ContactListManager
 
 # Interface: ContactListManager
+
+Defined in: [nips/nip-02.ts:103](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L103)
 
 Contact list manager interface
 
@@ -13,6 +15,8 @@ Contact list manager interface
 ### addContact()
 
 > **addContact**(`contact`): `void`
+
+Defined in: [nips/nip-02.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L108)
 
 Adds or updates a contact
 
@@ -28,15 +32,13 @@ Contact to add/update
 
 `void`
 
-#### Defined in
-
-[nips/nip-02.ts:119](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L119)
-
 ***
 
 ### removeContact()
 
 > **removeContact**(`pubkey`): `void`
+
+Defined in: [nips/nip-02.ts:114](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L114)
 
 Removes a contact
 
@@ -52,15 +54,13 @@ Public key of contact to remove
 
 `void`
 
-#### Defined in
-
-[nips/nip-02.ts:125](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L125)
-
 ***
 
 ### getContact()
 
-> **getContact**(`pubkey`): `undefined` \| [`Contact`](Contact.md)
+> **getContact**(`pubkey`): [`Contact`](Contact.md) \| `undefined`
+
+Defined in: [nips/nip-02.ts:121](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L121)
 
 Gets a contact by public key
 
@@ -74,19 +74,17 @@ Public key to look up
 
 #### Returns
 
-`undefined` \| [`Contact`](Contact.md)
+[`Contact`](Contact.md) \| `undefined`
 
 Contact if found
-
-#### Defined in
-
-[nips/nip-02.ts:132](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L132)
 
 ***
 
 ### getAllContacts()
 
 > **getAllContacts**(): [`Contact`](Contact.md)[]
+
+Defined in: [nips/nip-02.ts:127](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L127)
 
 Gets all contacts
 
@@ -96,15 +94,13 @@ Gets all contacts
 
 Array of all contacts
 
-#### Defined in
-
-[nips/nip-02.ts:138](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L138)
-
 ***
 
 ### updateContactMetadata()
 
 > **updateContactMetadata**(`pubkey`, `metadata`): `void`
+
+Defined in: [nips/nip-02.ts:134](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L134)
 
 Updates contact metadata
 
@@ -126,24 +122,18 @@ New metadata
 
 `void`
 
-#### Defined in
-
-[nips/nip-02.ts:145](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L145)
-
 ***
 
 ### createEvent()
 
-> **createEvent**(): [`NostrWSMessage`](NostrWSMessage.md)
+> **createEvent**(): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-02.ts:140](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L140)
 
 Creates a contact list event
 
 #### Returns
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Contact list event
-
-#### Defined in
-
-[nips/nip-02.ts:151](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L151)

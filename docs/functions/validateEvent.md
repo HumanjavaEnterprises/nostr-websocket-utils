@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,18 +8,16 @@
 
 > **validateEvent**(`event`): `NostrEventValidationResult`
 
+Defined in: [nips/nip-01.ts:96](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L96)
+
 Validates a Nostr event according to NIP-01
 
 ## Parameters
 
 ### event
 
-`unknown`
+`NostrEvent`
 
 ## Returns
 
 `NostrEventValidationResult`
-
-## Defined in
-
-[nips/nip-01.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L108)

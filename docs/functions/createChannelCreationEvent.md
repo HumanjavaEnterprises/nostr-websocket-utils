@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createChannelCreationEvent()
 
-> **createChannelCreationEvent**(`metadata`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createChannelCreationEvent**(`metadata`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-28.ts:39](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L39)
 
 Creates a channel creation message
 
@@ -20,10 +22,6 @@ Channel metadata
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Channel creation event
-
-## Defined in
-
-[nips/nip-28.ts:39](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L39)

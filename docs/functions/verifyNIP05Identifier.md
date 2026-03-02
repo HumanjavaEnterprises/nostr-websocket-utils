@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: verifyNIP05Identifier()
 
 > **verifyNIP05Identifier**(`identifier`, `pubkey`, `logger`): `Promise`\<[`NIP05VerificationResult`](../interfaces/NIP05VerificationResult.md)\>
+
+Defined in: [nips/nip-05.ts:35](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L35)
 
 Verifies a NIP-05 identifier
 
@@ -26,7 +28,7 @@ Public key to verify
 
 ### logger
 
-`any`
+`Logger`
 
 Logger instance
 
@@ -35,7 +37,3 @@ Logger instance
 `Promise`\<[`NIP05VerificationResult`](../interfaces/NIP05VerificationResult.md)\>
 
 Verification result
-
-## Defined in
-
-[nips/nip-05.ts:34](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-05.ts#L34)

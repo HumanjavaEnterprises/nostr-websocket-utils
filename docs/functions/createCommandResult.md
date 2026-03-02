@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: createCommandResult()
 
 > **createCommandResult**(`data`): [`CommandResult`](../interfaces/CommandResult.md)
+
+Defined in: [nips/nip-20.ts:107](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L107)
 
 Creates a command result message
 
@@ -19,7 +21,3 @@ Creates a command result message
 ## Returns
 
 [`CommandResult`](../interfaces/CommandResult.md)
-
-## Defined in
-
-[nips/nip-20.ts:101](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L101)

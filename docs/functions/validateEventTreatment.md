@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **validateEventTreatment**(`message`, `logger`): `boolean`
 
+Defined in: [nips/nip-16.ts:73](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L73)
+
 Validates event treatment rules
 
 ## Parameters
 
 ### message
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Message to validate
 
@@ -29,7 +31,3 @@ Logger instance
 `boolean`
 
 True if event follows treatment rules
-
-## Defined in
-
-[nips/nip-16.ts:73](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L73)

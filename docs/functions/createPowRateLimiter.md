@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,19 +6,21 @@
 
 # Function: createPowRateLimiter()
 
-> **createPowRateLimiter**(`windowSeconds`, `maxDifficulty`): [`PowRateLimiter`](../interfaces/PowRateLimiter.md)
+> **createPowRateLimiter**(`windowSeconds?`, `maxDifficulty?`): [`PowRateLimiter`](../interfaces/PowRateLimiter.md)
+
+Defined in: [nips/nip-13.ts:171](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L171)
 
 Creates a default PoW rate limiter
 
 ## Parameters
 
-### windowSeconds
+### windowSeconds?
 
 `number` = `3600`
 
 Time window for rate limiting
 
-### maxDifficulty
+### maxDifficulty?
 
 `number` = `100`
 
@@ -29,7 +31,3 @@ Maximum cumulative difficulty per window
 [`PowRateLimiter`](../interfaces/PowRateLimiter.md)
 
 Rate limiter
-
-## Defined in
-
-[nips/nip-13.ts:171](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L171)

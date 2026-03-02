@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / NostrWSSubscription
 
 # Interface: NostrWSSubscription
+
+Defined in: [types/index.ts:95](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L95)
 
 Represents a subscription to a Nostr relay
 
@@ -14,11 +16,9 @@ Represents a subscription to a Nostr relay
 
 > **channel**: `string`
 
+Defined in: [types/index.ts:99](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L99)
+
 Channel identifier for the subscription
-
-#### Defined in
-
-[types/index.ts:91](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L91)
 
 ***
 
@@ -26,8 +26,6 @@ Channel identifier for the subscription
 
 > `optional` **filter**: `Record`\<`string`, `unknown`\>
 
+Defined in: [types/index.ts:104](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L104)
+
 Filter criteria for the subscription
-
-#### Defined in
-
-[types/index.ts:96](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L96)

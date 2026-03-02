@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createEncryptedDM()
 
-> **createEncryptedDM**(`content`, `recipientPubkey`, `senderPrivkey`, `tags`): `Promise`\<[`NostrWSMessage`](../interfaces/NostrWSMessage.md)\>
+> **createEncryptedDM**(`content`, `recipientPubkey`, `senderPrivkey`, `tags?`): `Promise`\<[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)\>
+
+Defined in: [nips/nip-04.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-04.ts#L24)
 
 Creates an encrypted direct message event
 
@@ -30,7 +32,7 @@ Recipient's public key
 
 Sender's private key
 
-### tags
+### tags?
 
 `string`[][] = `[]`
 
@@ -38,10 +40,6 @@ Additional tags for the event
 
 ## Returns
 
-`Promise`\<[`NostrWSMessage`](../interfaces/NostrWSMessage.md)\>
+`Promise`\<[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)\>
 
 Encrypted message event
-
-## Defined in
-
-[nips/nip-04.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-04.ts#L24)

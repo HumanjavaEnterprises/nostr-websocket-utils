@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createHideMessageEvent()
 
-> **createHideMessageEvent**(`channelId`, `messageId`, `reason`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createHideMessageEvent**(`channelId`, `messageId`, `reason`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-28.ts:80](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L80)
 
 Creates a message moderation event
 
@@ -32,10 +34,6 @@ Moderation reason
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Hide message event
-
-## Defined in
-
-[nips/nip-28.ts:86](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L86)

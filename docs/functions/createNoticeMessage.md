@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createNoticeMessage()
 
-> **createNoticeMessage**(`message`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createNoticeMessage**(`message`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-01.ts:87](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L87)
 
 Creates a NOTICE message
 
@@ -18,8 +20,4 @@ Creates a NOTICE message
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
-
-## Defined in
-
-[nips/nip-01.ts:96](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-01.ts#L96)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)

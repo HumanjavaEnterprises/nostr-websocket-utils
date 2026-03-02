@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / EventDeletionManager
 
 # Interface: EventDeletionManager
+
+Defined in: [nips/nip-09.ts:140](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L140)
 
 Event deletion manager interface
 
@@ -14,13 +16,15 @@ Event deletion manager interface
 
 > **processDeletion**(`message`): `Promise`\<`string`[]\>
 
+Defined in: [nips/nip-09.ts:146](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L146)
+
 Processes a deletion event
 
 #### Parameters
 
 ##### message
 
-[`NostrEvent`](NostrEvent.md)
+`NostrEvent`
 
 Deletion message
 
@@ -30,15 +34,13 @@ Deletion message
 
 Deleted event IDs
 
-#### Defined in
-
-[nips/nip-09.ts:155](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L155)
-
 ***
 
 ### isDeleted()
 
 > **isDeleted**(`eventId`): `boolean`
+
+Defined in: [nips/nip-09.ts:153](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L153)
 
 Checks if an event has been deleted
 
@@ -56,15 +58,13 @@ Event ID to check
 
 True if event is deleted
 
-#### Defined in
-
-[nips/nip-09.ts:162](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L162)
-
 ***
 
 ### getDeletionReason()
 
-> **getDeletionReason**(`eventId`): `undefined` \| `string`
+> **getDeletionReason**(`eventId`): `string` \| `undefined`
+
+Defined in: [nips/nip-09.ts:160](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L160)
 
 Gets deletion reason for an event
 
@@ -78,19 +78,17 @@ Event ID
 
 #### Returns
 
-`undefined` \| `string`
+`string` \| `undefined`
 
 Deletion reason if available
-
-#### Defined in
-
-[nips/nip-09.ts:169](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L169)
 
 ***
 
 ### getDeletedEvents()
 
 > **getDeletedEvents**(): `Map`\<`string`, `string`\>
+
+Defined in: [nips/nip-09.ts:166](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L166)
 
 Gets all deleted events
 
@@ -99,7 +97,3 @@ Gets all deleted events
 `Map`\<`string`, `string`\>
 
 Map of event IDs to deletion reasons
-
-#### Defined in
-
-[nips/nip-09.ts:175](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L175)

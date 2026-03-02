@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: getEventTreatment()
 
 > **getEventTreatment**(`eventKind`): [`EventTreatmentType`](../type-aliases/EventTreatmentType.md)
+
+Defined in: [nips/nip-16.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L57)
 
 Determines event treatment type
 
@@ -23,7 +25,3 @@ Event kind number
 [`EventTreatmentType`](../type-aliases/EventTreatmentType.md)
 
 Event treatment type
-
-## Defined in
-
-[nips/nip-16.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L57)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **PARAMETERIZED\_REPLACEABLE\_KINDS**: `object`
 
+Defined in: [nips/nip-33.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L13)
+
 Parameterized replaceable event kinds (30000-39999)
 
-## Type declaration
+## Type Declaration
 
 ### CATEGORIZED\_BOOKMARK
 
@@ -39,7 +41,3 @@ Parameterized replaceable event kinds (30000-39999)
 ### CUSTOM\_END
 
 > **CUSTOM\_END**: `number` = `39999`
-
-## Defined in
-
-[nips/nip-33.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-33.ts#L13)

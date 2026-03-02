@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: createEventStorageManager()
 
 > **createEventStorageManager**(`logger`): [`EventStorageManager`](../interfaces/EventStorageManager.md)
+
+Defined in: [nips/nip-16.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L149)
 
 Creates default event storage manager
 
@@ -23,7 +25,3 @@ Logger instance
 [`EventStorageManager`](../interfaces/EventStorageManager.md)
 
 Storage manager
-
-## Defined in
-
-[nips/nip-16.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L149)

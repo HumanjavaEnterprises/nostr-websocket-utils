@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: encodePrivkey()
 
 > **encodePrivkey**(`privkey`): `string`
+
+Defined in: [nips/nip-19.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-19.ts#L27)
 
 Encode a private key to bech32 nsec format
 
@@ -19,7 +21,3 @@ Encode a private key to bech32 nsec format
 ## Returns
 
 `string`
-
-## Defined in
-
-[nips/nip-19.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-19.ts#L27)

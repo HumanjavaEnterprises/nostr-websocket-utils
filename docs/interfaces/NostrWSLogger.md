@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / NostrWSLogger
 
 # Interface: NostrWSLogger
+
+Defined in: [types/logger.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L23)
 
 Extended logger interface with WebSocket-specific methods
 
@@ -18,6 +20,8 @@ Extended logger interface with WebSocket-specific methods
 
 > **wsConnect**(`context`): `void`
 
+Defined in: [types/logger.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L27)
+
 Log WebSocket connection event
 
 #### Parameters
@@ -30,15 +34,13 @@ Log WebSocket connection event
 
 `void`
 
-#### Defined in
-
-[types/logger.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L27)
-
 ***
 
 ### wsDisconnect()
 
 > **wsDisconnect**(`context`): `void`
+
+Defined in: [types/logger.ts:32](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L32)
 
 Log WebSocket disconnection event
 
@@ -52,15 +54,13 @@ Log WebSocket disconnection event
 
 `void`
 
-#### Defined in
-
-[types/logger.ts:32](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L32)
-
 ***
 
 ### wsMessage()
 
 > **wsMessage**(`context`): `void`
+
+Defined in: [types/logger.ts:37](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L37)
 
 Log WebSocket message event
 
@@ -74,15 +74,13 @@ Log WebSocket message event
 
 `void`
 
-#### Defined in
-
-[types/logger.ts:37](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L37)
-
 ***
 
 ### wsError()
 
 > **wsError**(`error`, `context`): `void`
+
+Defined in: [types/logger.ts:42](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L42)
 
 Log WebSocket error event
 
@@ -100,15 +98,13 @@ Log WebSocket error event
 
 `void`
 
-#### Defined in
-
-[types/logger.ts:42](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L42)
-
 ***
 
 ### wsMetrics()
 
 > **wsMetrics**(`metrics`, `context`): `void`
+
+Defined in: [types/logger.ts:47](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L47)
 
 Log WebSocket metrics
 
@@ -125,7 +121,3 @@ Log WebSocket metrics
 #### Returns
 
 `void`
-
-#### Defined in
-
-[types/logger.ts:47](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/logger.ts#L47)

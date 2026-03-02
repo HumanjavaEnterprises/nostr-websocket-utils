@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: createContactListManager()
 
 > **createContactListManager**(`_logger`): [`ContactListManager`](../interfaces/ContactListManager.md)
+
+Defined in: [nips/nip-02.ts:148](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L148)
 
 Creates a contact list manager
 
@@ -23,7 +25,3 @@ Logger instance
 [`ContactListManager`](../interfaces/ContactListManager.md)
 
 Contact list manager
-
-## Defined in
-
-[nips/nip-02.ts:159](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L159)

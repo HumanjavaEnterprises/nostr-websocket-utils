@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Class: NostrWSServer
 
+Defined in: [core/server.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L19)
+
 NostrWSServer class for handling WebSocket connections
 
 ## Constructors
 
-### new NostrWSServer()
+### Constructor
 
-> **new NostrWSServer**(`options`): [`NostrWSServer`](NostrWSServer.md)
+> **new NostrWSServer**(`options`): `NostrWSServer`
+
+Defined in: [core/server.ts:25](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L25)
 
 #### Parameters
 
@@ -22,11 +26,7 @@ NostrWSServer class for handling WebSocket connections
 
 #### Returns
 
-[`NostrWSServer`](NostrWSServer.md)
-
-#### Defined in
-
-[core/server.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L24)
+`NostrWSServer`
 
 ## Properties
 
@@ -34,9 +34,7 @@ NostrWSServer class for handling WebSocket connections
 
 > `private` **wss**: `WebSocketServer`
 
-#### Defined in
-
-[core/server.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L19)
+Defined in: [core/server.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L20)
 
 ***
 
@@ -44,9 +42,7 @@ NostrWSServer class for handling WebSocket connections
 
 > `private` **options**: `NostrWSServerOptions`
 
-#### Defined in
-
-[core/server.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L20)
+Defined in: [core/server.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L21)
 
 ***
 
@@ -54,9 +50,7 @@ NostrWSServer class for handling WebSocket connections
 
 > `private` `optional` **rateLimiter**: `RateLimiter`
 
-#### Defined in
-
-[core/server.ts:21](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L21)
+Defined in: [core/server.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L22)
 
 ***
 
@@ -64,9 +58,7 @@ NostrWSServer class for handling WebSocket connections
 
 > `private` `optional` **pingInterval**: `Timeout`
 
-#### Defined in
-
-[core/server.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L22)
+Defined in: [core/server.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L23)
 
 ## Methods
 
@@ -74,15 +66,35 @@ NostrWSServer class for handling WebSocket connections
 
 > `private` **setupServer**(): `void`
 
+Defined in: [core/server.ts:54](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L54)
+
 Set up WebSocket server event handlers
 
 #### Returns
 
 `void`
 
-#### Defined in
+***
 
-[core/server.ts:52](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L52)
+### handleMessage()
+
+> `private` **handleMessage**(`socket`, `rawMessage`): `Promise`\<`void`\>
+
+Defined in: [core/server.ts:97](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L97)
+
+#### Parameters
+
+##### socket
+
+`NostrWSServerSocket`
+
+##### rawMessage
+
+`string`
+
+#### Returns
+
+`Promise`\<`void`\>
 
 ***
 
@@ -90,15 +102,13 @@ Set up WebSocket server event handlers
 
 > `private` **startPingInterval**(): `void`
 
+Defined in: [core/server.ts:123](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L123)
+
 Start ping interval to check client connections
 
 #### Returns
 
 `void`
-
-#### Defined in
-
-[core/server.ts:107](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L107)
 
 ***
 
@@ -106,12 +116,10 @@ Start ping interval to check client connections
 
 > **stop**(): `void`
 
+Defined in: [core/server.ts:142](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L142)
+
 Stop the server and clean up resources
 
 #### Returns
 
 `void`
-
-#### Defined in
-
-[core/server.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/core/server.ts#L126)

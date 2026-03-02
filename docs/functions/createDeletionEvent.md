@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createDeletionEvent()
 
-> **createDeletionEvent**(`eventIds`, `reason`?): `Omit`\<[`NostrEvent`](../interfaces/NostrEvent.md), `"id"` \| `"sig"`\>
+> **createDeletionEvent**(`eventIds`, `reason?`): `Omit`\<`NostrEvent`, `"id"` \| `"sig"`\>
+
+Defined in: [nips/nip-09.ts:30](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L30)
 
 Creates a deletion event
 
@@ -22,8 +24,4 @@ Creates a deletion event
 
 ## Returns
 
-`Omit`\<[`NostrEvent`](../interfaces/NostrEvent.md), `"id"` \| `"sig"`\>
-
-## Defined in
-
-[nips/nip-09.ts:33](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L33)
+`Omit`\<`NostrEvent`, `"id"` \| `"sig"`\>

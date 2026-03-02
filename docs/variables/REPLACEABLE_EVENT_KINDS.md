@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **REPLACEABLE\_EVENT\_KINDS**: `object`
 
+Defined in: [nips/nip-16.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L24)
+
 Replaceable event kinds (10000-19999)
 
-## Type declaration
+## Type Declaration
 
 ### METADATA
 
@@ -67,7 +69,3 @@ Replaceable event kinds (10000-19999)
 ### CUSTOM\_END
 
 > **CUSTOM\_END**: `number` = `19999`
-
-## Defined in
-
-[nips/nip-16.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L24)

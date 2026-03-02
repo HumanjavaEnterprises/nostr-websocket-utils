@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: checkRelayRequirements()
 
 > **checkRelayRequirements**(`relay`, `requirements`): `boolean`
+
+Defined in: [nips/nip-11.ts:61](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L61)
 
 Checks if relay meets requirements
 
@@ -29,7 +31,3 @@ Required relay features
 `boolean`
 
 True if relay meets all requirements
-
-## Defined in
-
-[nips/nip-11.ts:61](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L61)

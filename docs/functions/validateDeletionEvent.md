@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: validateDeletionEvent()
 
-> **validateDeletionEvent**(`event`): `boolean`
+> **validateDeletionEvent**(`event`, `_logger`): `Promise`\<`boolean`\>
+
+Defined in: [nips/nip-09.ts:46](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L46)
 
 Validates a deletion event
 
@@ -14,12 +16,12 @@ Validates a deletion event
 
 ### event
 
-[`NostrEvent`](../interfaces/NostrEvent.md)
+`NostrEvent`
+
+### \_logger
+
+`any`
 
 ## Returns
 
-`boolean`
-
-## Defined in
-
-[nips/nip-09.ts:49](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L49)
+`Promise`\<`boolean`\>

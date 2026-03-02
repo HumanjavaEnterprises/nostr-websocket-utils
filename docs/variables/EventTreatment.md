@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **EventTreatment**: `object`
 
+Defined in: [nips/nip-16.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L13)
+
 Event treatment types
 
-## Type declaration
+## Type Declaration
 
 ### EPHEMERAL
 
@@ -23,7 +25,3 @@ Event treatment types
 ### PERSISTENT
 
 > `readonly` **PERSISTENT**: `"persistent"` = `'persistent'`
-
-## Defined in
-
-[nips/nip-16.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-16.ts#L13)

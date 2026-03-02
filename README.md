@@ -191,7 +191,7 @@ Comprehensive API documentation is available in our [documentation site](https:/
 - [NostrServer](docs/classes/NostrServer.md) - High-level Nostr server
 
 ### Types and Interfaces
-- [NostrWSMessage](docs/interfaces/NostrWSMessage.md) - Message structure
+- [NostrWSMessage](docs/type-aliases/NostrWSMessage.md) - Message structure
 - [NostrWSOptions](docs/interfaces/NostrWSOptions.md) - Configuration options
 - [NostrWSSubscription](docs/interfaces/NostrWSSubscription.md) - Subscription interface
 - [ExtendedWebSocket](docs/interfaces/ExtendedWebSocket.md) - Enhanced WebSocket interface
@@ -201,7 +201,7 @@ Comprehensive API documentation is available in our [documentation site](https:/
 - [getLogger](docs/functions/getLogger.md) - Logging utility
 
 ### Type Definitions
-- [MessageType](docs/enumerations/NostrWSMessageType.md) - Message type enumeration
+- [ConnectionState](docs/enumerations/ConnectionState.md) - Connection state enumeration
 - [Global Types](docs/globals.md) - Global type definitions
 
 ## Examples

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / NostrRelayMetadata
 
 # Interface: NostrRelayMetadata
+
+Defined in: [types/relays.ts:22](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L22)
 
 Relay metadata interface
 
@@ -18,13 +20,11 @@ Relay metadata interface
 
 > `optional` **name**: `string`
 
+Defined in: [types/relays.ts:10](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L10)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`name`](NostrRelayInfo.md#name)
-
-#### Defined in
-
-[types/relays.ts:10](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L10)
 
 ***
 
@@ -32,13 +32,11 @@ Relay metadata interface
 
 > `optional` **description**: `string`
 
+Defined in: [types/relays.ts:11](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L11)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`description`](NostrRelayInfo.md#description)
-
-#### Defined in
-
-[types/relays.ts:11](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L11)
 
 ***
 
@@ -46,13 +44,11 @@ Relay metadata interface
 
 > `optional` **pubkey**: `string`
 
+Defined in: [types/relays.ts:12](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L12)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`pubkey`](NostrRelayInfo.md#pubkey)
-
-#### Defined in
-
-[types/relays.ts:12](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L12)
 
 ***
 
@@ -60,13 +56,11 @@ Relay metadata interface
 
 > `optional` **contact**: `string`
 
+Defined in: [types/relays.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L13)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`contact`](NostrRelayInfo.md#contact)
-
-#### Defined in
-
-[types/relays.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L13)
 
 ***
 
@@ -74,13 +68,11 @@ Relay metadata interface
 
 > `optional` **supported\_nips**: `number`[]
 
+Defined in: [types/relays.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L14)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`supported_nips`](NostrRelayInfo.md#supported_nips)
-
-#### Defined in
-
-[types/relays.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L14)
 
 ***
 
@@ -88,13 +80,11 @@ Relay metadata interface
 
 > `optional` **software**: `string`
 
+Defined in: [types/relays.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L15)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`software`](NostrRelayInfo.md#software)
-
-#### Defined in
-
-[types/relays.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L15)
 
 ***
 
@@ -102,13 +92,11 @@ Relay metadata interface
 
 > `optional` **version**: `string`
 
+Defined in: [types/relays.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L16)
+
 #### Inherited from
 
 [`NostrRelayInfo`](NostrRelayInfo.md).[`version`](NostrRelayInfo.md#version)
-
-#### Defined in
-
-[types/relays.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L16)
 
 ***
 
@@ -116,9 +104,7 @@ Relay metadata interface
 
 > **url**: `string`
 
-#### Defined in
-
-[types/relays.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L23)
+Defined in: [types/relays.ts:23](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L23)
 
 ***
 
@@ -126,9 +112,7 @@ Relay metadata interface
 
 > **status**: `"error"` \| `"connected"` \| `"disconnected"`
 
-#### Defined in
-
-[types/relays.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L24)
+Defined in: [types/relays.ts:24](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L24)
 
 ***
 
@@ -136,9 +120,7 @@ Relay metadata interface
 
 > `optional` **error**: `string`
 
-#### Defined in
-
-[types/relays.ts:25](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L25)
+Defined in: [types/relays.ts:25](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L25)
 
 ***
 
@@ -146,9 +128,7 @@ Relay metadata interface
 
 > `optional` **lastConnected**: `number`
 
-#### Defined in
-
-[types/relays.ts:26](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L26)
+Defined in: [types/relays.ts:26](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L26)
 
 ***
 
@@ -156,6 +136,4 @@ Relay metadata interface
 
 > `optional` **lastDisconnected**: `number`
 
-#### Defined in
-
-[types/relays.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L27)
+Defined in: [types/relays.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/relays.ts#L27)

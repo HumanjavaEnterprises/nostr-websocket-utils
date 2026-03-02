@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,9 +8,11 @@
 
 > `const` **DEFAULT\_TIME\_LIMITS**: `object`
 
+Defined in: [nips/nip-22.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L14)
+
 Default time limits in seconds
 
-## Type declaration
+## Type Declaration
 
 ### FUTURE\_LIMIT
 
@@ -19,7 +21,3 @@ Default time limits in seconds
 ### PAST\_LIMIT
 
 > **PAST\_LIMIT**: `number` = `31536000`
-
-## Defined in
-
-[nips/nip-22.ts:13](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L13)

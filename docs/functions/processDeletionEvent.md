@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **processDeletionEvent**(`event`, `_logger`, `deleteEvent`): `Promise`\<`DeletionResult`\>
 
+Defined in: [nips/nip-09.ts:83](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L83)
+
 Processes a deletion event
 
 ## Parameters
 
 ### event
 
-[`NostrEvent`](../interfaces/NostrEvent.md)
+`NostrEvent`
 
 ### \_logger
 
@@ -27,7 +29,3 @@ Processes a deletion event
 ## Returns
 
 `Promise`\<`DeletionResult`\>
-
-## Defined in
-
-[nips/nip-09.ts:88](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L88)

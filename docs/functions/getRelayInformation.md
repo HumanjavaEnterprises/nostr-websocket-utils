@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: getRelayInformation()
 
 > **getRelayInformation**(`url`): `Promise`\<[`RelayInformation`](../interfaces/RelayInformation.md)\>
+
+Defined in: [nips/nip-11.ts:43](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L43)
 
 Fetches relay information document
 
@@ -23,7 +25,3 @@ Relay URL (ws:// or wss://)
 `Promise`\<[`RelayInformation`](../interfaces/RelayInformation.md)\>
 
 Relay information
-
-## Defined in
-
-[nips/nip-11.ts:43](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-11.ts#L43)

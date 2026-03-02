@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createContactListSubscription()
 
-> **createContactListSubscription**(`pubkey`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createContactListSubscription**(`pubkey`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-02.ts:91](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L91)
 
 Creates a contact list subscription message
 
@@ -20,10 +22,6 @@ Public key to subscribe to
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Subscription message
-
-## Defined in
-
-[nips/nip-02.ts:98](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-02.ts#L98)

@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -7,6 +7,8 @@
 # Function: createPaginationHandler()
 
 > **createPaginationHandler**(`stateManager`, `logger`): [`PaginationHandler`](../interfaces/PaginationHandler.md)
+
+Defined in: [nips/nip-15.ts:147](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L147)
 
 Creates a pagination handler
 
@@ -29,7 +31,3 @@ Logger instance
 [`PaginationHandler`](../interfaces/PaginationHandler.md)
 
 Pagination handler
-
-## Defined in
-
-[nips/nip-15.ts:152](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L152)

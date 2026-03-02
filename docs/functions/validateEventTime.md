@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **validateEventTime**(`message`, `validator`, `logger`): [`TimeValidationResult`](../interfaces/TimeValidationResult.md)
 
+Defined in: [nips/nip-22.ts:107](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L107)
+
 Validates event timestamp
 
 ## Parameters
 
 ### message
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Message to validate
 
@@ -35,7 +37,3 @@ Logger instance
 [`TimeValidationResult`](../interfaces/TimeValidationResult.md)
 
 Validation result
-
-## Defined in
-
-[nips/nip-22.ts:106](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L106)

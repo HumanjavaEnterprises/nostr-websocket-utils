@@ -1,8 +1,8 @@
-[**nostr-websocket-utils v0.3.0**](README.md)
+[**nostr-websocket-utils v0.3.16**](README.md)
 
 ***
 
-# nostr-websocket-utils v0.3.0
+# nostr-websocket-utils v0.3.16
 
 ## File
 
@@ -19,6 +19,7 @@ Main entry point for the nostr-websocket-utils library
 - [NostrWSClient](classes/NostrWSClient.md)
 - [NostrServer](classes/NostrServer.md)
 - [NostrWSServer](classes/NostrWSServer.md)
+- [Nip46Transport](classes/Nip46Transport.md)
 
 ## Interfaces
 
@@ -44,11 +45,8 @@ Main entry point for the nostr-websocket-utils library
 - [ChannelSubscriptionManager](interfaces/ChannelSubscriptionManager.md)
 - [ParameterizedEventManager](interfaces/ParameterizedEventManager.md)
 - [EventReplacementHandler](interfaces/EventReplacementHandler.md)
-- [NostrEvent](interfaces/NostrEvent.md)
-- [SignedNostrEvent](interfaces/SignedNostrEvent.md)
-- [NostrEventValidationResult](interfaces/NostrEventValidationResult.md)
-- [NostrEventFilter](interfaces/NostrEventFilter.md)
-- [NostrSubscriptionEvent](interfaces/NostrSubscriptionEvent.md)
+- [Nip46TransportOptions](interfaces/Nip46TransportOptions.md)
+- [Nip46TransportResult](interfaces/Nip46TransportResult.md)
 - [NostrSubscriptionFilter](interfaces/NostrSubscriptionFilter.md)
 - [NostrFilterValidationResult](interfaces/NostrFilterValidationResult.md)
 - [ExtendedWebSocket](interfaces/ExtendedWebSocket.md)
@@ -61,10 +59,7 @@ Main entry point for the nostr-websocket-utils library
 - [NostrWSServerEvents](interfaces/NostrWSServerEvents.md)
 - [WebSocketLogContext](interfaces/WebSocketLogContext.md)
 - [NostrWSLogger](interfaces/NostrWSLogger.md)
-- [NostrWSEvent](interfaces/NostrWSEvent.md)
-- [NostrWSFilter](interfaces/NostrWSFilter.md)
-- [NostrWSMessage](interfaces/NostrWSMessage.md)
-- [NostrWSValidationResult](interfaces/NostrWSValidationResult.md)
+- [QueueItem](interfaces/QueueItem.md)
 - [NostrRelayInfo](interfaces/NostrRelayInfo.md)
 - [NostrRelayMetadata](interfaces/NostrRelayMetadata.md)
 
@@ -72,9 +67,9 @@ Main entry point for the nostr-websocket-utils library
 
 - [EventTreatmentType](type-aliases/EventTreatmentType.md)
 - [CommandStatusType](type-aliases/CommandStatusType.md)
+- [NostrEvent](type-aliases/NostrEvent.md)
 - [Logger](type-aliases/Logger.md)
-- [MessageType](type-aliases/MessageType.md)
-- [NostrWSMessageType](type-aliases/NostrWSMessageType.md)
+- [NostrWSMessage](type-aliases/NostrWSMessage.md)
 
 ## Variables
 
@@ -87,12 +82,26 @@ Main entry point for the nostr-websocket-utils library
 - [DEFAULT\_TIME\_LIMITS](variables/DEFAULT_TIME_LIMITS.md)
 - [ChatEventKinds](variables/ChatEventKinds.md)
 - [PARAMETERIZED\_REPLACEABLE\_KINDS](variables/PARAMETERIZED_REPLACEABLE_KINDS.md)
-- [MESSAGE\_TYPES](variables/MESSAGE_TYPES.md)
+- [ENCRYPTED\_DM\_KIND\_44](variables/ENCRYPTED_DM_KIND_44.md)
+- [parseBunkerURI](variables/parseBunkerURI.md)
+- [createBunkerURI](variables/createBunkerURI.md)
+- [validateBunkerURI](variables/validateBunkerURI.md)
+- [createNip46Session](variables/createNip46Session.md)
+- [restoreNip46Session](variables/restoreNip46Session.md)
+- [connectRequest](variables/connectRequest.md)
+- [pingRequest](variables/pingRequest.md)
+- [getPublicKeyRequest](variables/getPublicKeyRequest.md)
+- [signEventRequest](variables/signEventRequest.md)
 
 ## Functions
 
 - [createServer](functions/createServer.md)
+- [bech32Encode](functions/bech32Encode.md)
+- [bech32Decode](functions/bech32Decode.md)
+- [encodeToBech32](functions/encodeToBech32.md)
+- [decodeFromBech32](functions/decodeFromBech32.md)
 - [validateSignedMessage](functions/validateSignedMessage.md)
+- [validateSignature](functions/validateSignature.md)
 - [validateMessage](functions/validateMessage.md)
 - [createEventMessage](functions/createEventMessage.md)
 - [createReqMessage](functions/createReqMessage.md)
@@ -157,4 +166,10 @@ Main entry point for the nostr-websocket-utils library
 - [validateParameterizedEvent](functions/validateParameterizedEvent.md)
 - [createParameterizedEventManager](functions/createParameterizedEventManager.md)
 - [createEventReplacementHandler](functions/createEventReplacementHandler.md)
+- [getConversationKey](functions/getConversationKey.md)
+- [encryptNip44](functions/encryptNip44.md)
+- [decryptNip44](functions/decryptNip44.md)
+- [createEncryptedDM44](functions/createEncryptedDM44.md)
+- [decryptDM44](functions/decryptDM44.md)
+- [validateEncryptedDM44](functions/validateEncryptedDM44.md)
 - [getLogger](functions/getLogger.md)

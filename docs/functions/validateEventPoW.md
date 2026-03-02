@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **validateEventPoW**(`message`, `minDifficulty`, `logger`): `boolean`
 
+Defined in: [nips/nip-13.ts:77](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L77)
+
 Validates proof of work for an event
 
 ## Parameters
 
 ### message
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Message containing event
 
@@ -35,7 +37,3 @@ Logger instance
 `boolean`
 
 True if proof of work is valid
-
-## Defined in
-
-[nips/nip-13.ts:77](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-13.ts#L77)

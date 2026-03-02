@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Interface: PaginationHandler
 
+Defined in: [nips/nip-15.ts:114](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L114)
+
 Pagination handler interface
 
 ## Methods
 
 ### getNextPage()
 
-> **getNextPage**(`subscriptionId`, `pageSize`): `Promise`\<[`NostrWSMessage`](NostrWSMessage.md)[]\>
+> **getNextPage**(`subscriptionId`, `pageSize`): `Promise`\<[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)[]\>
+
+Defined in: [nips/nip-15.ts:121](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L121)
 
 Gets next page of events
 
@@ -32,19 +36,17 @@ Number of events per page
 
 #### Returns
 
-`Promise`\<[`NostrWSMessage`](NostrWSMessage.md)[]\>
+`Promise`\<[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)[]\>
 
 Next page of events
-
-#### Defined in
-
-[nips/nip-15.ts:126](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L126)
 
 ***
 
 ### hasMoreEvents()
 
 > **hasMoreEvents**(`subscriptionId`): `boolean`
+
+Defined in: [nips/nip-15.ts:131](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L131)
 
 Checks if more events are available
 
@@ -62,15 +64,13 @@ Subscription ID
 
 True if more events exist
 
-#### Defined in
-
-[nips/nip-15.ts:136](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L136)
-
 ***
 
 ### updateState()
 
 > **updateState**(`subscriptionId`, `events`): `void`
+
+Defined in: [nips/nip-15.ts:138](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L138)
 
 Updates pagination state with new events
 
@@ -84,14 +84,10 @@ Subscription ID
 
 ##### events
 
-[`NostrWSMessage`](NostrWSMessage.md)[]
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)[]
 
 New events
 
 #### Returns
 
 `void`
-
-#### Defined in
-
-[nips/nip-15.ts:143](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L143)

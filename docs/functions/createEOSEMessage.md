@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: createEOSEMessage()
 
-> **createEOSEMessage**(`subscriptionId`): [`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+> **createEOSEMessage**(`subscriptionId`): [`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
+
+Defined in: [nips/nip-15.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L15)
 
 Creates an EOSE (End of Stored Events) message
 
@@ -20,10 +22,6 @@ Subscription ID
 
 ## Returns
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 EOSE message
-
-## Defined in
-
-[nips/nip-15.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-15.ts#L15)

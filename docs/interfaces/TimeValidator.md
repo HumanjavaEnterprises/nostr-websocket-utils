@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / TimeValidator
 
 # Interface: TimeValidator
+
+Defined in: [nips/nip-22.ts:30](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L30)
 
 Time validator interface
 
@@ -13,6 +15,8 @@ Time validator interface
 ### validateTime()
 
 > **validateTime**(`timestamp`): [`TimeValidationResult`](TimeValidationResult.md)
+
+Defined in: [nips/nip-22.ts:36](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L36)
 
 Validates event timestamp
 
@@ -30,15 +34,13 @@ Event timestamp
 
 Validation result
 
-#### Defined in
-
-[nips/nip-22.ts:35](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L35)
-
 ***
 
 ### updateTimeOffset()
 
 > **updateTimeOffset**(`serverTime`): `void`
+
+Defined in: [nips/nip-22.ts:42](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L42)
 
 Updates server time offset
 
@@ -54,15 +56,13 @@ Server timestamp
 
 `void`
 
-#### Defined in
-
-[nips/nip-22.ts:41](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L41)
-
 ***
 
 ### getCurrentTime()
 
 > **getCurrentTime**(): `number`
+
+Defined in: [nips/nip-22.ts:48](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L48)
 
 Gets current adjusted timestamp
 
@@ -71,7 +71,3 @@ Gets current adjusted timestamp
 `number`
 
 Adjusted timestamp
-
-#### Defined in
-
-[nips/nip-22.ts:47](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L47)

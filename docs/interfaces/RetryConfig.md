@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / RetryConfig
 
 # Interface: RetryConfig
+
+Defined in: [types/index.ts:47](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L47)
 
 Retry configuration options
 
@@ -14,9 +16,7 @@ Retry configuration options
 
 > **maxAttempts**: `number`
 
-#### Defined in
-
-[types/index.ts:44](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L44)
+Defined in: [types/index.ts:48](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L48)
 
 ***
 
@@ -24,9 +24,7 @@ Retry configuration options
 
 > **initialDelay**: `number`
 
-#### Defined in
-
-[types/index.ts:45](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L45)
+Defined in: [types/index.ts:49](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L49)
 
 ***
 
@@ -34,9 +32,7 @@ Retry configuration options
 
 > **maxDelay**: `number`
 
-#### Defined in
-
-[types/index.ts:46](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L46)
+Defined in: [types/index.ts:50](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L50)
 
 ***
 
@@ -44,6 +40,4 @@ Retry configuration options
 
 > **backoffFactor**: `number`
 
-#### Defined in
-
-[types/index.ts:47](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L47)
+Defined in: [types/index.ts:51](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L51)

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / ChannelMetadata
 
 # Interface: ChannelMetadata
+
+Defined in: [nips/nip-28.ts:25](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L25)
 
 Channel metadata structure
 
@@ -14,9 +16,7 @@ Channel metadata structure
 
 > **name**: `string`
 
-#### Defined in
-
-[nips/nip-28.ts:26](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L26)
+Defined in: [nips/nip-28.ts:26](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L26)
 
 ***
 
@@ -24,9 +24,7 @@ Channel metadata structure
 
 > `optional` **about**: `string`
 
-#### Defined in
-
-[nips/nip-28.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L27)
+Defined in: [nips/nip-28.ts:27](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L27)
 
 ***
 
@@ -34,9 +32,7 @@ Channel metadata structure
 
 > `optional` **picture**: `string`
 
-#### Defined in
-
-[nips/nip-28.ts:28](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L28)
+Defined in: [nips/nip-28.ts:28](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L28)
 
 ***
 
@@ -44,9 +40,7 @@ Channel metadata structure
 
 > `optional` **rules**: `string`[]
 
-#### Defined in
-
-[nips/nip-28.ts:29](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L29)
+Defined in: [nips/nip-28.ts:29](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L29)
 
 ***
 
@@ -54,9 +48,7 @@ Channel metadata structure
 
 > `optional` **moderators**: `string`[]
 
-#### Defined in
-
-[nips/nip-28.ts:30](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L30)
+Defined in: [nips/nip-28.ts:30](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L30)
 
 ***
 
@@ -64,6 +56,4 @@ Channel metadata structure
 
 > `optional` **pinned**: `string`[]
 
-#### Defined in
-
-[nips/nip-28.ts:31](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L31)
+Defined in: [nips/nip-28.ts:31](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-28.ts#L31)

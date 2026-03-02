@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / QueueConfig
 
 # Interface: QueueConfig
+
+Defined in: [types/index.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L57)
 
 Queue configuration options
 
@@ -14,9 +16,7 @@ Queue configuration options
 
 > **maxSize**: `number`
 
-#### Defined in
-
-[types/index.ts:54](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L54)
+Defined in: [types/index.ts:58](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L58)
 
 ***
 
@@ -24,9 +24,7 @@ Queue configuration options
 
 > **maxRetries**: `number`
 
-#### Defined in
-
-[types/index.ts:55](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L55)
+Defined in: [types/index.ts:59](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L59)
 
 ***
 
@@ -34,9 +32,7 @@ Queue configuration options
 
 > **retryDelay**: `number`
 
-#### Defined in
-
-[types/index.ts:56](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L56)
+Defined in: [types/index.ts:60](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L60)
 
 ***
 
@@ -44,6 +40,4 @@ Queue configuration options
 
 > **staleTimeout**: `number`
 
-#### Defined in
-
-[types/index.ts:57](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L57)
+Defined in: [types/index.ts:61](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/types/index.ts#L61)

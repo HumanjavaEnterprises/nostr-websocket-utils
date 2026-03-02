@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / CommandStatus
 
 # Enumeration: CommandStatus
+
+Defined in: [nips/nip-20.ts:14](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L14)
 
 Command status types
 
@@ -14,19 +16,15 @@ Command status types
 
 > **SUCCESS**: `"success"`
 
-#### Defined in
-
-[nips/nip-20.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L15)
+Defined in: [nips/nip-20.ts:15](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L15)
 
 ***
 
-### ERROR
+### error
 
-> **ERROR**: `"error"`
+> **error**: `"error"`
 
-#### Defined in
-
-[nips/nip-20.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L16)
+Defined in: [nips/nip-20.ts:16](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L16)
 
 ***
 
@@ -34,9 +32,7 @@ Command status types
 
 > **PENDING**: `"pending"`
 
-#### Defined in
-
-[nips/nip-20.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L17)
+Defined in: [nips/nip-20.ts:17](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L17)
 
 ***
 
@@ -44,9 +40,7 @@ Command status types
 
 > **RATE\_LIMITED**: `"rate_limited"`
 
-#### Defined in
-
-[nips/nip-20.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L18)
+Defined in: [nips/nip-20.ts:18](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L18)
 
 ***
 
@@ -54,9 +48,7 @@ Command status types
 
 > **AUTH\_REQUIRED**: `"auth_required"`
 
-#### Defined in
-
-[nips/nip-20.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L19)
+Defined in: [nips/nip-20.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L19)
 
 ***
 
@@ -64,6 +56,4 @@ Command status types
 
 > **RESTRICTED**: `"restricted"`
 
-#### Defined in
-
-[nips/nip-20.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L20)
+Defined in: [nips/nip-20.ts:20](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-20.ts#L20)

@@ -1,10 +1,12 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
 [nostr-websocket-utils](../globals.md) / TimeSyncManager
 
 # Interface: TimeSyncManager
+
+Defined in: [nips/nip-22.ts:140](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L140)
 
 Time synchronization manager interface
 
@@ -13,6 +15,8 @@ Time synchronization manager interface
 ### startSync()
 
 > **startSync**(`wsUrl`): `void`
+
+Defined in: [nips/nip-22.ts:145](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L145)
 
 Starts time synchronization
 
@@ -28,15 +32,13 @@ WebSocket URL for time sync
 
 `void`
 
-#### Defined in
-
-[nips/nip-22.ts:144](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L144)
-
 ***
 
 ### stopSync()
 
 > **stopSync**(): `void`
+
+Defined in: [nips/nip-22.ts:150](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L150)
 
 Stops time synchronization
 
@@ -44,15 +46,13 @@ Stops time synchronization
 
 `void`
 
-#### Defined in
-
-[nips/nip-22.ts:149](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L149)
-
 ***
 
 ### getCurrentTime()
 
 > **getCurrentTime**(): `number`
+
+Defined in: [nips/nip-22.ts:156](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L156)
 
 Gets current synchronized time
 
@@ -62,15 +62,13 @@ Gets current synchronized time
 
 Current timestamp
 
-#### Defined in
-
-[nips/nip-22.ts:155](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L155)
-
 ***
 
 ### validateEvent()
 
 > **validateEvent**(`event`): [`TimeValidationResult`](TimeValidationResult.md)
+
+Defined in: [nips/nip-22.ts:163](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L163)
 
 Validates event timing
 
@@ -78,7 +76,7 @@ Validates event timing
 
 ##### event
 
-[`NostrWSMessage`](NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Event to validate
 
@@ -87,7 +85,3 @@ Event to validate
 [`TimeValidationResult`](TimeValidationResult.md)
 
 Validation result
-
-#### Defined in
-
-[nips/nip-22.ts:162](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-22.ts#L162)

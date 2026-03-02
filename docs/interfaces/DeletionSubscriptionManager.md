@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,13 +6,17 @@
 
 # Interface: DeletionSubscriptionManager
 
+Defined in: [nips/nip-09.ts:229](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L229)
+
 Event deletion subscription manager interface
 
 ## Methods
 
 ### subscribeToDeletions()
 
-> **subscribeToDeletions**(`eventIds`): [`NostrSubscriptionEvent`](NostrSubscriptionEvent.md)
+> **subscribeToDeletions**(`eventIds`): `NostrSubscriptionEvent`
+
+Defined in: [nips/nip-09.ts:235](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L235)
 
 Creates a subscription for deletion events
 
@@ -26,19 +30,17 @@ Event IDs to monitor
 
 #### Returns
 
-[`NostrSubscriptionEvent`](NostrSubscriptionEvent.md)
+`NostrSubscriptionEvent`
 
 Subscription message
-
-#### Defined in
-
-[nips/nip-09.ts:253](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L253)
 
 ***
 
 ### subscribeToUserDeletions()
 
-> **subscribeToUserDeletions**(`pubkey`): [`NostrSubscriptionEvent`](NostrSubscriptionEvent.md)
+> **subscribeToUserDeletions**(`pubkey`): `NostrSubscriptionEvent`
+
+Defined in: [nips/nip-09.ts:242](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L242)
 
 Creates a subscription for all deletions by a user
 
@@ -52,10 +54,6 @@ Public key of user
 
 #### Returns
 
-[`NostrSubscriptionEvent`](NostrSubscriptionEvent.md)
+`NostrSubscriptionEvent`
 
 Subscription message
-
-#### Defined in
-
-[nips/nip-09.ts:260](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-09.ts#L260)

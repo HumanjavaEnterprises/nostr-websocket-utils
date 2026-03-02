@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -6,7 +6,9 @@
 
 # Function: addDelegationTag()
 
-> **addDelegationTag**(`event`, `delegation`): [`NostrEvent`](../interfaces/NostrEvent.md)
+> **addDelegationTag**(`event`, `delegation`): `NostrEvent`
+
+Defined in: [nips/nip-26.ts:108](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-26.ts#L108)
 
 Add delegation tag to an event
 
@@ -14,7 +16,7 @@ Add delegation tag to an event
 
 ### event
 
-[`NostrEvent`](../interfaces/NostrEvent.md)
+`NostrEvent`
 
 ### delegation
 
@@ -22,8 +24,4 @@ Add delegation tag to an event
 
 ## Returns
 
-[`NostrEvent`](../interfaces/NostrEvent.md)
-
-## Defined in
-
-[nips/nip-26.ts:112](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/nips/nip-26.ts#L112)
+`NostrEvent`

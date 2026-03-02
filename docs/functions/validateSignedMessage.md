@@ -1,4 +1,4 @@
-[**nostr-websocket-utils v0.3.0**](../README.md)
+[**nostr-websocket-utils v0.3.16**](../README.md)
 
 ***
 
@@ -8,13 +8,15 @@
 
 > **validateSignedMessage**(`message`): `Promise`\<`boolean`\>
 
+Defined in: [crypto/handlers.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/crypto/handlers.ts#L19)
+
 Validates a signed message
 
 ## Parameters
 
 ### message
 
-[`NostrWSMessage`](../interfaces/NostrWSMessage.md)
+[`NostrWSMessage`](../type-aliases/NostrWSMessage.md)
 
 Message to validate
 
@@ -23,7 +25,3 @@ Message to validate
 `Promise`\<`boolean`\>
 
 Promise resolving to true if message is valid
-
-## Defined in
-
-[crypto/handlers.ts:19](https://github.com/HumanjavaEnterprises/nostr-websocket-utils/blob/main/src/crypto/handlers.ts#L19)
