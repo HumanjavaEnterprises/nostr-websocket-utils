@@ -47,6 +47,9 @@ export class NostrWSClient {
         this.connectionState = ConnectionState.CONNECTING;
         try {
             const url = this.relayUrls[0]; // For now just use first relay
+            if (url.startsWith('ws://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+                console.warn('[nostr-websocket] WARNING: Connecting over plaintext ws:// — messages are not encrypted');
+            }
             this.ws = new WebSocket(url);
             await new Promise((resolve, reject) => {
                 const timeout = setTimeout(() => {
@@ -131,13 +134,17 @@ export class NostrWSClient {
             this.reconnectAttempts < this.options.retryAttempts) {
             this.connectionState = ConnectionState.RECONNECTING;
             this.reconnectAttempts++;
-            const delay = this.options.retryDelay || 1000;
-            this.logger.info({ attempt: this.reconnectAttempts, maxAttempts: this.options.retryAttempts }, `Reconnecting in ${delay}ms`);
+            const baseDelay = this.options.retryDelay || 1000;
+            const maxDelay = 30000; // 30 second cap
+            const delay = Math.min(baseDelay * Math.pow(2, this.reconnectAttempts), maxDelay);
+            const jitter = delay * 0.1 * Math.random(); // 10% jitter
+            const totalDelay = delay + jitter;
+            this.logger.info({ attempt: this.reconnectAttempts, maxAttempts: this.options.retryAttempts, delay: Math.round(totalDelay) }, `Reconnecting in ${Math.round(totalDelay)}ms`);
             this.reconnectTimeout = setTimeout(() => {
                 this.connect().catch(error => {
                     this.logger.error({ error }, 'Reconnection failed');
                 });
-            }, delay);
+            }, totalDelay);
         }
         else {
             this.logger.warn('Max reconnection attempts reached');

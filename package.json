@@ -61,7 +61,7 @@
   "homepage": "https://github.com/HumanjavaEnterprises/nostr-websocket-utils#readme",
   "dependencies": {
     "@types/uuid": "^10.0.0",
-    "nostr-crypto-utils": "^0.4.10",
+    "nostr-crypto-utils": "^0.5.1",
     "pino": "^8.21.0",
     "uuid": "^11.1.0",
     "ws": "^8.19.0"

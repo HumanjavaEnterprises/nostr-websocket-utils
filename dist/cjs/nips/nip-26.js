@@ -22,17 +22,13 @@ async function createDelegation(delegatorPrivkey, delegateePubkey, conditions) {
             .sort()
             .join('&');
         const message = `nostr:delegation:${delegateePubkey}:${conditionsString}`;
-        // Create a NostrEvent object for signing
-        const event = {
-            id: '', // This will be set by signEvent
+        // Use finalizeEvent for one-step create+sign
+        const signedEvent = await (0, nostr_crypto_utils_1.finalizeEvent)({
             pubkey: delegateePubkey,
-            created_at: Math.floor(Date.now() / 1000),
             kind: 0, // Using kind 0 for delegation events
             tags: [],
             content: message,
-            sig: '' // This will be set by signEvent
-        };
-        const signedEvent = await (0, nostr_crypto_utils_1.signEvent)(event, delegatorPrivkey);
+        }, delegatorPrivkey);
         return signedEvent.sig;
     }
     catch (error) {

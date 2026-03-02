@@ -18,7 +18,8 @@ class NostrWSServer {
     constructor(options) {
         this.server = new ws_1.WebSocketServer({
             port: options.port,
-            host: options.host
+            host: options.host,
+            maxPayload: options.maxPayload || 65536, // 64KB default
         });
         /**
          * Handles incoming WebSocket connections

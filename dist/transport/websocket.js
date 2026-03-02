@@ -17,6 +17,9 @@ export class WebSocketTransport extends BaseTransport {
             return;
         }
         try {
+            if (endpoint.startsWith('ws://') && !endpoint.includes('localhost') && !endpoint.includes('127.0.0.1')) {
+                console.warn('[nostr-websocket] WARNING: Connecting over plaintext ws:// — messages are not encrypted');
+            }
             const ws = new WebSocket(endpoint);
             ws.on('open', () => {
                 this.trackMetric(endpoint, 'connection', true);

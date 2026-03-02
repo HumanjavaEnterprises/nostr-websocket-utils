@@ -75,12 +75,17 @@ export declare function createConnectionRateLimiter(config: {
 export declare class RateLimiterImpl implements RateLimiter {
     private clients;
     private config;
+    private checkCount;
     constructor(config: RateLimitConfig);
     getClientState(clientId: string): ClientState;
     shouldLimit(clientId: string, message: NostrWSMessage): Promise<boolean>;
     recordRequest(clientId: string, message: NostrWSMessage): void;
     getRemainingRequests(clientId: string, messageType: string): number;
     isBlocked(clientId: string): boolean;
+    /**
+     * Remove stale client entries to prevent memory leaks
+     */
+    private cleanup;
 }
 export {};
 //# sourceMappingURL=rate-limiter.d.ts.map

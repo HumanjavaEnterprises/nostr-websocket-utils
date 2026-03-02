@@ -14,7 +14,8 @@ export class NostrWSServer {
     constructor(options) {
         this.server = new WebSocketServer({
             port: options.port,
-            host: options.host
+            host: options.host,
+            maxPayload: options.maxPayload || 65536, // 64KB default
         });
         /**
          * Handles incoming WebSocket connections

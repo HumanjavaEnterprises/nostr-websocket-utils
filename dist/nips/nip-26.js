@@ -3,7 +3,7 @@
  * @module nips/nip-26
  */
 import { getLogger } from '../utils/logger.js';
-import { signEvent, verifySignature } from 'nostr-crypto-utils';
+import { finalizeEvent, verifySignature } from 'nostr-crypto-utils';
 const logger = getLogger('NIP-26');
 /**
  * Create a delegation token
@@ -15,17 +15,13 @@ export async function createDelegation(delegatorPrivkey, delegateePubkey, condit
             .sort()
             .join('&');
         const message = `nostr:delegation:${delegateePubkey}:${conditionsString}`;
-        // Create a NostrEvent object for signing
-        const event = {
-            id: '', // This will be set by signEvent
+        // Use finalizeEvent for one-step create+sign
+        const signedEvent = await finalizeEvent({
             pubkey: delegateePubkey,
-            created_at: Math.floor(Date.now() / 1000),
             kind: 0, // Using kind 0 for delegation events
             tags: [],
             content: message,
-            sig: '' // This will be set by signEvent
-        };
-        const signedEvent = await signEvent(event, delegatorPrivkey);
+        }, delegatorPrivkey);
         return signedEvent.sig;
     }
     catch (error) {

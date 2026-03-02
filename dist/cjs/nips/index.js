@@ -22,8 +22,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./nip-01.js"), exports);
 // Contact List and Petnames
 __exportStar(require("./nip-02.js"), exports);
-// Encrypted Direct Messages
+// Encrypted Direct Messages (NIP-04)
 __exportStar(require("./nip-04.js"), exports);
+// Versioned Encrypted Payloads (NIP-44)
+__exportStar(require("./nip-44.js"), exports);
 // DNS Identity Verification
 __exportStar(require("./nip-05.js"), exports);
 // Event Deletion
@@ -48,4 +50,6 @@ __exportStar(require("./nip-22.js"), exports);
 __exportStar(require("./nip-28.js"), exports);
 // Parameterized Replaceable Events
 __exportStar(require("./nip-33.js"), exports);
+// Nostr Connect / Remote Signing Transport (NIP-46)
+__exportStar(require("./nip-46.js"), exports);
 //# sourceMappingURL=index.js.map

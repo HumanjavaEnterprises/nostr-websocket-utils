@@ -76,16 +76,16 @@ class MessageQueue {
         finally {
             this.processing = false;
         }
-        // Clean up stale messages
+        // Clean up stale messages (reverse iteration to avoid index mutation bug)
         if (this.options.staleTimeout) {
             const now = Date.now();
             const staleTimeout = this.options.staleTimeout;
-            this.queue.forEach((message, index) => {
-                if (now - message.queuedAt > staleTimeout) {
-                    this.logger.warn({ message }, 'Message is stale, removing from queue');
-                    this.queue.splice(index, 1);
+            for (let i = this.queue.length - 1; i >= 0; i--) {
+                if (now - this.queue[i].queuedAt > staleTimeout) {
+                    this.logger.warn({ message: this.queue[i] }, 'Message is stale, removing from queue');
+                    this.queue.splice(i, 1);
                 }
-            });
+            }
         }
     }
     /**

@@ -9,8 +9,11 @@ export * from './nip-01.js';
 // Contact List and Petnames
 export * from './nip-02.js';
 
-// Encrypted Direct Messages
+// Encrypted Direct Messages (NIP-04)
 export * from './nip-04.js';
+
+// Versioned Encrypted Payloads (NIP-44)
+export * from './nip-44.js';
 
 // DNS Identity Verification
 export * from './nip-05.js';
@@ -47,3 +50,6 @@ export * from './nip-28.js';
 
 // Parameterized Replaceable Events
 export * from './nip-33.js';
+
+// Nostr Connect / Remote Signing Transport (NIP-46)
+export * from './nip-46.js';
