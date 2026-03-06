@@ -111,7 +111,7 @@ export class WebSocketTransport extends BaseTransport {
             return elapsed < 30000;
         }
         catch (error) {
-            logger.error('Error checking endpoint health:', error);
+            logger.error({ error }, 'Error checking endpoint health');
             return false;
         }
     }

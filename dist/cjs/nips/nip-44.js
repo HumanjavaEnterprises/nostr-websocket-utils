@@ -103,7 +103,7 @@ function decryptDM44(message, recipientPrivkey, senderPubkey, logger) {
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        logger.error('Failed to decrypt NIP-44 DM:', errorMessage);
+        logger.error({ error: errorMessage }, 'Failed to decrypt NIP-44 DM');
         throw new Error(`Failed to decrypt NIP-44 DM: ${errorMessage}`);
     }
 }
@@ -136,7 +136,7 @@ function validateEncryptedDM44(message, logger) {
         return true;
     }
     catch (error) {
-        logger.error('Error validating NIP-44 encrypted DM:', error);
+        logger.error({ error }, 'Error validating NIP-44 encrypted DM');
         return false;
     }
 }

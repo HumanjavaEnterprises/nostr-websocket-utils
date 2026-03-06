@@ -60,28 +60,19 @@ export function createConnectionRateLimiter(config, logger) {
             };
             // Check if blocked
             if (state.blockedUntil && now < state.blockedUntil) {
-                logger.debug('Connection blocked', {
-                    clientId,
-                    until: new Date(state.blockedUntil)
-                });
+                logger.debug({ clientId, until: new Date(state.blockedUntil) }, 'Connection blocked');
                 return false;
             }
             // Clean old attempts
             state.attempts = cleanOldAttempts(state.attempts);
             // Check rate limits
             if (state.attempts.length >= config.maxConnectionsPerMinute) {
-                logger.debug('Too many connection attempts', {
-                    clientId,
-                    attempts: state.attempts.length
-                });
+                logger.debug({ clientId, attempts: state.attempts.length }, 'Too many connection attempts');
                 return false;
             }
             // Check concurrent connections
             if (state.currentConnections >= config.maxConcurrentConnections) {
-                logger.debug('Too many concurrent connections', {
-                    clientId,
-                    connections: state.currentConnections
-                });
+                logger.debug({ clientId, connections: state.currentConnections }, 'Too many concurrent connections');
                 return false;
             }
             // Check failure rate
@@ -89,11 +80,7 @@ export function createConnectionRateLimiter(config, logger) {
             if (recentFailures >= config.blockAfterFailures) {
                 state.blockedUntil = now + config.blockDurationMs;
                 clients.set(clientId, state);
-                logger.debug('Client blocked due to failures', {
-                    clientId,
-                    failures: recentFailures,
-                    until: new Date(state.blockedUntil)
-                });
+                logger.debug({ clientId, failures: recentFailures, until: new Date(state.blockedUntil) }, 'Client blocked due to failures');
                 return false;
             }
             return true;

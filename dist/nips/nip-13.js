@@ -75,7 +75,7 @@ export function validateEventPoW(message, minDifficulty, logger) {
         return difficulty >= minDifficulty;
     }
     catch (error) {
-        logger.error('Error validating proof of work:', error);
+        logger.error({ error }, 'Error validating proof of work');
         return false;
     }
 }

@@ -71,7 +71,7 @@ export function validateEventTime(message, validator, logger) {
         return validator.validateTime(timestamp);
     }
     catch (error) {
-        logger.error('Error validating event time:', error);
+        logger.error({ error }, 'Error validating event time');
         return {
             valid: false,
             reason: 'Error validating timestamp'
@@ -116,7 +116,7 @@ export function createTimeSyncManager(logger) {
             });
         }
         catch (error) {
-            logger.error('Time sync failed:', error);
+            logger.error({ error }, 'Time sync failed');
         }
     }
     return {

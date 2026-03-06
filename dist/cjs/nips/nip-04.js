@@ -60,7 +60,7 @@ async function decryptDM(message, recipientPrivkey, senderPubkey, logger) {
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-        logger.error('Failed to decrypt DM:', errorMessage);
+        logger.error({ error: errorMessage }, 'Failed to decrypt DM');
         throw new Error(`Failed to decrypt DM: ${errorMessage}`);
     }
 }
@@ -97,7 +97,7 @@ function validateEncryptedDM(message, logger) {
         return true;
     }
     catch (error) {
-        logger.error('Error validating encrypted DM:', error);
+        logger.error({ error }, 'Error validating encrypted DM');
         return false;
     }
 }

@@ -34,7 +34,7 @@ async function validateSignedMessage(message) {
         return true;
     }
     catch (error) {
-        logger.error('Error validating signed message:', error);
+        logger.error({ error }, 'Error validating signed message');
         return false;
     }
 }

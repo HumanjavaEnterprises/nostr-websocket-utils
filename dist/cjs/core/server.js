@@ -57,12 +57,12 @@ class NostrWSServer {
                     await this.handleMessage(socket, rawMessage);
                 }
                 catch (error) {
-                    logger.error('Error processing message:', error);
+                    logger.error({ error }, 'Error processing message');
                     this.options.onError?.(error, socket);
                 }
             });
             socket.on('error', (error) => {
-                logger.error(`Client error (${socket.clientId}):`, error);
+                logger.error({ error, clientId: socket.clientId }, 'Client error');
                 this.options.onError?.(error, socket);
             });
             socket.on('close', () => {

@@ -80,15 +80,11 @@ export function createChatMessageHandler(logger) {
                 const channelId = tags.find(tag => tag[0] === 'e' && tag[3] === 'root')?.[1];
                 const replyId = tags.find(tag => tag[0] === 'e' && tag[3] === 'reply')?.[1];
                 // Process message
-                logger.debug('Processing chat message', {
-                    channelId,
-                    replyId,
-                    content: event.content
-                });
+                logger.debug({ channelId, replyId, content: event.content }, 'Processing chat message');
                 // Additional message processing logic here
             }
             catch (error) {
-                logger.error('Error handling chat message:', error);
+                logger.error({ error }, 'Error handling chat message');
             }
         },
         async handleModeration(message) {
@@ -103,15 +99,11 @@ export function createChatMessageHandler(logger) {
                 const channelId = tags.find(tag => tag[0] === 'e' && tag[3] === 'root')?.[1];
                 const messageId = tags.find(tag => tag[0] === 'e' && tag[3] === 'reply')?.[1];
                 // Process moderation
-                logger.debug('Processing message moderation', {
-                    channelId,
-                    messageId,
-                    reason: event.content
-                });
+                logger.debug({ channelId, messageId, reason: event.content }, 'Processing message moderation');
                 // Additional moderation logic here
             }
             catch (error) {
-                logger.error('Error handling message moderation:', error);
+                logger.error({ error }, 'Error handling message moderation');
             }
         }
     };
