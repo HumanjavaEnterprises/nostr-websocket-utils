@@ -52,13 +52,13 @@ export class NostrWSServer {
       socket.on('message', async (data: Buffer) => {
         try {
           const message = JSON.parse(data.toString()) as NostrWSServerMessage;
-          logger.info('Received message:', message);
+          logger.info({ data: message }, 'Received message');
           /**
            * Calls the onMessage handler if provided
            */
           await options.onMessage?.(message, socket);
         } catch (error) {
-          logger.error('Error processing message:', error);
+          logger.error({ error }, 'Error processing message');
           /**
            * Calls the onError handler if provided
            */
@@ -72,7 +72,7 @@ export class NostrWSServer {
        * @param {Error} error - The error that occurred
        */
       socket.on('error', (error: Error) => {
-        logger.error(`Client error (${socket.clientId}):`, error);
+        logger.error({ error, clientId: socket.clientId }, 'Client error');
         /**
          * Calls the onError handler if provided
          */

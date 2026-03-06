@@ -131,7 +131,7 @@ export class WebSocketTransport extends BaseTransport {
       // If we haven't seen a ping response in 30 seconds, consider unhealthy
       return elapsed < 30000;
     } catch (error) {
-      logger.error('Error checking endpoint health:', error);
+      logger.error({ error }, 'Error checking endpoint health');
       return false;
     }
   }

@@ -11,19 +11,21 @@ vi.mock('uuid', () => ({
 }));
 
 // Mock the entire ws module
-vi.mock('ws', () => ({
-  WebSocket: vi.fn(),
-  WebSocketServer: vi.fn().mockImplementation(() => {
-    const server = new EventEmitter();
-    Object.assign(server, { 
-      close: vi.fn((callback?: () => void) => {
-        if (callback) callback();
-      }),
-      clients: new Set()
-    });
-    return server;
-  })
-}));
+// vitest 4: `new` on a vi.fn() constructs an instance, so use a class
+// Use dynamic import inside mock factory since vi.mock is hoisted before imports
+vi.mock('ws', async () => {
+  const { EventEmitter } = await import('events');
+  class MockWebSocketServer extends EventEmitter {
+    clients = new Set();
+    close(callback?: () => void) {
+      if (callback) callback();
+    }
+  }
+  return {
+    WebSocket: vi.fn(),
+    WebSocketServer: MockWebSocketServer,
+  };
+});
 
 describe('NostrWSServer', () => {
   let server: NostrWSServer;

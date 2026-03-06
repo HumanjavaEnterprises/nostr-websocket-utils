@@ -85,7 +85,7 @@ export function validateParameterizedEvent(
 
     return true;
   } catch (error) {
-    _logger.error('Error validating parameterized event:', error);
+    _logger.error({ error }, 'Error validating parameterized event');
     return false;
   }
 }
@@ -223,7 +223,7 @@ export function createEventReplacementHandler(
         // Replace if newer
         return (newEvent.created_at as number) > (existingEvent.created_at as number);
       } catch (error) {
-        _logger.error('Error checking event replacement:', error);
+        _logger.error({ error }, 'Error checking event replacement');
         return false;
       }
     },

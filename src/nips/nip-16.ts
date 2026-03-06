@@ -109,7 +109,7 @@ export function validateEventTreatment(
 
     return true;
   } catch (error) {
-    logger.error('Error validating event treatment:', error);
+    logger.error({ error }, 'Error validating event treatment');
     return false;
   }
 }
@@ -197,7 +197,7 @@ export function createEventStorageManager(logger: Logger): EventStorageManager {
         // Replace if new event is newer
         return (newEvent.created_at as number) > (existingEvent.created_at as number);
       } catch (error) {
-        logger.error('Error checking event replacement:', error);
+        logger.error({ error }, 'Error checking event replacement');
         return false;
       }
     }

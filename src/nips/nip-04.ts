@@ -70,7 +70,7 @@ export async function decryptDM(
     return await decryptMessage(event.content, senderPubkey, recipientPrivkey);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    logger.error('Failed to decrypt DM:', errorMessage);
+    logger.error({ error: errorMessage }, 'Failed to decrypt DM');
     throw new Error(`Failed to decrypt DM: ${errorMessage}`);
   }
 }
@@ -118,7 +118,7 @@ export function validateEncryptedDM(
 
     return true;
   } catch (error) {
-    logger.error('Error validating encrypted DM:', error);
+    logger.error({ error }, 'Error validating encrypted DM');
     return false;
   }
 }
