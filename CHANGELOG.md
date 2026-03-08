@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-03-06
+
+### Changed
+- **Pino 10:** Upgraded logger from pino ^8.x to ^10.3.1
+- **UUID 13:** Upgraded from uuid ^9.x to ^13.0.0
+- **Vitest 4:** Upgraded test framework
+- **esbuild:** Replaced webpack with esbuild for browser bundling
+- **nostr-crypto-utils** dependency upgraded to ^0.6.0
+- Dropped Node.js 16 support, CI runs on Node 20.x + 22.x
+
+### Added
+- NIP-44 encryption and NIP-46 transport via nostr-crypto-utils v0.5.1
+- CommonJS `package.json` in dist/cjs for Node-RED compatibility
+
+### Fixed
+- WSS enforcement, payload size limits, backoff jitter, rate limiter cleanup
+- Resolved npm audit vulnerabilities
+- Fixed broken typedoc links in README
+
 ## [0.3.14] - 2025-02-19
 
 ### Changed

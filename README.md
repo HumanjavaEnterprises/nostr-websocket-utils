@@ -176,10 +176,10 @@ See the `examples/browser.html` file for a complete example of browser usage.
 ## Dependencies
 
 This package uses:
-- nostr-crypto-utils (^0.4.2) for cryptographic operations
-- pino (^8.17.2) for logging
-- ws (^8.16.0) for WebSocket functionality
-- uuid (^9.0.0) for unique identifiers
+- nostr-crypto-utils (^0.6.0) for cryptographic operations
+- pino (^10.3.1) for logging
+- ws (^8.19.0) for WebSocket functionality
+- uuid (^13.0.0) for unique identifiers
 
 ## Documentation
 
