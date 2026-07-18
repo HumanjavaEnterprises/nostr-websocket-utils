@@ -26,7 +26,7 @@ async function createEncryptedDM(content, recipientPubkey, senderPrivkey, tags =
     try {
         // Canonical nostr-crypto-utils signature:
         //   encryptMessage(message, senderPrivkey, recipientPubkey)
-        const encryptedContent = await (0, nostr_crypto_utils_1.encryptMessage)(content, senderPrivkey, recipientPubkey);
+        const encryptedContent = await (0, nostr_crypto_utils_1.encryptMessage)(content, (0, nostr_crypto_utils_1.asPrivateKey)(senderPrivkey), (0, nostr_crypto_utils_1.asPublicKey)(recipientPubkey));
         const senderPubkey = (0, nostr_crypto_utils_1.getPublicKeySync)(senderPrivkey);
         return ['EVENT', {
                 kind: exports.ENCRYPTED_DM_KIND,
@@ -63,7 +63,7 @@ async function decryptDM(message, recipientPrivkey, senderPubkey, logger) {
         }
         // Canonical nostr-crypto-utils signature:
         //   decryptMessage(ciphertext, recipientPrivkey, senderPubkey)
-        return await (0, nostr_crypto_utils_1.decryptMessage)(event.content, recipientPrivkey, senderPubkey);
+        return await (0, nostr_crypto_utils_1.decryptMessage)(event.content, (0, nostr_crypto_utils_1.asPrivateKey)(recipientPrivkey), (0, nostr_crypto_utils_1.asPublicKey)(senderPubkey));
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';

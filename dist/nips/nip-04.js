@@ -3,7 +3,7 @@
  * @module nips/nip-04
  * @see https://github.com/nostr-protocol/nips/blob/master/04.md
  */
-import { encryptMessage, decryptMessage, getPublicKeySync } from 'nostr-crypto-utils';
+import { encryptMessage, decryptMessage, getPublicKeySync, asPrivateKey, asPublicKey } from 'nostr-crypto-utils';
 /**
  * Kind value for encrypted direct messages
  */
@@ -20,7 +20,7 @@ export async function createEncryptedDM(content, recipientPubkey, senderPrivkey,
     try {
         // Canonical nostr-crypto-utils signature:
         //   encryptMessage(message, senderPrivkey, recipientPubkey)
-        const encryptedContent = await encryptMessage(content, senderPrivkey, recipientPubkey);
+        const encryptedContent = await encryptMessage(content, asPrivateKey(senderPrivkey), asPublicKey(recipientPubkey));
         const senderPubkey = getPublicKeySync(senderPrivkey);
         return ['EVENT', {
                 kind: ENCRYPTED_DM_KIND,
@@ -57,7 +57,7 @@ export async function decryptDM(message, recipientPrivkey, senderPubkey, logger)
         }
         // Canonical nostr-crypto-utils signature:
         //   decryptMessage(ciphertext, recipientPrivkey, senderPubkey)
-        return await decryptMessage(event.content, recipientPrivkey, senderPubkey);
+        return await decryptMessage(event.content, asPrivateKey(recipientPrivkey), asPublicKey(senderPubkey));
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
