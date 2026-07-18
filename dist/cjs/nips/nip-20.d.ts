@@ -49,12 +49,14 @@ export declare function validateCommandMessage(message: NostrWSMessage): boolean
  */
 export declare function createCommandResult(data: CommandMessageData): CommandResult;
 /**
- * Creates an OK message
+ * Creates an OK message: ["OK", <eventId>, <success>, <message>]
+ * per NIP-20 / NIP-01. The message string defaults to empty.
  */
-export declare function createOkMessage(eventId: string, success?: boolean, details?: Record<string, unknown>): NostrWSMessage;
+export declare function createOkMessage(eventId: string, success?: boolean, message?: string): NostrWSMessage;
 /**
- * Creates a NOTICE message
+ * Creates a NOTICE message: ["NOTICE", <message>] per NIP-01.
+ * The optional code is prefixed into the human-readable message.
  */
-export declare function createCommandNoticeMessage(code: CommandStatusType, message: string, details?: Record<string, unknown>): NostrWSMessage;
+export declare function createCommandNoticeMessage(code: CommandStatusType, message: string): NostrWSMessage;
 export {};
 //# sourceMappingURL=nip-20.d.ts.map

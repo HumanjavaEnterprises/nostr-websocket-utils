@@ -4,7 +4,7 @@
  * @see https://github.com/nostr-protocol/nips/blob/master/04.md
  */
 
-import { encryptMessage, decryptMessage } from 'nostr-crypto-utils';
+import { encryptMessage, decryptMessage, getPublicKeySync } from 'nostr-crypto-utils';
 import type { NostrWSMessage, NostrEvent } from '../types/messages.js';
 import type { Logger } from '../types/logger.js';
 
@@ -28,9 +28,14 @@ export async function createEncryptedDM(
   tags: string[][] = []
 ): Promise<NostrWSMessage> {
   try {
-    const encryptedContent = await encryptMessage(content, recipientPubkey, senderPrivkey);
+    // Canonical nostr-crypto-utils signature:
+    //   encryptMessage(message, senderPrivkey, recipientPubkey)
+    const encryptedContent = await encryptMessage(content, senderPrivkey, recipientPubkey);
+    const senderPubkey = getPublicKeySync(senderPrivkey);
     return ['EVENT', {
       kind: ENCRYPTED_DM_KIND,
+      pubkey: senderPubkey,
+      created_at: Math.floor(Date.now() / 1000),
       content: encryptedContent,
       tags: [
         ['p', recipientPubkey],
@@ -67,7 +72,9 @@ export async function decryptDM(
       throw new Error('Not an encrypted DM event');
     }
 
-    return await decryptMessage(event.content, senderPubkey, recipientPrivkey);
+    // Canonical nostr-crypto-utils signature:
+    //   decryptMessage(ciphertext, recipientPrivkey, senderPubkey)
+    return await decryptMessage(event.content, recipientPrivkey, senderPubkey);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     logger.error({ error: errorMessage }, 'Failed to decrypt DM');

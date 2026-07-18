@@ -126,8 +126,13 @@ export function bech32Encode(hrp: string, data: number[]): string {
 /**
  * Decode bech32 string
  */
-export function bech32Decode(str: string): { hrp: string; data: number[] } {
-  if (str.length < 8 || str.length > 90) {
+export function bech32Decode(
+  str: string,
+  limit = 1023
+): { hrp: string; data: number[] } {
+  // NIP-19 lifts BIP-173's 90-char cap for TLV entities (nprofile/nevent/naddr),
+  // so default to a high limit rather than 90.
+  if (str.length < 8 || str.length > limit) {
     throw new Error('Invalid length');
   }
 
@@ -144,12 +149,15 @@ export function bech32Decode(str: string): { hrp: string; data: number[] } {
     throw new Error('Mixed case');
   }
 
+  // Normalize the whole string (BIP-173 permits all-uppercase, e.g. QR codes).
+  str = str.toLowerCase();
+
   const pos = str.lastIndexOf('1');
   if (pos < 1 || pos + 7 > str.length) {
     throw new Error('Invalid separator position');
   }
 
-  const hrp = str.substring(0, pos).toLowerCase();
+  const hrp = str.substring(0, pos);
   const data = fromChars(str.substring(pos + 1));
 
   if (!verifyChecksum(hrp, data)) {
@@ -163,6 +171,11 @@ export function bech32Decode(str: string): { hrp: string; data: number[] } {
  * Encode hex string to bech32
  */
 export function encodeToBech32(hrp: string, hex: string): string {
+  // Reject non-hex or odd-length input, otherwise garbage (NaN bytes / a
+  // truncated key) would be silently encoded into a checksum-valid string.
+  if (!/^[0-9a-fA-F]*$/.test(hex) || hex.length % 2 !== 0) {
+    throw new Error('Invalid hex input');
+  }
   const data = new Uint8Array(hex.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []);
   const words = convertBits(Array.from(data), 8, 5, true);
   return bech32Encode(hrp, words);
@@ -171,8 +184,8 @@ export function encodeToBech32(hrp: string, hex: string): string {
 /**
  * Decode bech32 to hex string
  */
-export function decodeFromBech32(str: string): { prefix: string; hex: string } {
-  const { hrp, data } = bech32Decode(str);
+export function decodeFromBech32(str: string, limit = 1023): { prefix: string; hex: string } {
+  const { hrp, data } = bech32Decode(str, limit);
   const bytes = convertBits(data, 5, 8, false);
   const hex = bytes.map(b => b.toString(16).padStart(2, '0')).join('');
   return { prefix: hrp, hex };

@@ -12,13 +12,25 @@ import type { Logger } from '../types/logger.js';
  */
 export declare function countLeadingZeroBits(hex: string): number;
 /**
- * Calculates event ID with proof of work
- * @param event - Event object without ID
+ * Result of mining proof of work.
+ */
+export interface PowResult {
+    /** The mined event id (sha256 of the NIP-01 serialization including the nonce tag) */
+    id: string;
+    /** The winning nonce */
+    nonce: number;
+    /** The event tags including the committed ["nonce", <n>, <target>] tag */
+    tags: string[][];
+}
+/**
+ * Mines proof of work for an event per NIP-13: the nonce lives in a
+ * ["nonce", "<n>", "<target>"] tag inside the standard NIP-01 id preimage.
+ * @param event - Event object without id (must have pubkey/created_at/kind/tags/content)
  * @param targetDifficulty - Target number of leading zero bits
  * @param maxAttempts - Maximum number of attempts
- * @returns {Promise<string>} Event ID with sufficient proof of work
+ * @returns {Promise<PowResult>} The mined id, winning nonce, and committed tags
  */
-export declare function calculatePowEventId(event: Record<string, unknown>, targetDifficulty: number, maxAttempts?: number): Promise<string>;
+export declare function calculatePowEventId(event: Record<string, unknown>, targetDifficulty: number, maxAttempts?: number): Promise<PowResult>;
 /**
  * Validates proof of work for an event
  * @param message - Message containing event

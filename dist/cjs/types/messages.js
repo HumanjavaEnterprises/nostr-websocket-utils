@@ -14,6 +14,7 @@ exports.MESSAGE_TYPES = {
     EVENT: 'EVENT', // NIP-01: Basic protocol flow events
     REQ: 'REQ', // NIP-01: Request events
     CLOSE: 'CLOSE', // NIP-01: Close subscription
+    CLOSED: 'CLOSED', // NIP-01: Relay-initiated subscription close
     NOTICE: 'NOTICE', // NIP-01: Human-readable messages
     EOSE: 'EOSE', // NIP-15: End of stored events notice
     OK: 'OK', // NIP-20: Command result

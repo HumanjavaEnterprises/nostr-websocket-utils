@@ -18,6 +18,10 @@ export declare class NostrWSClient {
      */
     connect(): Promise<void>;
     /**
+     * Attempt a connection to a single relay URL.
+     */
+    private connectTo;
+    /**
      * Disconnect from the relay
      */
     disconnect(): Promise<void>;

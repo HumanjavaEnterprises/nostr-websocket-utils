@@ -28,11 +28,39 @@ A TypeScript library for building Nostr protocol WebSocket clients and servers.
 |-----|--------|-------------|
 | 01 | 🟢 | Basic protocol flow & WebSocket connections |
 | 02 | 🟢 | Contact List and Petnames |
+| 04 | 🟢 | Encrypted Direct Messages |
 | 11 | 🟢 | Relay Information Document |
+| 13 | 🟢 | Proof of Work |
 | 15 | 🟢 | End of Stored Events Notice |
 | 16 | 🟢 | Event Treatment |
+| 19 | 🟢 | bech32-encoded entities |
 | 20 | 🟢 | Command Results |
+| 26 | 🟢 | Delegated Event Signing |
 | 42 | 🟢 | Authentication of clients to relays |
+| 44 | 🟢 | Versioned Encrypted Payloads |
+| 46 | 🟢 | Nostr Connect / Remote Signing transport |
+
+> **⚠️ 0.5.0 is a breaking release.** It fixes the wire/crypto layer — message
+> builders now emit spec-compliant NIP-01 positional arrays (earlier versions
+> emitted an object shape that every compliant relay rejects) and the NIP-04
+> DM implementation had its key arguments swapped. Any consumer relying on the
+> old (non-functional) output must update. See [CHANGELOG.md](CHANGELOG.md).
+
+### Wire format (NIP-01)
+
+All builders emit spec-shaped positional arrays exactly as they appear on the wire:
+
+```typescript
+import { createReqMessage, createCloseMessage, createNoticeMessage } from 'nostr-websocket-utils';
+import { createOkMessage } from 'nostr-websocket-utils';
+
+createReqMessage('sub1', [{ kinds: [1] }]); // ["REQ","sub1",{"kinds":[1]}]
+createCloseMessage('sub1');                 // ["CLOSE","sub1"]
+createNoticeMessage('hello');               // ["NOTICE","hello"]
+createOkMessage('<eventId>', true, 'ok');   // ["OK","<eventId>",true,"ok"]
+```
+
+Tag filters use NIP-01 `#e` / `#p` keys (e.g. `{ kinds: [4], '#p': [pubkey] }`).
 
 ### WebSocket Protocol Implementation Details
 
@@ -176,7 +204,8 @@ See the `examples/browser.html` file for a complete example of browser usage.
 ## Dependencies
 
 This package uses:
-- nostr-crypto-utils (^0.6.0) for cryptographic operations
+- nostr-crypto-utils (^0.7.0) for cryptographic operations
+- @noble/curves + @noble/hashes (^2.0.1) for NIP-26 schnorr delegation tokens
 - pino (^10.3.1) for logging
 - ws (^8.19.0) for WebSocket functionality
 - uuid (^13.0.0) for unique identifiers

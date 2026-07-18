@@ -46,10 +46,8 @@ class Nip46Transport {
      */
     async subscribe(subscriptionId, since) {
         const filter = nostr_crypto_utils_1.nip46.createResponseFilter(this.session.clientPubkey, since);
-        const message = ['REQ', {
-                subscription_id: subscriptionId,
-                filters: [filter]
-            }];
+        // NIP-01 positional REQ: ["REQ", <subId>, <filter1>, ...]
+        const message = ['REQ', subscriptionId, filter];
         await this.client.sendMessage(message);
         logger.debug({ subscriptionId, filter }, 'Subscribed for NIP-46 responses');
         return message;

@@ -23,8 +23,12 @@ export class MessageQueue {
             this.queue.length >= this.options.maxSize) {
             throw new Error('Queue is full');
         }
+        // Store the original tuple verbatim — never destructure/rebuild it, or
+        // valid NIP-01 messages with >2 elements (e.g. ["REQ", subId, filter]) get
+        // corrupted into ["REQ", [subId, filter]].
         const [type, ...data] = message;
         const queueItem = {
+            message,
             type,
             data: data.length === 1 ? data[0] : data,
             priority: MessagePriority.NORMAL,
@@ -52,7 +56,8 @@ export class MessageQueue {
         try {
             while (this.queue.length > 0) {
                 const item = this.queue[0];
-                const message = [item.type, item.data];
+                // Send the original tuple verbatim, never a rebuilt [type, data].
+                const message = item.message;
                 try {
                     await this.sender(message);
                     this.queue.shift();

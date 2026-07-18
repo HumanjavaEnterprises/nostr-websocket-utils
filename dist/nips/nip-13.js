@@ -24,30 +24,46 @@ export function countLeadingZeroBits(hex) {
     return count;
 }
 /**
- * Calculates event ID with proof of work
- * @param event - Event object without ID
+ * Computes the NIP-01 event id (sha256 of [0,pubkey,created_at,kind,tags,content]).
+ */
+function computeEventId(event) {
+    const serialized = JSON.stringify([
+        0,
+        event.pubkey,
+        event.created_at,
+        event.kind,
+        event.tags,
+        event.content
+    ]);
+    return createHash('sha256').update(serialized).digest('hex');
+}
+/**
+ * Mines proof of work for an event per NIP-13: the nonce lives in a
+ * ["nonce", "<n>", "<target>"] tag inside the standard NIP-01 id preimage.
+ * @param event - Event object without id (must have pubkey/created_at/kind/tags/content)
  * @param targetDifficulty - Target number of leading zero bits
  * @param maxAttempts - Maximum number of attempts
- * @returns {Promise<string>} Event ID with sufficient proof of work
+ * @returns {Promise<PowResult>} The mined id, winning nonce, and committed tags
  */
 export async function calculatePowEventId(event, targetDifficulty, maxAttempts = 1000000) {
+    const baseTags = Array.isArray(event.tags)
+        ? event.tags.filter(tag => tag[0] !== 'nonce')
+        : [];
     let nonce = 0;
-    const eventCopy = { ...event };
     while (nonce < maxAttempts) {
-        eventCopy.nonce = nonce.toString();
-        const serialized = JSON.stringify([
-            0,
-            eventCopy.pubkey,
-            eventCopy.created_at,
-            eventCopy.kind,
-            eventCopy.tags,
-            eventCopy.content,
-            eventCopy.nonce
-        ]);
-        const hash = createHash('sha256').update(serialized).digest('hex');
-        const difficulty = countLeadingZeroBits(hash);
-        if (difficulty >= targetDifficulty) {
-            return hash;
+        const tags = [
+            ...baseTags,
+            ['nonce', String(nonce), String(targetDifficulty)]
+        ];
+        const id = computeEventId({
+            pubkey: event.pubkey,
+            created_at: event.created_at,
+            kind: event.kind,
+            tags,
+            content: event.content
+        });
+        if (countLeadingZeroBits(id) >= targetDifficulty) {
+            return { id, nonce, tags };
         }
         nonce++;
     }
@@ -70,8 +86,21 @@ export function validateEventPoW(message, minDifficulty, logger) {
             logger.debug('Missing event ID');
             return false;
         }
-        // Calculate difficulty
-        const difficulty = countLeadingZeroBits(event.id);
+        // Recompute the id from the event's own fields — never trust a claimed id
+        // (a forger could otherwise just set id="0000...").
+        const recomputedId = computeEventId({
+            pubkey: event.pubkey,
+            created_at: event.created_at,
+            kind: event.kind,
+            tags: event.tags,
+            content: event.content
+        });
+        if (recomputedId !== event.id) {
+            logger.debug('Event id does not match its content');
+            return false;
+        }
+        // Calculate difficulty from the verified id
+        const difficulty = countLeadingZeroBits(recomputedId);
         return difficulty >= minDifficulty;
     }
     catch (error) {

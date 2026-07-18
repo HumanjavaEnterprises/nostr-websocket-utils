@@ -121,8 +121,10 @@ function bech32Encode(hrp, data) {
 /**
  * Decode bech32 string
  */
-function bech32Decode(str) {
-    if (str.length < 8 || str.length > 90) {
+function bech32Decode(str, limit = 1023) {
+    // NIP-19 lifts BIP-173's 90-char cap for TLV entities (nprofile/nevent/naddr),
+    // so default to a high limit rather than 90.
+    if (str.length < 8 || str.length > limit) {
         throw new Error('Invalid length');
     }
     let lower = false;
@@ -139,11 +141,13 @@ function bech32Decode(str) {
     if (lower && upper) {
         throw new Error('Mixed case');
     }
+    // Normalize the whole string (BIP-173 permits all-uppercase, e.g. QR codes).
+    str = str.toLowerCase();
     const pos = str.lastIndexOf('1');
     if (pos < 1 || pos + 7 > str.length) {
         throw new Error('Invalid separator position');
     }
-    const hrp = str.substring(0, pos).toLowerCase();
+    const hrp = str.substring(0, pos);
     const data = fromChars(str.substring(pos + 1));
     if (!verifyChecksum(hrp, data)) {
         throw new Error('Invalid checksum');
@@ -154,6 +158,11 @@ function bech32Decode(str) {
  * Encode hex string to bech32
  */
 function encodeToBech32(hrp, hex) {
+    // Reject non-hex or odd-length input, otherwise garbage (NaN bytes / a
+    // truncated key) would be silently encoded into a checksum-valid string.
+    if (!/^[0-9a-fA-F]*$/.test(hex) || hex.length % 2 !== 0) {
+        throw new Error('Invalid hex input');
+    }
     const data = new Uint8Array(hex.match(/.{1,2}/g)?.map(byte => parseInt(byte, 16)) || []);
     const words = convertBits(Array.from(data), 8, 5, true);
     return bech32Encode(hrp, words);
@@ -161,8 +170,8 @@ function encodeToBech32(hrp, hex) {
 /**
  * Decode bech32 to hex string
  */
-function decodeFromBech32(str) {
-    const { hrp, data } = bech32Decode(str);
+function decodeFromBech32(str, limit = 1023) {
+    const { hrp, data } = bech32Decode(str, limit);
     const bytes = convertBits(data, 5, 8, false);
     const hex = bytes.map(b => b.toString(16).padStart(2, '0')).join('');
     return { prefix: hrp, hex };

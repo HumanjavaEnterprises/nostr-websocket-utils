@@ -11,6 +11,7 @@ export declare const MESSAGE_TYPES: {
     readonly EVENT: "EVENT";
     readonly REQ: "REQ";
     readonly CLOSE: "CLOSE";
+    readonly CLOSED: "CLOSED";
     readonly NOTICE: "NOTICE";
     readonly EOSE: "EOSE";
     readonly OK: "OK";
@@ -40,6 +41,12 @@ export type NostrWSMessage = [MessageType, ...unknown[]];
  * Queue item interface for message queue
  */
 export interface QueueItem extends NostrWSMessageBase {
+    /**
+     * The original, verbatim wire tuple. This is what gets sent — the queue must
+     * never destructure/rebuild the message, or valid >2-element NIP-01 tuples
+     * (e.g. ["REQ", subId, filter]) are corrupted.
+     */
+    message: NostrWSMessage;
     priority: MessagePriority;
     queuedAt: number;
     retryCount: number;
@@ -78,13 +85,16 @@ export interface NostrWSFilter {
     authors?: string[];
     /** Array of event kinds */
     kinds?: number[];
-    /** Event tags */
-    tags?: Record<string, string[]>;
     /** Unix timestamp range */
     since?: number;
     until?: number;
     /** Maximum number of events to return */
     limit?: number;
+    /**
+     * NIP-01 tag filters use '#<single-letter>' keys, e.g. '#e', '#p', '#a'.
+     * Each value is an array of tag values to match.
+     */
+    [key: `#${string}`]: string[] | undefined;
 }
 /**
  * Represents a subscription to a Nostr relay

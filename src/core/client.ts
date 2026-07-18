@@ -61,50 +61,69 @@ export class NostrWSClient {
 
     this.connectionState = ConnectionState.CONNECTING;
 
-    try {
-      const url = this.relayUrls[0]; // For now just use first relay
+    // Failover: try each relay URL in turn (rotating the starting index on
+    // reconnect attempts so a persistently-down first relay doesn't block B/C).
+    const count = this.relayUrls.length;
+    const start = count > 0 ? this.reconnectAttempts % count : 0;
+    let lastError: unknown;
 
-      if (url.startsWith('ws://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
-        console.warn('[nostr-websocket] WARNING: Connecting over plaintext ws:// — messages are not encrypted');
+    for (let i = 0; i < count; i++) {
+      const url = this.relayUrls[(start + i) % count];
+      try {
+        await this.connectTo(url);
+        return; // connected successfully
+      } catch (error) {
+        lastError = error;
+        this.logger.warn({ url, error }, 'Relay connection attempt failed, trying next');
       }
-
-      this.ws = new WebSocket(url);
-
-      await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          reject(new Error('Connection timeout'));
-        }, this.options.connectionTimeout || 5000);
-
-        this.ws!.on('open', () => {
-          clearTimeout(timeout);
-          this.connectionState = ConnectionState.CONNECTED;
-          this.reconnectAttempts = 0;
-          this.logger.info('Connected to relay');
-          resolve();
-        });
-
-        this.ws!.on('error', (error) => {
-          clearTimeout(timeout);
-          this.logger.error({ error }, 'WebSocket error');
-          if (this.options.onError) {
-            this.options.onError(error);
-          }
-          reject(error);
-        });
-
-        this.ws!.on('close', () => {
-          this.handleDisconnect();
-        });
-
-        this.ws!.on('message', (data: WebSocket.Data) => {
-          this.handleMessage(data);
-        });
-      });
-    } catch (error) {
-      this.logger.error({ error }, 'Failed to connect');
-      this.handleDisconnect();
-      throw error;
     }
+
+    this.logger.error({ error: lastError }, 'Failed to connect to any relay');
+    this.handleDisconnect();
+    throw lastError instanceof Error ? lastError : new Error('Failed to connect to any relay');
+  }
+
+  /**
+   * Attempt a connection to a single relay URL.
+   */
+  private async connectTo(url: string): Promise<void> {
+    if (url.startsWith('ws://') && !url.includes('localhost') && !url.includes('127.0.0.1')) {
+      console.warn('[nostr-websocket] WARNING: Connecting over plaintext ws:// — messages are not encrypted');
+    }
+
+    const ws = new WebSocket(url);
+    this.ws = ws;
+
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Connection timeout'));
+      }, this.options.connectionTimeout || 5000);
+
+      ws.on('open', () => {
+        clearTimeout(timeout);
+        this.connectionState = ConnectionState.CONNECTED;
+        this.reconnectAttempts = 0;
+        this.logger.info({ url }, 'Connected to relay');
+        resolve();
+      });
+
+      ws.on('error', (error) => {
+        clearTimeout(timeout);
+        this.logger.error({ error, url }, 'WebSocket error');
+        if (this.options.onError) {
+          this.options.onError(error);
+        }
+        reject(error);
+      });
+
+      ws.on('close', () => {
+        this.handleDisconnect();
+      });
+
+      ws.on('message', (data: WebSocket.Data) => {
+        this.handleMessage(data);
+      });
+    });
   }
 
   /**
@@ -135,7 +154,14 @@ export class NostrWSClient {
    * Send a message to the relay
    */
   async sendMessage(message: NostrWSMessage): Promise<void> {
-    if (this.connectionState !== ConnectionState.CONNECTED) {
+    // Allow buffering while CONNECTED/CONNECTING/RECONNECTING so the message
+    // queue can hold messages across a disconnect (its sender-retry loop flushes
+    // them once the socket is open again). Only reject when there is no path to
+    // a connection.
+    if (
+      this.connectionState === ConnectionState.DISCONNECTED ||
+      this.connectionState === ConnectionState.FAILED
+    ) {
       throw new Error('Not connected to relay');
     }
 

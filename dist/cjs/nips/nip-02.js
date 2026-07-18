@@ -67,16 +67,16 @@ function extractContacts(message) {
     }
 }
 /**
- * Creates a contact list subscription message
+ * Creates a contact list subscription message.
  * @param pubkey - Public key to subscribe to
- * @returns {NostrWSMessage} Subscription message
+ * @param subscriptionId - Optional subscription id; auto-generated from the
+ *   pubkey when omitted (NIP-01 REQ requires a subscription id).
+ * @returns {NostrWSMessage} Positional REQ: ["REQ", <subId>, <filter>]
  */
-function createContactListSubscription(pubkey) {
-    return ['REQ', {
-            filter: {
-                authors: [pubkey],
-                kinds: [exports.CONTACT_LIST_KIND]
-            }
+function createContactListSubscription(pubkey, subscriptionId = `contacts:${pubkey.slice(0, 8)}`) {
+    return ['REQ', subscriptionId, {
+            authors: [pubkey],
+            kinds: [exports.CONTACT_LIST_KIND]
         }];
 }
 /**
