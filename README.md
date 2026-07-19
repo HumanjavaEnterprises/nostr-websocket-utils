@@ -9,6 +9,12 @@
 
 A TypeScript library for building Nostr protocol WebSocket clients and servers.
 
+> **Release note — v0.5.0 (staged, pending publish).** Part of the coordinated
+> 2026-07 correctness pass across the Nostr library family, verified against a
+> shared known-answer vector set (NIP-44 v2 / NIP-49 / NIP-19 TLV / BIP-340). This
+> release rebuilds the NIP-01 wire builders to spec and adds real crypto tests. The
+> family dogfoods only its own libraries — no upstream `nostr-tools` dependency.
+
 ## Features
 
 - 🚀 Full Nostr protocol support with nostr-crypto-utils integration
