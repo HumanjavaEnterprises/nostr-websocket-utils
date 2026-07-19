@@ -8,11 +8,16 @@ import { encodeToBech32, decodeFromBech32 } from '../crypto/bech32.js';
 
 const logger = getLogger('NIP-19');
 
+const HEX_64 = /^[0-9a-fA-F]{64}$/;
+
 /**
  * Encode a public key to bech32 npub format
  */
 export function encodePubkey(pubkey: string): string {
   try {
+    if (!HEX_64.test(pubkey)) {
+      throw new Error('pubkey must be 32 bytes (64 hex chars)');
+    }
     return encodeToBech32('npub', pubkey);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -26,6 +31,9 @@ export function encodePubkey(pubkey: string): string {
  */
 export function encodePrivkey(privkey: string): string {
   try {
+    if (!HEX_64.test(privkey)) {
+      throw new Error('privkey must be 32 bytes (64 hex chars)');
+    }
     return encodeToBech32('nsec', privkey);
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -43,6 +51,9 @@ export function decodePubkey(npub: string): string {
     if (prefix !== 'npub') {
       throw new Error('Invalid prefix for public key');
     }
+    if (hex.length !== 64) {
+      throw new Error('npub must decode to exactly 32 bytes');
+    }
     return hex;
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -59,6 +70,9 @@ export function decodePrivkey(nsec: string): string {
     const { prefix, hex } = decodeFromBech32(nsec);
     if (prefix !== 'nsec') {
       throw new Error('Invalid prefix for private key');
+    }
+    if (hex.length !== 64) {
+      throw new Error('nsec must decode to exactly 32 bytes');
     }
     return hex;
   } catch (error: unknown) {

@@ -24,8 +24,6 @@ export type EventTreatmentType = typeof EventTreatment[keyof typeof EventTreatme
 export const REPLACEABLE_EVENT_KINDS = {
   METADATA: 0,
   CONTACT_LIST: 3,
-  CHANNEL_METADATA: 41,
-  CHANNEL_MESSAGE: 42,
   USER_STATUS: 10000,
   USER_PROFILE: 10001,
   RELAY_LIST: 10002,
@@ -58,7 +56,10 @@ export function getEventTreatment(eventKind: number): EventTreatmentType {
   if (eventKind >= 20000 && eventKind < 30000) {
     return EventTreatment.EPHEMERAL;
   }
-  if (eventKind >= 10000 && eventKind < 20000 || [0, 3, 41, 42].includes(eventKind)) {
+  // Kinds 0 and 3 are replaceable; 10000-19999 are replaceable. Kinds 41
+  // (channel metadata) and 42 (channel message) are regular/persistent events —
+  // classifying them replaceable silently loses channel message history.
+  if ((eventKind >= 10000 && eventKind < 20000) || [0, 3].includes(eventKind)) {
     return EventTreatment.REPLACEABLE;
   }
   return EventTreatment.PERSISTENT;

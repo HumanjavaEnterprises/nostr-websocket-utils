@@ -64,6 +64,7 @@ export function createEncryptedDM44(content, recipientPubkey, senderPrivkey, tag
         return ['EVENT', {
                 kind,
                 pubkey: senderPubkey,
+                created_at: Math.floor(Date.now() / 1000),
                 content: encryptedContent,
                 tags: [
                     ['p', recipientPubkey],

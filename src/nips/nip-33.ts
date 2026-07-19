@@ -161,11 +161,11 @@ export function createParameterizedEventManager(
     },
 
     subscribe(kinds: number[], identifiers: string[]): NostrWSMessage {
-      return ['REQ', {
-        filter: {
-          kinds,
-          '#d': identifiers
-        }
+      // NIP-01 positional REQ requires a subscription id; auto-generate one.
+      const subscriptionId = `param:${kinds.join(',')}:${Date.now()}`;
+      return ['REQ', subscriptionId, {
+        kinds,
+        '#d': identifiers
       }];
     }
   };

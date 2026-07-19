@@ -20,8 +20,6 @@ export type EventTreatmentType = typeof EventTreatment[keyof typeof EventTreatme
 export declare const REPLACEABLE_EVENT_KINDS: {
     METADATA: number;
     CONTACT_LIST: number;
-    CHANNEL_METADATA: number;
-    CHANNEL_MESSAGE: number;
     USER_STATUS: number;
     USER_PROFILE: number;
     RELAY_LIST: number;

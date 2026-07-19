@@ -14,15 +14,17 @@ import { fetchJson } from '../utils/http.js';
 export async function verifyNIP05Identifier(identifier, pubkey, logger) {
     try {
         // Parse identifier
-        const [name, domain] = identifier.split('@');
-        if (!name || !domain) {
+        const [rawName, domain] = identifier.split('@');
+        if (!rawName || !domain) {
             return {
                 valid: false,
                 error: 'Invalid identifier format'
             };
         }
-        // Fetch well-known URL
-        const url = `https://${domain}/.well-known/nostr.json?name=${name}`;
+        // Normalize + percent-encode the local-part before building the query so
+        // reserved characters (&, #, spaces, ...) cannot corrupt or hijack the request.
+        const name = rawName.toLowerCase();
+        const url = `https://${domain}/.well-known/nostr.json?name=${encodeURIComponent(name)}`;
         const response = await fetchJson(url);
         if (!response || !response.names || !response.names[name]) {
             return {

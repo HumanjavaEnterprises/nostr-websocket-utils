@@ -32,11 +32,13 @@ export declare function createContactListEvent(contacts: Contact[], metadata?: R
  */
 export declare function extractContacts(message: NostrWSMessage): Contact[];
 /**
- * Creates a contact list subscription message
+ * Creates a contact list subscription message.
  * @param pubkey - Public key to subscribe to
- * @returns {NostrWSMessage} Subscription message
+ * @param subscriptionId - Optional subscription id; auto-generated from the
+ *   pubkey when omitted (NIP-01 REQ requires a subscription id).
+ * @returns {NostrWSMessage} Positional REQ: ["REQ", <subId>, <filter>]
  */
-export declare function createContactListSubscription(pubkey: string): NostrWSMessage;
+export declare function createContactListSubscription(pubkey: string, subscriptionId?: string): NostrWSMessage;
 /**
  * Contact list manager interface
  */

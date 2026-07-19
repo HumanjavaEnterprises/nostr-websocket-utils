@@ -9,7 +9,7 @@ export declare function bech32Encode(hrp: string, data: number[]): string;
 /**
  * Decode bech32 string
  */
-export declare function bech32Decode(str: string): {
+export declare function bech32Decode(str: string, limit?: number): {
     hrp: string;
     data: number[];
 };
@@ -20,7 +20,7 @@ export declare function encodeToBech32(hrp: string, hex: string): string;
 /**
  * Decode bech32 to hex string
  */
-export declare function decodeFromBech32(str: string): {
+export declare function decodeFromBech32(str: string, limit?: number): {
     prefix: string;
     hex: string;
 };

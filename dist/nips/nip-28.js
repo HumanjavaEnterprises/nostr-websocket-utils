@@ -120,25 +120,24 @@ export function createChannelSubscriptionManager(logger) {
         subscribe(channelId) {
             const subscriptionId = `chat:${channelId}:${Date.now()}`;
             subscriptions.set(channelId, subscriptionId);
-            return ['REQ', {
-                    subscription_id: subscriptionId,
-                    filter: {
-                        kinds: [
-                            ChatEventKinds.CHANNEL_MESSAGE,
-                            ChatEventKinds.CHANNEL_HIDE_MESSAGE
-                        ],
-                        '#e': [channelId]
-                    }
+            // NIP-01 positional REQ: ["REQ", <subId>, <filter>]
+            return ['REQ', subscriptionId, {
+                    kinds: [
+                        ChatEventKinds.CHANNEL_MESSAGE,
+                        ChatEventKinds.CHANNEL_HIDE_MESSAGE
+                    ],
+                    '#e': [channelId]
                 }];
         },
         unsubscribe(channelId) {
             const subscriptionId = subscriptions.get(channelId);
             if (!subscriptionId) {
                 logger.debug(`No subscription found for channel ${channelId}`);
-                return ['CLOSE', { subscription_id: '' }];
+                return ['CLOSE', ''];
             }
             subscriptions.delete(channelId);
-            return ['CLOSE', { subscription_id: subscriptionId }];
+            // NIP-01 positional CLOSE: ["CLOSE", <subId>]
+            return ['CLOSE', subscriptionId];
         },
         async getMetadata(channelId) {
             return metadata.get(channelId);

@@ -10,10 +10,19 @@ import type { NostrWSMessage } from '../types/messages.js';
  */
 export declare function validateSignedMessage(message: NostrWSMessage): Promise<boolean>;
 /**
- * Validates a signature
+ * Cryptographically validates an EVENT message's signature.
+ *
+ * SECURITY: this performs real BIP-340 verification via nostr-crypto-utils
+ * (validateEvent + verifySignature). It returns a Promise<boolean> and returns
+ * `false` for non-EVENT messages (a non-EVENT message is not a validly-signed
+ * event, so callers gating inbound events must not treat it as valid).
+ *
  * @param message - Message to validate
  * @param logger - Logger instance
- * @returns True if signature is valid
+ * @returns Promise resolving to true only if the event's signature verifies
  */
-export declare function validateSignature(message: NostrWSMessage, logger: any): boolean;
+export declare function validateSignature(message: NostrWSMessage, logger?: {
+    debug: (...a: unknown[]) => void;
+    error: (...a: unknown[]) => void;
+}): Promise<boolean>;
 //# sourceMappingURL=handlers.d.ts.map

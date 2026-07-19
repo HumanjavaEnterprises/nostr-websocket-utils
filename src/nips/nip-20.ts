@@ -58,47 +58,36 @@ export function validateCommandMessage(message: NostrWSMessage): boolean {
     return false;
   }
 
-  const [type, data] = message;
-  if (typeof data !== 'object' || !data) {
-    logger.debug('Invalid command message data');
-    return false;
-  }
+  const type = message[0];
 
-  const commandData = data as CommandMessageData;
-
-  // For OK/NOTICE messages
+  // NIP-20 OK: ["OK", <eventId:string>, <status:boolean>, <message:string?>]
   if (type === 'OK') {
-    if (!commandData.event_id || typeof commandData.event_id !== 'string') {
-      logger.debug('Invalid event_id in OK message');
+    if (typeof message[1] !== 'string') {
+      logger.debug('Invalid event id in OK message');
       return false;
     }
-
-    if (typeof commandData.status !== 'boolean') {
+    if (typeof message[2] !== 'boolean') {
       logger.debug('Invalid status in OK message');
       return false;
     }
-  }
-
-  // For NOTICE messages
-  if (type === 'NOTICE' && commandData.code) {
-    if (!Object.values(CommandStatus).includes(commandData.code as CommandStatus)) {
-      logger.debug('Invalid command status code');
+    if (message[3] !== undefined && typeof message[3] !== 'string') {
+      logger.debug('Invalid message field in OK message');
       return false;
     }
+    return true;
   }
 
-  // Optional fields validation
-  if (commandData.message && typeof commandData.message !== 'string') {
-    logger.debug('Invalid message field');
-    return false;
+  // NIP-01 NOTICE: ["NOTICE", <message:string>]
+  if (type === 'NOTICE') {
+    if (typeof message[1] !== 'string') {
+      logger.debug('Invalid message field in NOTICE');
+      return false;
+    }
+    return true;
   }
 
-  if (commandData.details && typeof commandData.details !== 'object') {
-    logger.debug('Invalid details field');
-    return false;
-  }
-
-  return true;
+  logger.debug(`Unsupported command message type: ${type}`);
+  return false;
 }
 
 /**
@@ -117,23 +106,18 @@ export function createCommandResult(data: CommandMessageData): CommandResult {
 }
 
 /**
- * Creates an OK message
+ * Creates an OK message: ["OK", <eventId>, <success>, <message>]
+ * per NIP-20 / NIP-01. The message string defaults to empty.
  */
-export function createOkMessage(eventId: string, success = true, details?: Record<string, unknown>): NostrWSMessage {
-  return ['OK', {
-    event_id: eventId,
-    status: success,
-    ...details && { details }
-  }];
+export function createOkMessage(eventId: string, success = true, message = ''): NostrWSMessage {
+  return ['OK', eventId, success, message];
 }
 
 /**
- * Creates a NOTICE message
+ * Creates a NOTICE message: ["NOTICE", <message>] per NIP-01.
+ * The optional code is prefixed into the human-readable message.
  */
-export function createCommandNoticeMessage(code: CommandStatusType, message: string, details?: Record<string, unknown>): NostrWSMessage {
-  return ['NOTICE', {
-    code,
-    message,
-    ...details && { details }
-  }];
+export function createCommandNoticeMessage(code: CommandStatusType, message: string): NostrWSMessage {
+  const text = code ? `${code}: ${message}` : message;
+  return ['NOTICE', text];
 }

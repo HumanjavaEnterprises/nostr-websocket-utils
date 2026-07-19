@@ -39,26 +39,32 @@ async function validateSignedMessage(message) {
     }
 }
 /**
- * Validates a signature
+ * Cryptographically validates an EVENT message's signature.
+ *
+ * SECURITY: this performs real BIP-340 verification via nostr-crypto-utils
+ * (validateEvent + verifySignature). It returns a Promise<boolean> and returns
+ * `false` for non-EVENT messages (a non-EVENT message is not a validly-signed
+ * event, so callers gating inbound events must not treat it as valid).
+ *
  * @param message - Message to validate
  * @param logger - Logger instance
- * @returns True if signature is valid
+ * @returns Promise resolving to true only if the event's signature verifies
  */
-function validateSignature(message, logger) {
+async function validateSignature(message, logger) {
     try {
-        if (!Array.isArray(message) || message[0] !== messages_js_1.MESSAGE_TYPES.EVENT) {
-            return true; // Not an event message
-        }
-        const event = message[1];
-        if (!event.sig || typeof event.sig !== 'string') {
-            logger.debug('Missing or invalid signature');
+        if (!Array.isArray(message) || message[0] !== messages_js_1.MESSAGE_TYPES.EVENT || !message[1]) {
+            logger?.debug('Not an EVENT message');
             return false;
         }
-        // Additional validation logic...
-        return true;
+        const event = message[1];
+        if (!(0, nostr_crypto_utils_1.validateEvent)(event)) {
+            logger?.debug('Invalid event format');
+            return false;
+        }
+        return await (0, nostr_crypto_utils_1.verifySignature)(event);
     }
     catch (error) {
-        logger.error('Error validating signature:', error);
+        logger?.error('Error validating signature:', error);
         return false;
     }
 }

@@ -30,10 +30,8 @@ describe('Nostr WebSocket Types', () => {
         ids: ['test-id-1', 'test-id-2'],
         authors: ['test-pubkey-1', 'test-pubkey-2'],
         kinds: [1, 2, 3],
-        tags: {
-          'e': ['test-event-1', 'test-event-2'],
-          'p': ['test-pubkey-1', 'test-pubkey-2']
-        },
+        '#e': ['test-event-1', 'test-event-2'],
+        '#p': ['test-pubkey-1', 'test-pubkey-2'],
         since: now - 3600, // 1 hour ago
         until: now,
         limit: 100,
@@ -42,8 +40,8 @@ describe('Nostr WebSocket Types', () => {
       expect(filter.ids).toBeInstanceOf(Array);
       expect(filter.authors).toBeInstanceOf(Array);
       expect(filter.kinds).toBeInstanceOf(Array);
-      expect(filter.tags?.e).toBeInstanceOf(Array);
-      expect(filter.tags?.p).toBeInstanceOf(Array);
+      expect(filter['#e']).toBeInstanceOf(Array);
+      expect(filter['#p']).toBeInstanceOf(Array);
       expect(typeof filter.since).toBe('number');
       expect(typeof filter.until).toBe('number');
       expect(typeof filter.limit).toBe('number');
