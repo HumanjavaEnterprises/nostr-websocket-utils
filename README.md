@@ -210,11 +210,11 @@ See the `examples/browser.html` file for a complete example of browser usage.
 ## Dependencies
 
 This package uses:
-- nostr-crypto-utils (^0.7.0) for cryptographic operations
-- @noble/curves + @noble/hashes (^2.0.1) for NIP-26 schnorr delegation tokens
+- nostr-crypto-utils (^0.9.1) for cryptographic operations
+- @noble/curves + @noble/hashes (^2.2.0) for NIP-26 schnorr delegation tokens
 - pino (^10.3.1) for logging
-- ws (^8.19.0) for WebSocket functionality
-- uuid (^13.0.0) for unique identifiers
+- ws (^8.21.1) for WebSocket functionality
+- uuid (^13.0.2) for unique identifiers
 
 ## Documentation
 
